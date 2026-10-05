@@ -12,3 +12,5 @@ pnpm-debug.log*
 Thumbs.db
 
 .vscode/
+public/uploads/*
+!public/uploads/.gitkeep
