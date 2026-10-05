@@ -1,0 +1,15 @@
+extends ../layouts/default.pug
+
+block title
+  title= title || "Thông báo lỗi - TroNest"
+
+block main
+  main(style="padding: 80px 0; text-align: center;")
+    .container
+      div(style="max-width: 500px; margin: 0 auto; background: #fff; padding: 40px; border-radius: 20px; border: 1px solid #D4E9E2; box-shadow: 0 4px 15px rgba(0,98,65,0.04);")
+        i.fa-solid.fa-triangle-exclamation(style="font-size: 56px; color: #D48B38; margin-bottom: 20px;")
+        h1(style="font-size: 24px; font-weight: 800; color: #1E3932; margin: 0 0 12px;")= title || "Đã xảy ra sự cố"
+        p(style="color: #5C6F68; font-size: 15px; line-height: 1.6; margin: 0 0 28px;")= message || "Trang hoặc tài nguyên bạn yêu cầu hiện không khả dụng."
+        a(href="/" style="display: inline-block; padding: 12px 24px; background: #006241; color: #fff; font-weight: 700; border-radius: 10px; text-decoration: none; box-shadow: 0 4px 12px rgba(0,98,65,0.25);")
+          i.fa-solid.fa-arrow-left(style="margin-right: 8px;")
+          | Quay lại trang chủ

@@ -1,0 +1,152 @@
+extends ../layouts/default.pug
+
+block title
+  title Quản lý và Phê duyệt bài đăng phòng trọ - TroNest
+
+block main
+  div(style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;")
+    div
+      h1.box-title(style="margin: 0 0 6px; font-size: 24px; font-weight: 800; color: #1e293b;")
+        | Quản lý & Phê duyệt Bài đăng phòng trọ
+      p(style="margin: 0; color: #64748b; font-size: 14px;")
+        | Kiểm duyệt nội dung bài đăng phòng trước khi cho phép hiển thị công khai trên website
+
+  // Filter Tabs
+  .filter-tabs(style="display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 4px;")
+    a.btn(href="/admin/rooms" class=!statusFilter ? 'btn-primary' : 'btn-secondary')
+      | Tất cả (#{counts.all})
+    a.btn(href="/admin/rooms?status=PENDING" class=statusFilter === 'PENDING' ? 'btn-primary' : 'btn-secondary')
+      i.fa-solid.fa-clock(style="color: #ca8a04;")
+      | Chờ duyệt (#{counts.pending})
+    a.btn(href="/admin/rooms?status=APPROVED" class=statusFilter === 'APPROVED' ? 'btn-primary' : 'btn-secondary')
+      i.fa-solid.fa-circle-check(style="color: #16a34a;")
+      | Đã duyệt (#{counts.approved})
+    a.btn(href="/admin/rooms?status=REJECTED" class=statusFilter === 'REJECTED' ? 'btn-primary' : 'btn-secondary')
+      i.fa-solid.fa-circle-xmark(style="color: #dc2626;")
+      | Bị từ chối (#{counts.rejected})
+    a.btn(href="/admin/rooms?status=DRAFT" class=statusFilter === 'DRAFT' ? 'btn-primary' : 'btn-secondary')
+      i.fa-solid.fa-file-lines(style="color: #64748b;")
+      | Bản nháp (#{counts.draft})
+
+  // Search Box
+  form(action="/admin/rooms" method="GET" style="display: flex; gap: 12px; margin-bottom: 20px; max-width: 450px;")
+    if statusFilter
+      input(type="hidden" name="status" value=statusFilter)
+    div(style="flex: 1; display: flex; align-items: center; gap: 8px; background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px 12px;")
+      i.fa-solid.fa-magnifying-glass(style="color: #94a3b8;")
+      input(type="text" name="keyword" value=keyword placeholder="Tìm tiêu đề bài đăng..." style="border: none; outline: none; width: 100%; font-size: 14px;")
+    button.btn.btn-primary(type="submit") Tìm kiếm
+
+  // Table
+  .table-2(style="background: #fff; border-radius: 16px; overflow: hidden; border: 1px solid #e2e8f0; box-shadow: 0 4px 15px rgba(0,0,0,0.02);")
+    table
+      thead
+        tr
+          th Ảnh
+          th Thông tin bài đăng
+          th Chủ trọ
+          th Giá & Diện tích
+          th Trạng thái
+          th Thao tác
+      tbody
+        if rooms && rooms.length > 0
+          each room in rooms
+            tr
+              td(style="width: 85px;")
+                img(src=room.thumbnail || "/client/assets/images/product-1.jpg" style="width: 70px; height: 50px; object-fit: cover; border-radius: 6px;")
+              td
+                b(style="color: #1e293b; font-size: 15px; display: block; margin-bottom: 4px;")= room.title
+                div(style="font-size: 12px; color: #64748b;")= room.address
+                if room.categoryId
+                  span(style="display: inline-block; margin-top: 4px; font-size: 11px; background: #f1f5f9; padding: 2px 8px; border-radius: 4px; color: #475569;")
+                    = room.categoryId.title
+                if room.status === 'REJECTED' && room.rejectReason
+                  div(style="margin-top: 6px; font-size: 12px; color: #b91c1c; background: #fef2f2; border: 1px solid #fecaca; padding: 4px 8px; border-radius: 4px;")
+                    b Lý do: 
+                    = room.rejectReason
+              td
+                b(style="color: #1e293b; display: block;")= room.landlordId ? room.landlordId.fullName : '-'
+                span(style="font-size: 13px; color: #2563eb; font-weight: 600;")= room.landlordId ? room.landlordId.phone : ''
+              td
+                div(style="font-weight: 700; color: #ff5100; font-size: 15px;")
+                  = room.price.toLocaleString('vi-VN') + ' đ'
+                div(style="font-size: 12px; color: #64748b;") #{room.area} m² - #{room.capacity || 2} người
+              td
+                if room.status === 'APPROVED'
+                  span.badge.badge-green Đã duyệt (APPROVED)
+                else if room.status === 'PENDING'
+                  span.badge.badge-yellow Chờ duyệt (PENDING)
+                else if room.status === 'DRAFT'
+                  span.badge.badge-gray Bản nháp (DRAFT)
+                else if room.status === 'REJECTED'
+                  span.badge.badge-red Bị từ chối (REJECTED)
+              td
+                div(style="display: flex; gap: 8px; flex-wrap: wrap;")
+                  a.btn.btn-secondary(href=`/admin/rooms/detail/${room._id}` style="padding: 6px 10px; font-size: 12px;" title="Thẩm định nội dung")
+                    i.fa-solid.fa-magnifying-glass
+                    span Thẩm định
+                  
+                  if room.status !== 'APPROVED'
+                    button.btn.btn-success(onclick=`approveRoom('${room._id}')` style="padding: 6px 10px; font-size: 12px;" title="Duyệt bài đăng")
+                      i.fa-solid.fa-check
+                      span Duyệt
+                  
+                  if room.status !== 'REJECTED'
+                    button.btn.btn-danger(onclick=`rejectRoom('${room._id}')` style="padding: 6px 10px; font-size: 12px;" title="Từ chối bài đăng")
+                      i.fa-solid.fa-xmark
+                      span Từ chối
+
+                  button.btn.btn-secondary(onclick=`deleteRoom('${room._id}')` style="padding: 6px 10px; font-size: 12px; color: #dc2626;" title="Xóa vĩnh viễn")
+                    i.fa-solid.fa-trash-can
+        else
+          tr
+            td(colspan="6" style="text-align: center; padding: 40px; color: #64748b;")
+              | Không có bài đăng nào trong danh mục này.
+
+  script.
+    function approveRoom(id) {
+      if (!confirm("Xác nhận phê duyệt bài đăng này để hiển thị công khai trên website?")) return;
+      fetch('/admin/rooms/approve/' + id, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.code === 200) {
+          notyf.success(data.message);
+          setTimeout(() => location.reload(), 1200);
+        } else notyf.error(data.message);
+      });
+    }
+
+    function rejectRoom(id) {
+      const reason = prompt("Nhập lý do từ chối bài đăng phòng trọ:");
+      if (reason === null) return;
+      fetch('/admin/rooms/reject/' + id, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reason })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.code === 200) {
+          notyf.success(data.message);
+          setTimeout(() => location.reload(), 1200);
+        } else notyf.error(data.message);
+      });
+    }
+
+    function deleteRoom(id) {
+      if (!confirm("Bạn có chắc chắn muốn xóa bài đăng này khỏi hệ thống?")) return;
+      fetch('/admin/rooms/delete/' + id, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.code === 200) {
+          notyf.success(data.message);
+          setTimeout(() => location.reload(), 1200);
+        } else notyf.error(data.message);
+      });
+    }

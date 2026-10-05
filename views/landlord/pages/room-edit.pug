@@ -1,0 +1,475 @@
+extends ../layouts/default.pug
+
+block title
+  title Chỉnh sửa bài đăng - TroNest
+
+block main
+  div(style="margin-bottom: 24px;")
+    h1.box-title(style="margin: 0 0 6px; font-size: 24px; font-weight: 800; color: #1e293b;")
+      | Chỉnh sửa bài đăng phòng trọ
+    p(style="margin: 0; color: #64748b; font-size: 14px;")
+      | Cập nhật lại thông tin bài đăng hoặc chỉnh sửa để gửi duyệt lại nếu bị từ chối
+
+  if room.status === 'REJECTED' && room.rejectReason
+    .alert-rejected(style="background: #fef2f2; border: 1px solid #fecaca; border-left: 5px solid #dc2626; padding: 16px 20px; border-radius: 12px; margin-bottom: 24px;")
+      b(style="color: #991b1b; display: block; margin-bottom: 4px; font-size: 15px;")
+        i.fa-solid.fa-triangle-exclamation(style="margin-right: 8px;")
+        | Bài đăng này bị Admin từ chối phê duyệt!
+      span(style="color: #b91c1c; font-size: 14px;")
+        b Lý do: 
+        = room.rejectReason
+      div(style="margin-top: 8px; font-size: 13px; color: #7f1d1d;")
+        | Hãy sửa lại các thông tin chưa đạt và nhấn "Lưu & Gửi duyệt lại" bên dưới để Admin xem xét lại.
+
+  .section-form(style="background: #fff; padding: 30px; border-radius: 20px; border: 1px solid #e2e8f0; max-width: 900px; box-shadow: 0 4px 20px rgba(0,0,0,0.03);")
+    form#form-edit-room
+      // Tiêu đề
+      .form-group(style="margin-bottom: 20px;")
+        label(style="display: block; font-size: 14px; font-weight: 700; color: #1e293b; margin-bottom: 6px;")
+          | Tiêu đề bài đăng 
+          span(style="color: #ef4444;") *
+        input#title(type="text" name="title" value=room.title required style="width: 100%; padding: 12px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px;")
+
+      // Loại phòng & Diện tích & Sức chứa (3 cột)
+      div(style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 20px; margin-bottom: 20px;")
+        .form-group
+          label(style="display: block; font-size: 14px; font-weight: 700; color: #1e293b; margin-bottom: 6px;")
+            | Loại phòng 
+            span(style="color: #ef4444;") *
+          select#categoryId(name="categoryId" required style="width: 100%; padding: 12px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px;")
+            each cat in categories
+              option(value=cat._id selected=room.categoryId && room.categoryId.toString() === cat._id.toString())= cat.title
+        
+        .form-group
+          label(style="display: block; font-size: 14px; font-weight: 700; color: #1e293b; margin-bottom: 6px;")
+            | Diện tích (m²) 
+            span(style="color: #ef4444;") *
+          input#area(type="number" name="area" value=room.area required min="5" style="width: 100%; padding: 12px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px;")
+
+        .form-group
+          label(style="display: block; font-size: 14px; font-weight: 700; color: #1e293b; margin-bottom: 6px;")
+            | Sức chứa (người)
+          input#capacity(type="number" name="capacity" value=room.capacity min="1" style="width: 100%; padding: 12px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px;")
+
+      // Giá thuê & Tiền cọc (2 cột)
+      div(style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;")
+        .form-group
+          label(style="display: block; font-size: 14px; font-weight: 700; color: #1e293b; margin-bottom: 6px;")
+            | Giá thuê (VND/tháng) 
+            span(style="color: #ef4444;") *
+          input#price(type="number" name="price" value=room.price required min="100000" step="50000" style="width: 100%; padding: 12px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px;")
+
+        .form-group
+          label(style="display: block; font-size: 14px; font-weight: 700; color: #1e293b; margin-bottom: 6px;")
+            | Tiền đặt cọc (VND)
+          input#deposit(type="number" name="deposit" value=room.deposit min="0" step="50000" style="width: 100%; padding: 12px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px;")
+
+      // Địa chỉ (Quận, Phường, Địa chỉ cụ thể)
+      div(style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;")
+        .form-group
+          label(style="display: block; font-size: 14px; font-weight: 700; color: #1e293b; margin-bottom: 6px;")
+            | Quận / Huyện 
+            span(style="color: #ef4444;") *
+          select#district(name="district" required style="width: 100%; padding: 12px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px;")
+            option(value="Cầu Giấy" selected=room.district === "Cầu Giấy") Cầu Giấy
+            option(value="Đống Đa" selected=room.district === "Đống Đa") Đống Đa
+            option(value="Hai Bà Trưng" selected=room.district === "Hai Bà Trưng") Hai Bà Trưng
+            option(value="Thanh Xuân" selected=room.district === "Thanh Xuân") Thanh Xuân
+            option(value="Nam Từ Liêm" selected=room.district === "Nam Từ Liêm") Nam Từ Liêm
+            option(value="Bắc Từ Liêm" selected=room.district === "Bắc Từ Liêm") Bắc Từ Liêm
+            option(value="Ba Đình" selected=room.district === "Ba Đình") Ba Đình
+            option(value="Hoàng Mai" selected=room.district === "Hoàng Mai") Hoàng Mai
+
+        .form-group
+          label(style="display: block; font-size: 14px; font-weight: 700; color: #1e293b; margin-bottom: 6px;")
+            | Phường / Xã
+          input#ward(type="text" name="ward" value=room.ward style="width: 100%; padding: 12px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px;")
+
+      .form-group(style="margin-bottom: 20px;")
+        label(style="display: block; font-size: 14px; font-weight: 700; color: #1e293b; margin-bottom: 6px;")
+          | Địa chỉ chi tiết 
+          span(style="color: #ef4444;") *
+        input#address(type="text" name="address" value=room.address required style="width: 100%; padding: 12px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px;")
+
+      // Quản lý hình ảnh phòng trọ (Tối đa 6 ảnh)
+      .form-group(style="margin-bottom: 24px; background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px;")
+        div(style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;")
+          div
+            label(style="display: block; font-size: 15px; font-weight: 700; color: #1e293b; margin-bottom: 4px;")
+              i.fa-solid.fa-images(style="color: #006241; margin-right: 8px;")
+              | Hình ảnh phòng trọ (Tối đa 6 ảnh)
+              span(style="color: #ef4444; margin-left: 4px;") *
+            p(style="margin: 0; font-size: 13px; color: #64748b;")
+              | Đăng tải từ 1 đến 6 hình ảnh. Ảnh có huy hiệu xanh 
+              strong [Ảnh đại diện]
+              |  sẽ hiển thị ngoài trang chủ. Nhấp vào ảnh bất kỳ để đổi ảnh đại diện.
+          
+          #imageCounter(style="background: #e6f4ea; color: #137333; font-weight: 700; font-size: 13px; padding: 6px 14px; border-radius: 20px; border: 1px solid #ceead6;")
+            | Đã chọn: 
+            span#countText 0
+            | /6 ảnh
+
+        // Thanh công cụ thêm ảnh
+        div(style="display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap;")
+          input#fileInput(type="file" multiple accept="image/png,image/jpeg,image/jpg,image/webp,image/gif" style="display: none;")
+          
+          button#btnUploadComputer.btn(type="button" style="background: #006241; color: #fff; padding: 9px 18px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 8px;")
+            i.fa-solid.fa-cloud-arrow-up
+            | Tải ảnh từ thiết bị
+
+          button#btnToggleUrlInput.btn(type="button" style="background: #f1f5f9; color: #334155; padding: 9px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: 1px solid #cbd5e1; display: inline-flex; align-items: center; gap: 6px;")
+            i.fa-solid.fa-link
+            | Dán link ảnh URL
+
+          button#btnToggleSampleBox.btn(type="button" style="background: #f1f5f9; color: #334155; padding: 9px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: 1px solid #cbd5e1; display: inline-flex; align-items: center; gap: 6px;")
+            i.fa-regular.fa-images
+            | Chọn ảnh mẫu có sẵn
+
+        // Hộp dán link URL
+        #urlInputBox(style="display: none; margin-bottom: 16px; background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px dashed #cbd5e1;")
+          div(style="display: flex; gap: 8px;")
+            input#customImageUrl(type="url" placeholder="Dán đường dẫn ảnh: https://example.com/hinh-anh.jpg" style="flex: 1; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px;")
+            button#btnAddUrlImage.btn(type="button" style="background: #006241; color: #fff; padding: 9px 16px; font-size: 13px; border-radius: 6px; border: none; cursor: pointer;") Thêm ảnh
+
+        // Hộp chọn ảnh mẫu
+        #sampleImagesBox(style="display: none; margin-bottom: 16px; background: #f8fafc; padding: 14px; border-radius: 8px; border: 1px dashed #cbd5e1;")
+          p(style="margin: 0 0 10px 0; font-size: 13px; font-weight: 600; color: #475569;") Bấm vào ảnh để thêm nhanh:
+          div(style="display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px;")
+            - const sampleImgs = [{ url: '/client/assets/images/product-1.jpg', name: 'Hiện đại 1' }, { url: '/client/assets/images/product-2.jpg', name: 'Studio 2' }, { url: '/client/assets/images/product-3.jpg', name: 'Chung cư 3' }, { url: '/client/assets/images/banner-1.png', name: 'Sleepbox' }, { url: '/client/assets/images/banner-2.png', name: 'Phòng đơn' }, { url: '/client/assets/images/banner-3.png', name: 'Gác lửng' }];
+            each sample in sampleImgs
+              div.sample-card(style="cursor: pointer; position: relative; border-radius: 8px; overflow: hidden; border: 2px solid #e2e8f0; height: 75px; transition: transform 0.15s;" onclick=`addSampleImage('${sample.url}')` title=`Bấm để thêm ${sample.name}`)
+                img(src=sample.url style="width: 100%; height: 100%; object-fit: cover;")
+                span(style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.65); color: #fff; font-size: 10px; text-align: center; padding: 2px 0;")= sample.name
+
+        // Loading spinner khi đang tải ảnh
+        #uploadProgressBox(style="display: none; margin-bottom: 14px; padding: 10px 14px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; font-size: 13px; color: #1e40af; align-items: center; gap: 8px;")
+          i.fa-solid.fa-spinner.fa-spin
+          span#uploadProgressText Đang xử lý tải ảnh lên máy chủ...
+
+        // Khung hiển thị danh sách ảnh (Preview Grid)
+        #imagePreviewGrid(style="display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; min-height: 120px;")
+          // Slot thêm ảnh nét đứt
+          #addMoreSlot(style="border: 2px dashed #94a3b8; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; min-height: 120px; background: #f8fafc; transition: all 0.2s;" onclick="document.querySelector('#fileInput').click()")
+            i.fa-solid.fa-plus(style="font-size: 24px; color: #64748b; margin-bottom: 6px;")
+            span(style="font-size: 12px; font-weight: 600; color: #64748b;") Thêm ảnh
+
+      // Chi phí khác
+      div(style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 20px;")
+        .form-group
+          label(style="display: block; font-size: 13px; font-weight: 700; color: #475569; margin-bottom: 6px;") Giá điện
+          input#electricityPrice(type="text" name="electricityPrice" value=room.electricityPrice style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px;")
+        .form-group
+          label(style="display: block; font-size: 13px; font-weight: 700; color: #475569; margin-bottom: 6px;") Giá nước
+          input#waterPrice(type="text" name="waterPrice" value=room.waterPrice style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px;")
+        .form-group
+          label(style="display: block; font-size: 13px; font-weight: 700; color: #475569; margin-bottom: 6px;") Phí dịch vụ
+          input#servicePrice(type="text" name="servicePrice" value=room.servicePrice style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px;")
+
+      // Tiện ích
+      .form-group(style="margin-bottom: 20px;")
+        label(style="display: block; font-size: 14px; font-weight: 700; color: #1e293b; margin-bottom: 10px;") Tiện ích đi kèm
+        .amenities-list(style="display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px;")
+          - const amenitiesList = ['Điều hòa', 'Nóng lạnh', 'Wifi', 'Tủ lạnh', 'Máy giặt', 'Ban công', 'Thang máy', 'Tự do giờ giấc', 'Bảo vệ 24/7'];
+          each item in amenitiesList
+            label(style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #334155; cursor: pointer;")
+              input(type="checkbox" name="amenities" value=item checked=room.amenities && room.amenities.includes(item))
+              span= item
+
+      // Mô tả chi tiết
+      .form-group(style="margin-bottom: 30px;")
+        label(style="display: block; font-size: 14px; font-weight: 700; color: #1e293b; margin-bottom: 6px;") Mô tả chi tiết phòng
+        textarea#description(name="description" rows="5" style="width: 100%; padding: 12px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline: none;")= room.description
+
+      // 2 Nút hành động
+      div(style="display: flex; justify-content: flex-end; gap: 14px; border-top: 1px solid #f1f5f9; padding-top: 20px;")
+        button#btn-save.btn.btn-secondary(type="button" style="padding: 12px 24px;")
+          i.fa-regular.fa-floppy-disk
+          | Cập nhật bài
+        
+        button#btn-resubmit.btn.btn-primary(type="button" style="padding: 12px 28px;")
+          i.fa-solid.fa-paper-plane
+          | Gửi Admin duyệt lại (PENDING)
+
+  script.
+    const form = document.querySelector("#form-edit-room");
+    const btnSave = document.querySelector("#btn-save");
+    const btnResubmit = document.querySelector("#btn-resubmit");
+
+    const fileInput = document.querySelector("#fileInput");
+    const btnUploadComputer = document.querySelector("#btnUploadComputer");
+    const btnToggleUrlInput = document.querySelector("#btnToggleUrlInput");
+    const urlInputBox = document.querySelector("#urlInputBox");
+    const customImageUrl = document.querySelector("#customImageUrl");
+    const btnAddUrlImage = document.querySelector("#btnAddUrlImage");
+    const btnToggleSampleBox = document.querySelector("#btnToggleSampleBox");
+    const sampleImagesBox = document.querySelector("#sampleImagesBox");
+    const imagePreviewGrid = document.querySelector("#imagePreviewGrid");
+    const addMoreSlot = document.querySelector("#addMoreSlot");
+    const countText = document.querySelector("#countText");
+    const imageCounter = document.querySelector("#imageCounter");
+    const uploadProgressBox = document.querySelector("#uploadProgressBox");
+    const uploadProgressText = document.querySelector("#uploadProgressText");
+
+    // Khởi tạo mảng ảnh và ảnh đại diện từ dữ liệu phòng trọ hiện có
+    let roomImages = !{JSON.stringify(room.images && room.images.length > 0 ? room.images : (room.thumbnail ? [room.thumbnail] : ['/client/assets/images/product-1.jpg']))};
+    let mainThumbnail = "#{room.thumbnail || ''}";
+    if (!mainThumbnail && roomImages.length > 0) {
+      mainThumbnail = roomImages[0];
+    }
+
+    function updatePreviewGrid() {
+      // Xoá tất cả item preview cũ (trừ slot addMoreSlot)
+      const existingItems = imagePreviewGrid.querySelectorAll(".img-preview-card");
+      existingItems.forEach(el => el.remove());
+
+      // Đảm bảo mainThumbnail hợp lệ
+      if (!mainThumbnail && roomImages.length > 0) {
+        mainThumbnail = roomImages[0];
+      }
+
+      // Cập nhật số lượng ảnh đếm
+      countText.innerText = roomImages.length;
+      if (roomImages.length >= 6) {
+        imageCounter.style.background = "#fee2e2";
+        imageCounter.style.color = "#dc2626";
+        imageCounter.style.borderColor = "#fca5a5";
+        addMoreSlot.style.display = "none";
+      } else {
+        imageCounter.style.background = "#e6f4ea";
+        imageCounter.style.color = "#137333";
+        imageCounter.style.borderColor = "#ceead6";
+        addMoreSlot.style.display = "flex";
+      }
+
+      // Render từng ảnh
+      roomImages.forEach((url, idx) => {
+        const isMain = (url === mainThumbnail);
+        const card = document.createElement("div");
+        card.className = "img-preview-card";
+        card.style.cssText = `
+          position: relative;
+          height: 120px;
+          border-radius: 10px;
+          overflow: hidden;
+          border: 2px solid ${isMain ? '#006241' : '#cbd5e1'};
+          box-shadow: ${isMain ? '0 0 0 2px rgba(0,98,65,0.2)' : 'none'};
+          background: #f1f5f9;
+        `;
+
+        card.innerHTML = `
+          <img src="${url}" style="width: 100%; height: 100%; object-fit: cover; cursor: pointer;" title="Bấm để chọn làm ảnh đại diện" onclick="setMainThumbnail('${url}')" />
+          ${isMain ? `
+            <span style="position: absolute; top: 6px; left: 6px; background: #006241; color: #fff; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 4px; display: flex; align-items: center; gap: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.25);">
+              <i class="fa-solid fa-star" style="color: #ffd700;"></i> Ảnh chính
+            </span>
+          ` : `
+            <button type="button" onclick="setMainThumbnail('${url}')" style="position: absolute; bottom: 4px; left: 4px; right: 4px; background: rgba(0,0,0,0.68); color: #fff; font-size: 10px; border: none; padding: 3px 0; border-radius: 4px; cursor: pointer; text-align: center;">
+              Chọn làm ảnh chính
+            </button>
+          `}
+          <button type="button" onclick="removeImage(${idx})" style="position: absolute; top: 6px; right: 6px; width: 22px; height: 22px; border-radius: 50%; background: rgba(220, 38, 38, 0.9); color: #fff; border: none; font-size: 12px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.25);" title="Xóa ảnh này">✕</button>
+        `;
+
+        imagePreviewGrid.insertBefore(card, addMoreSlot);
+      });
+    }
+
+    window.setMainThumbnail = function(url) {
+      mainThumbnail = url;
+      updatePreviewGrid();
+    };
+
+    window.removeImage = function(idx) {
+      const removed = roomImages.splice(idx, 1)[0];
+      if (mainThumbnail === removed) {
+        mainThumbnail = roomImages.length > 0 ? roomImages[0] : "";
+      }
+      updatePreviewGrid();
+    };
+
+    window.addSampleImage = function(url) {
+      if (roomImages.length >= 6) {
+        notyf.error("Bạn chỉ có thể chọn tối đa 6 hình ảnh!");
+        return;
+      }
+      if (!roomImages.includes(url)) {
+        roomImages.push(url);
+        updatePreviewGrid();
+        notyf.success("Đã thêm ảnh mẫu!");
+      } else {
+        notyf.error("Ảnh này đã có trong danh sách!");
+      }
+    };
+
+    btnUploadComputer.addEventListener("click", () => {
+      if (roomImages.length >= 6) {
+        notyf.error("Bạn đã chọn đủ tối đa 6 hình ảnh!");
+        return;
+      }
+      fileInput.click();
+    });
+
+    fileInput.addEventListener("change", async (e) => {
+      const files = Array.from(e.target.files);
+      if (!files.length) return;
+
+      const remaining = 6 - roomImages.length;
+      if (remaining <= 0) {
+        notyf.error("Bạn đã tải đủ 6 hình ảnh!");
+        fileInput.value = "";
+        return;
+      }
+
+      let filesToUpload = files;
+      if (files.length > remaining) {
+        notyf.error(`Chỉ còn ${remaining} vị trí ảnh, hệ thống sẽ tải lên ${remaining} ảnh đầu tiên!`);
+        filesToUpload = files.slice(0, remaining);
+      }
+
+      const formData = new FormData();
+      filesToUpload.forEach(file => {
+        formData.append("images", file);
+      });
+
+      uploadProgressBox.style.display = "flex";
+      uploadProgressText.innerText = `Đang tải ${filesToUpload.length} ảnh lên máy chủ...`;
+
+      try {
+        const res = await fetch("/landlord/rooms/upload-images", {
+          method: "POST",
+          body: formData
+        });
+        const data = await res.json();
+
+        if (data.code === 200 && Array.isArray(data.urls)) {
+          data.urls.forEach(url => {
+            if (roomImages.length < 6) {
+              roomImages.push(url);
+            }
+          });
+          if (!mainThumbnail && roomImages.length > 0) {
+            mainThumbnail = roomImages[0];
+          }
+          updatePreviewGrid();
+          notyf.success(data.message || `Đã tải lên ${data.urls.length} ảnh thành công!`);
+        } else {
+          notyf.error(data.message || "Tải ảnh thất bại!");
+        }
+      } catch (err) {
+        console.error(err);
+        notyf.error("Không thể kết nối đến máy chủ khi tải ảnh!");
+      } finally {
+        uploadProgressBox.style.display = "none";
+        fileInput.value = "";
+      }
+    });
+
+    btnToggleUrlInput.addEventListener("click", () => {
+      urlInputBox.style.display = urlInputBox.style.display === "none" ? "block" : "none";
+      if (urlInputBox.style.display === "block") customImageUrl.focus();
+    });
+
+    btnAddUrlImage.addEventListener("click", () => {
+      const url = customImageUrl.value.trim();
+      if (!url) {
+        notyf.error("Vui lòng nhập đường dẫn link ảnh hợp lệ!");
+        return;
+      }
+      if (roomImages.length >= 6) {
+        notyf.error("Bạn chỉ có thể chọn tối đa 6 hình ảnh!");
+        return;
+      }
+      if (roomImages.includes(url)) {
+        notyf.error("Ảnh này đã có trong danh sách!");
+        return;
+      }
+      roomImages.push(url);
+      customImageUrl.value = "";
+      urlInputBox.style.display = "none";
+      updatePreviewGrid();
+      notyf.success("Đã thêm ảnh từ link!");
+    });
+
+    btnToggleSampleBox.addEventListener("click", () => {
+      sampleImagesBox.style.display = sampleImagesBox.style.display === "none" ? "block" : "none";
+    });
+
+    // Khởi chạy render ban đầu
+    updatePreviewGrid();
+
+    function handleUpdate(actionStatus) {
+      if (!form.reportValidity()) return;
+
+      if (roomImages.length === 0) {
+        notyf.error("Vui lòng thêm ít nhất 1 hình ảnh phòng trọ!");
+        return;
+      }
+
+      const title = form.title.value;
+      const categoryId = form.categoryId.value;
+      const price = form.price.value;
+      const deposit = form.deposit.value;
+      const area = form.area.value;
+      const capacity = form.capacity.value;
+      const district = form.district.value;
+      const ward = form.ward.value;
+      const address = form.address.value;
+      const electricityPrice = form.electricityPrice.value;
+      const waterPrice = form.waterPrice.value;
+      const servicePrice = form.servicePrice.value;
+      const description = form.description.value;
+
+      const checkedAmenities = [];
+      form.querySelectorAll('input[name="amenities"]:checked').forEach(c => checkedAmenities.push(c.value));
+
+      const payload = {
+        title,
+        categoryId,
+        price,
+        deposit,
+        area,
+        capacity,
+        district,
+        ward,
+        address,
+        thumbnail: mainThumbnail || roomImages[0],
+        images: roomImages,
+        electricityPrice,
+        waterPrice,
+        servicePrice,
+        description,
+        amenities: checkedAmenities,
+        actionStatus
+      };
+
+      btnSave.disabled = true;
+      btnResubmit.disabled = true;
+
+      fetch("/landlord/rooms/edit/#{room._id}", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      })
+      .then(res => res.json())
+      .then(data => {
+        btnSave.disabled = false;
+        btnResubmit.disabled = false;
+        if (data.code === 200) {
+          notyf.success(data.message);
+          setTimeout(() => {
+            window.location.href = "/landlord/rooms";
+          }, 1500);
+        } else {
+          notyf.error(data.message);
+        }
+      })
+      .catch(err => {
+        btnSave.disabled = false;
+        btnResubmit.disabled = false;
+        notyf.error("Lỗi cập nhật!");
+      });
+    }
+
+    btnSave.addEventListener("click", () => handleUpdate("DRAFT"));
+    btnResubmit.addEventListener("click", () => handleUpdate("PENDING"));
+

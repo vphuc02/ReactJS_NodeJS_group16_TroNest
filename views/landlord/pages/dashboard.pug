@@ -1,0 +1,120 @@
+extends ../layouts/default.pug
+
+block title
+  title Tổng quan Chủ trọ - TroNest
+
+block main
+  h1.box-title(style="margin-bottom: 24px; font-size: 24px; font-weight: 800; color: #1e293b;")
+    | Tổng quan Chủ trọ
+
+  // Cảnh báo trạng thái tài khoản
+  if landlordStatus === 'PENDING'
+    .alert-banner(style="background: #fffbeb; border: 1px solid #fde68a; border-left: 5px solid #d97706; padding: 16px 20px; border-radius: 12px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between;")
+      div(style="display: flex; align-items: center; gap: 14px;")
+        i.fa-solid.fa-clock(style="font-size: 24px; color: #d97706;")
+        div
+          b(style="font-size: 15px; color: #92400e; display: block;") Tài khoản của bạn đang trong trạng thái Chờ phê duyệt (PENDING)
+          span(style="font-size: 13px; color: #b45309;") Vui lòng chờ Admin kiểm duyệt thông tin trước khi có thể đăng bài phòng trọ.
+      span.badge.badge-yellow Chờ duyệt
+  else if landlordStatus === 'REJECTED'
+    .alert-banner(style="background: #fef2f2; border: 1px solid #fecaca; border-left: 5px solid #dc2626; padding: 16px 20px; border-radius: 12px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between;")
+      div(style="display: flex; align-items: center; gap: 14px;")
+        i.fa-solid.fa-triangle-exclamation(style="font-size: 24px; color: #dc2626;")
+        div
+          b(style="font-size: 15px; color: #991b1b; display: block;") Tài khoản của bạn đã bị từ chối phê duyệt!
+          span(style="font-size: 13px; color: #b91c1c;") Lý do: #{rejectReason || 'Thông tin chưa hợp lệ'}
+      span.badge.badge-red Bị từ chối
+
+  // 4 Thẻ thống kê bài đăng
+  .stats-grid(style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 30px;")
+    .stat-card(style="background: #fff; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 16px;")
+      div(style="width: 50px; height: 50px; border-radius: 12px; background: #e0e7ff; color: #4338ca; display: flex; align-items: center; justify-content: center; font-size: 22px;")
+        i.fa-solid.fa-house
+      div
+        span(style="font-size: 13px; color: #64748b; font-weight: 600;") Tổng số bài đăng
+        h3(style="font-size: 24px; font-weight: 800; color: #1e293b; margin: 4px 0 0;")= totalRooms
+
+    .stat-card(style="background: #fff; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 16px;")
+      div(style="width: 50px; height: 50px; border-radius: 12px; background: #dcfce7; color: #15803d; display: flex; align-items: center; justify-content: center; font-size: 22px;")
+        i.fa-solid.fa-circle-check
+      div
+        span(style="font-size: 13px; color: #64748b; font-weight: 600;") Đã duyệt (APPROVED)
+        h3(style="font-size: 24px; font-weight: 800; color: #16a34a; margin: 4px 0 0;")= approvedRooms
+
+    .stat-card(style="background: #fff; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 16px;")
+      div(style="width: 50px; height: 50px; border-radius: 12px; background: #fef9c3; color: #a16207; display: flex; align-items: center; justify-content: center; font-size: 22px;")
+        i.fa-solid.fa-clock
+      div
+        span(style="font-size: 13px; color: #64748b; font-weight: 600;") Chờ Admin duyệt (PENDING)
+        h3(style="font-size: 24px; font-weight: 800; color: #ca8a04; margin: 4px 0 0;")= pendingRooms
+
+    .stat-card(style="background: #fff; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 16px;")
+      div(style="width: 50px; height: 50px; border-radius: 12px; background: #f1f5f9; color: #475569; display: flex; align-items: center; justify-content: center; font-size: 22px;")
+        i.fa-solid.fa-file-lines
+      div
+        span(style="font-size: 13px; color: #64748b; font-weight: 600;") Bản nháp (DRAFT)
+        h3(style="font-size: 24px; font-weight: 800; color: #475569; margin: 4px 0 0;")= draftRooms
+
+    .stat-card(style="background: #fff; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 16px;")
+      div(style="width: 50px; height: 50px; border-radius: 12px; background: #fee2e2; color: #b91c1c; display: flex; align-items: center; justify-content: center; font-size: 22px;")
+        i.fa-solid.fa-circle-xmark
+      div
+        span(style="font-size: 13px; color: #64748b; font-weight: 600;") Bị từ chối (REJECTED)
+        h3(style="font-size: 24px; font-weight: 800; color: #dc2626; margin: 4px 0 0;")= rejectedRooms
+
+  // Action Bar
+  div(style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;")
+    h2(style="font-size: 18px; font-weight: 700; color: #1e293b; margin: 0;") Bài đăng gần đây
+    if landlordStatus === 'APPROVED'
+      a.btn.btn-primary(href="/landlord/rooms/create")
+        i.fa-solid.fa-plus
+        | Đăng phòng mới
+    else
+      button.btn.btn-secondary(disabled title="Cần được Admin phê duyệt tài khoản trước khi đăng phòng")
+        i.fa-solid.fa-lock
+        | Đăng phòng mới (Đang khóa)
+
+  // Danh sách gần đây
+  .table-2(style="background: #fff; border-radius: 16px; overflow: hidden; border: 1px solid #e2e8f0;")
+    table
+      thead
+        tr
+          th Ảnh
+          th Tiêu đề phòng
+          th Loại phòng
+          th Giá thuê
+          th Diện tích
+          th Trạng thái
+          th Thao tác
+      tbody
+        if recentRooms && recentRooms.length > 0
+          each room in recentRooms
+            tr
+              td(style="width: 80px;")
+                img(src=room.thumbnail || "/client/assets/images/product-1.jpg" style="width: 60px; height: 45px; object-fit: cover; border-radius: 6px;")
+              td
+                b(style="color: #1e293b;")= room.title
+                div(style="font-size: 12px; color: #64748b;")= room.address
+              td= room.categoryId ? room.categoryId.title : '-'
+              td(style="font-weight: 700; color: #ff5100;") #{room.price.toLocaleString('vi-VN')} đ
+              td #{room.area} m²
+              td
+                if room.status === 'APPROVED'
+                  span.badge.badge-green Đã duyệt (APPROVED)
+                else if room.status === 'PENDING'
+                  span.badge.badge-yellow Chờ duyệt (PENDING)
+                else if room.status === 'DRAFT'
+                  span.badge.badge-gray Bản nháp (DRAFT)
+                else if room.status === 'REJECTED'
+                  span.badge.badge-red Bị từ chối (REJECTED)
+              td
+                div(style="display: flex; gap: 8px;")
+                  a.btn.btn-secondary(href=`/landlord/rooms/edit/${room._id}` style="padding: 6px 10px; font-size: 12px;" title="Chỉnh sửa")
+                    i.fa-solid.fa-pen-to-square
+                  if room.status === 'APPROVED'
+                    a.btn.btn-success(href=`/rooms/detail/${room._id}` target="_blank" style="padding: 6px 10px; font-size: 12px;" title="Xem trên web")
+                      i.fa-solid.fa-eye
+        else
+          tr
+            td(colspan="7" style="text-align: center; padding: 40px; color: #64748b;")
+              | Bạn chưa có bài đăng nào. Hãy bấm "Đăng phòng mới" để tạo bài đầu tiên!

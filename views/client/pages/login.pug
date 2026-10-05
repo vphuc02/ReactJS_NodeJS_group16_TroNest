@@ -1,0 +1,90 @@
+doctype html
+html(lang="vi")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    title Đăng nhập tài khoản - TroNest
+    link(rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css")
+    link(rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css")
+    link(rel="stylesheet" href="/admin/assets/css/style.css")
+  body(style="background-color: #F7F6F2;")
+    .page-account(style="display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 40px 20px;")
+      .form-account(style="background: #fff; border-radius: 24px; padding: 50px 40px; width: 100%; max-width: 500px; border: 1px solid #D4E9E2; box-shadow: 0 10px 40px rgba(0,98,65,0.06);")
+        .inner-logo(style="text-align: center; margin-bottom: 24px;")
+          a(href="/" style="display: inline-flex; align-items: center; gap: 8px; font-size: 26px; font-weight: 800; color: #006241; text-decoration: none;")
+            i.fa-solid.fa-house-circle-check(style="color: #006241; font-size: 32px;")
+            span TroNest
+        
+        h2.inner-title(style="font-size: 24px; font-weight: 800; color: #1E3932; text-align: center; margin-bottom: 8px;") Đăng nhập hệ thống
+        p(style="text-align: center; color: #5C6F68; font-size: 14px; margin-bottom: 28px;") Dành cho Khách thuê và Chủ trọ 
+
+        form#login-form
+          input(type="hidden" name="redirectUrl" value=redirectUrl || "")
+
+          .inner-group(style="margin-bottom: 18px;")
+            label(style="display: block; font-size: 13px; font-weight: 700; color: #1E3932; margin-bottom: 6px;") Email đăng nhập
+            input#email(type="email" name="email" placeholder="example@tronest.com" required style="width: 100%; padding: 12px 14px; border: 1px solid #D4E9E2; border-radius: 10px; font-size: 14px; outline: none; background: #F7F6F2; color: #1E3932;")
+
+          .inner-group(style="margin-bottom: 20px;")
+            label(style="display: block; font-size: 13px; font-weight: 700; color: #1E3932; margin-bottom: 6px;") Mật khẩu
+            input#password(type="password" name="password" placeholder="••••••••" required style="width: 100%; padding: 12px 14px; border: 1px solid #D4E9E2; border-radius: 10px; font-size: 14px; outline: none; background: #F7F6F2; color: #1E3932;")
+
+          .inner-meta(style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; font-size: 13px;")
+            label(style="display: flex; align-items: center; gap: 6px; cursor: pointer; color: #5C6F68;")
+              input#rememberPassword(type="checkbox" name="rememberPassword" style="accent-color: #006241;")
+              span Ghi nhớ đăng nhập
+            span(style="color: #5C6F68; font-size: 12px;") (Mặc định: 123456)
+
+          button#btn-submit(type="submit" style="width: 100%; padding: 14px; background: #006241; color: #fff; font-weight: 700; border: none; border-radius: 10px; font-size: 15px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,98,65,0.25);")
+            | Đăng nhập ngay
+
+        .inner-footer(style="text-align: center; margin-top: 24px; font-size: 14px; color: #5C6F68;")
+          | Chưa có tài khoản? 
+          a(href="/register" style="color: #006241; font-weight: 700; text-decoration: none;") Đăng ký ngay
+        
+        div(style="margin-top: 24px; padding-top: 20px; border-top: 1px dashed #e2e8f0; font-size: 12px; color: #94a3b8; text-align: center;")
+          | Tài khoản mẫu: Admin (admin@tronest.com) | Chủ trọ (chutro.viet@tronest.com) | Khách (khachhang@tronest.com) | MK: 123456
+
+    script(src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js")
+    script(src="/admin/assets/js/notify.js")
+    script.
+      const form = document.querySelector("#login-form");
+      if (form) {
+        form.addEventListener("submit", function(e) {
+          e.preventDefault();
+          const email = form.email.value;
+          const password = form.password.value;
+          const rememberPassword = form.rememberPassword.checked;
+          const redirectUrl = form.redirectUrl.value;
+
+          const btn = document.querySelector("#btn-submit");
+          btn.disabled = true;
+          btn.innerText = "Đang xử lý...";
+
+          fetch("/login", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ email, password, rememberPassword, redirectUrl })
+          })
+          .then(res => res.json())
+          .then(data => {
+            btn.disabled = false;
+            btn.innerText = "Đăng nhập ngay";
+            if (data.code === 200) {
+              notyf.success(data.message);
+              setTimeout(() => {
+                window.location.href = data.redirectUrl || "/";
+              }, 1200);
+            } else {
+              notyf.error(data.message);
+            }
+          })
+          .catch(err => {
+            btn.disabled = false;
+            btn.innerText = "Đăng nhập ngay";
+            notyf.error("Lỗi kết nối máy chủ!");
+          });
+        });
+      }

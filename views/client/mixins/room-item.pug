@@ -1,0 +1,51 @@
+mixin roomItem(room, favoriteRoomIds)
+  - const isFav = favoriteRoomIds && favoriteRoomIds.includes(room._id.toString());
+  .product-item(style="background: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,98,65,0.04); transition: all 0.3s ease; position: relative; border: 1px solid #D4E9E2; display: flex; flex-direction: column;")
+    // Favorite Button
+    button.btn-fav(class=isFav ? 'active' : '' data-room-id=room._id.toString() title="Lưu vào danh sách yêu thích")
+      if isFav
+        i.fa-solid.fa-heart
+      else
+        i.fa-regular.fa-heart
+
+    .inner-image(style="position: relative; height: 210px; overflow: hidden;")
+      a(href=`/rooms/detail/${room._id}`)
+        img(
+          alt=room.title
+          src=room.thumbnail || "/client/assets/images/product-1.jpg"
+          style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease;"
+        )
+      if room.categoryId && room.categoryId.title
+        span(style="position: absolute; bottom: 12px; left: 12px; background: rgba(30, 57, 50, 0.85); backdrop-filter: blur(4px); color: #D4E9E2; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600;")
+          = room.categoryId.title
+
+    .inner-content(style="padding: 16px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between;")
+      div
+        h3.inner-title(style="font-size: 16px; font-weight: 700; line-height: 1.4; margin: 0 0 10px; height: 44px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;")
+          a(href=`/rooms/detail/${room._id}` style="color: #1E3932; text-decoration: none;")
+            = room.title
+
+        .inner-prices(style="display: flex; align-items: baseline; gap: 4px; margin-bottom: 12px;")
+          span(style="font-size: 20px; font-weight: 800; color: #006241;")
+            = room.price.toLocaleString('vi-VN')
+          span(style="font-size: 13px; color: #5C6F68; font-weight: 600;") đ/tháng
+
+        .inner-desc(style="display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 12px; font-size: 13px; color: #5C6F68; border-bottom: 1px dashed #D4E9E2; padding-bottom: 12px;")
+          div(style="display: flex; align-items: center; gap: 5px;")
+            i.fa-solid.fa-vector-square(style="color: #006241;")
+            span #{room.area} m²
+          div(style="display: flex; align-items: center; gap: 5px;")
+            i.fa-solid.fa-user-group(style="color: #006241;")
+            span #{room.capacity || 2} người
+          div(style="display: flex; align-items: center; gap: 5px;")
+            i.fa-solid.fa-location-dot(style="color: #006241;")
+            span= room.district
+
+      div(style="display: flex; align-items: center; justify-content: space-between; margin-top: 10px; font-size: 13px; color: #5C6F68;")
+        div(style="display: flex; align-items: center; gap: 6px;")
+          i.fa-solid.fa-user-tie(style="color: #CBA258;")
+          span(style="max-width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600;")
+            = room.landlordId ? room.landlordId.fullName : 'Chủ trọ'
+        a(href=`/rooms/detail/${room._id}` style="color: #006241; font-weight: 700; display: flex; align-items: center; gap: 4px;")
+          | Chi tiết
+          i.fa-solid.fa-arrow-right(style="font-size: 11px;")

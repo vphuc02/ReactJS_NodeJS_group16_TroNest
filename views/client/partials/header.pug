@@ -1,0 +1,105 @@
+// Top Header
+.top-header
+  .container
+    .inner-wrap
+      .inner-item
+        i.fa-solid.fa-phone
+        | Hotline: 0987.654.321
+      .inner-item
+        i.fa-solid.fa-envelope
+        | contact@tronest.com
+      .inner-item
+        i.fa-solid.fa-location-dot
+        | Hệ thống phòng trọ sinh viên & người đi làm toàn quốc
+// End Top Header
+
+// Header
+header.header
+  .container
+    .inner-wrap
+      // Menu Mobile
+      button.inner-menu-mobile(type="button" aria-label="Mở menu")
+        i.fa-solid.fa-bars
+
+      // Logo
+      .inner-logo
+        a(href="/" style="display: flex; align-items: center; gap: 8px; font-size: 24px; font-weight: 800; color: #006241;")
+          i.fa-solid.fa-house-circle-check(style="color: #006241; font-size: 28px;")
+          span TroNest
+
+      // Navigation Menu
+      nav.inner-menu
+        .inner-overlay
+        .inner-menu-drawer
+          .inner-menu-header
+            .inner-logo-drawer(style="display: flex; align-items: center; gap: 8px; font-size: 20px; font-weight: 800; color: #006241;")
+              i.fa-solid.fa-house-circle-check(style="color: #006241; font-size: 22px;")
+              span TroNest
+            button.inner-menu-close(type="button" aria-label="Đóng menu")
+              i.fa-solid.fa-xmark
+          ul
+            li
+              a(href="/")
+                i.fa-solid.fa-house(style="color: #006241;")
+                span Trang chủ
+            li
+              a(href="/rooms")
+                i.fa-solid.fa-list-check(style="color: #006241;")
+                span Tất cả phòng
+            li
+              a(href="/rooms?district=Cầu Giấy")
+                i.fa-solid.fa-location-dot(style="color: #D48B38;")
+                span Cầu Giấy
+            li
+              a(href="/rooms?district=Đống Đa")
+                i.fa-solid.fa-location-dot(style="color: #D48B38;")
+                span Đống Đa
+            li
+              a(href="/rooms?district=Hai Bà Trưng")
+                i.fa-solid.fa-location-dot(style="color: #D48B38;")
+                span Hai Bà Trưng
+            li
+              a(href="/rooms?district=Nam Từ Liêm")
+                i.fa-solid.fa-location-dot(style="color: #D48B38;")
+                span Nam Từ Liêm
+
+      // Action Area (Post room & User account)
+      .header-actions
+        if user && user.role === 'LANDLORD'
+          a.btn-post-room(href="/landlord/rooms/create" title="Đăng tin trọ")
+            i.fa-solid.fa-plus
+            span.btn-text Đăng tin trọ
+        else if user && user.role === 'ADMIN'
+          a.btn-post-room.btn-admin(href="/admin/dashboard" title="Cổng Quản trị")
+            i.fa-solid.fa-shield-halved
+            span.btn-text Cổng Quản trị
+        else
+          a.btn-post-room(href="/landlord/rooms/create" title="Đăng tin trọ")
+            i.fa-solid.fa-plus
+            span.btn-text Đăng tin trọ
+
+        if user
+          .user-profile-menu
+            a.user-profile-card(href=user.role === 'LANDLORD' ? '/landlord/dashboard' : (user.role === 'ADMIN' ? '/admin/dashboard' : '/favorites') title="Tài khoản cá nhân")
+              img.user-avatar-small(src=user.avatar || "/admin/assets/images/avatar.jpg" alt=user.fullName)
+              .user-profile-info
+                span.user-name= user.fullName ? user.fullName.replace(/\s*\([^)]*\)/g, '') : ''
+                span.user-role-badge(class=`badge-${user.role.toLowerCase()}`)
+                  if user.role === 'LANDLORD'
+                    | Chủ trọ
+                  else if user.role === 'ADMIN'
+                    | Quản trị viên
+                  else
+                    | Khách thuê
+            
+            if user.role === 'CUSTOMER'
+              a.header-icon-btn.btn-favorites(href="/favorites" title="Phòng yêu thích")
+                i.fa-solid.fa-heart
+
+            a.header-icon-btn.btn-logout(href="/logout" title="Đăng xuất")
+              i.fa-solid.fa-arrow-right-from-bracket
+        else
+          .auth-buttons
+            a.btn-login(href="/login") Đăng nhập
+            a.btn-register(href="/register") Đăng ký
+// End Header

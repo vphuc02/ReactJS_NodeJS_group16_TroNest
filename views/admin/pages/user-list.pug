@@ -1,0 +1,100 @@
+extends ../layouts/default.pug
+
+block title
+  title Quản lý người dùng - TroNest
+
+block main
+  div(style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;")
+    div
+      h1.box-title(style="margin: 0 0 6px; font-size: 24px; font-weight: 800; color: #1e293b;")
+        | Quản lý người dùng hệ thống
+      p(style="margin: 0; color: #64748b; font-size: 14px;")
+        | Danh sách tất cả tài khoản Khách hàng, Chủ trọ và Quản trị viên trong hệ thống
+
+  // Filter Form
+  form(action="/admin/users" method="GET" style="display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap;")
+    select(name="role" style="padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; background: #fff;")
+      option(value="") -- Tất cả vai trò --
+      option(value="CUSTOMER" selected=roleFilter === 'CUSTOMER') Khách hàng
+      option(value="LANDLORD" selected=roleFilter === 'LANDLORD') Chủ trọ
+      option(value="ADMIN" selected=roleFilter === 'ADMIN') Quản trị viên (Admin)
+
+    select(name="status" style="padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; background: #fff;")
+      option(value="") -- Tất cả trạng thái --
+      option(value="ACTIVE" selected=statusFilter === 'ACTIVE') Đang hoạt động (ACTIVE)
+      option(value="INACTIVE" selected=statusFilter === 'INACTIVE') Đã khóa (INACTIVE)
+      option(value="PENDING" selected=statusFilter === 'PENDING') Chờ duyệt (PENDING)
+      option(value="APPROVED" selected=statusFilter === 'APPROVED') Đã duyệt (APPROVED)
+
+    div(style="display: flex; align-items: center; gap: 8px; background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px 12px; min-width: 250px;")
+      i.fa-solid.fa-magnifying-glass(style="color: #94a3b8;")
+      input(type="text" name="keyword" value=keyword placeholder="Tìm theo tên, email, sđt..." style="border: none; outline: none; width: 100%; font-size: 14px;")
+
+    button.btn.btn-primary(type="submit") Lọc danh sách
+
+  // Table
+  .table-2(style="background: #fff; border-radius: 16px; overflow: hidden; border: 1px solid #e2e8f0; box-shadow: 0 4px 15px rgba(0,0,0,0.02);")
+    table
+      thead
+        tr
+          th Họ tên
+          th Email
+          th Số điện thoại
+          th Vai trò
+          th Trạng thái
+          th Thao tác
+      tbody
+        if users && users.length > 0
+          each u in users
+            tr
+              td
+                div(style="display: flex; align-items: center; gap: 10px;")
+                  img(src=u.avatar || "/admin/assets/images/avatar.jpg" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover;")
+                  b(style="color: #1e293b;")= u.fullName
+              td= u.email
+              td(style="font-weight: 600; color: #2563eb;")= u.phone || '-'
+              td
+                if u.role === 'ADMIN'
+                  span.badge.badge-blue Admin
+                else if u.role === 'LANDLORD'
+                  span.badge.badge-yellow Chủ trọ
+                else
+                  span.badge.badge-gray Khách hàng
+              td
+                if u.status === 'ACTIVE' || u.status === 'APPROVED'
+                  span.badge.badge-green= u.status
+                else if u.status === 'PENDING'
+                  span.badge.badge-yellow PENDING
+                else
+                  span.badge.badge-red= u.status
+              td
+                if u.role !== 'ADMIN'
+                  button.btn(onclick=`toggleUserStatus('${u._id}')` class=u.status === 'INACTIVE' ? 'btn-success' : 'btn-danger' style="padding: 6px 12px; font-size: 12px;")
+                    if u.status === 'INACTIVE'
+                      i.fa-solid.fa-lock-open
+                      | Mở khóa
+                    else
+                      i.fa-solid.fa-lock
+                      | Khóa tài khoản
+                else
+                  span(style="color: #94a3b8; font-size: 12px;") Không thể khóa
+        else
+          tr
+            td(colspan="6" style="text-align: center; padding: 40px; color: #64748b;")
+              | Không tìm thấy người dùng phù hợp.
+
+  script.
+    function toggleUserStatus(id) {
+      if (!confirm("Bạn có chắc chắn muốn thay đổi trạng thái hoạt động của tài khoản này?")) return;
+      fetch('/admin/users/toggle-status/' + id, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.code === 200) {
+          notyf.success(data.message);
+          setTimeout(() => location.reload(), 1200);
+        } else notyf.error(data.message);
+      });
+    }

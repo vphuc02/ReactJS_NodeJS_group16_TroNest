@@ -1,0 +1,42 @@
+extends ../layouts/account.pug
+
+block title
+  title Đăng nhập Quản trị viên - TroNest
+
+block main
+  .form-account
+    .inner-logo(style="text-align: center; margin-bottom: 20px;")
+      div(style="display: inline-flex; align-items: center; gap: 10px; font-size: 26px; font-weight: 800; color: #2563eb;")
+        i.fa-solid.fa-shield-halved(style="font-size: 32px;")
+        span TroNest Admin
+    h2.inner-title Đăng nhập Quản trị
+    p.inner-desc(style="text-align: center; margin-bottom: 28px; color: #64748b; font-size: 14px;") Cổng xác thực Ban Quản trị hệ thống
+    
+    form.inner-form#login-form
+      .inner-group
+        label.inner-label(for="email") Email Quản trị viên
+        input.inner-control(
+          type="email"
+          name="email"
+          id="email"
+          value="admin@tronest.com"
+          placeholder="admin@tronest.com"
+        )
+      .inner-group
+        label.inner-label(for="password") Mật khẩu
+        input.inner-control(
+          type="password"
+          name="password"
+          id="password"
+          value="123456"
+        )
+      .inner-meta
+        .inner-confirm
+          input.inner-check(
+            type="checkbox"
+            name="rememberPassword"
+            id="remember-password"
+            checked
+          )
+          label.inner-label(for="remember-password") Nhớ mật khẩu
+      button.inner-button(type="submit" style="width: 100%;") Đăng Nhập Quản Trị

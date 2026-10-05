@@ -1,0 +1,56 @@
+doctype html
+html(lang="vi")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    block title
+    link(rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css")
+    link(rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css")
+    link(rel="stylesheet" href="/admin/assets/css/style.css")
+    style.
+      .badge {
+        display: inline-block;
+        padding: 5px 12px;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 700;
+      }
+      .badge-green { background: #dcfce7; color: #15803d; }
+      .badge-yellow { background: #fef9c3; color: #a16207; }
+      .badge-red { background: #fee2e2; color: #b91c1c; }
+      .badge-blue { background: #dbeafe; color: #1d4ed8; }
+      .badge-gray { background: #f1f5f9; color: #475569; }
+      .btn {
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 14px;
+        border: none;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        text-decoration: none;
+      }
+      .btn-primary { background: #ff5100; color: #fff; }
+      .btn-primary:hover { background: #e04800; }
+      .btn-secondary { background: #f1f5f9; color: #475569; }
+      .btn-success { background: #16a34a; color: #fff; }
+      .btn-danger { background: #dc2626; color: #fff; }
+      .table-2 table th, .table-2 table td {
+        vertical-align: middle;
+      }
+  body
+    // Header
+    include ../partials/header.pug
+
+    // Sider
+    include ../partials/sider.pug
+
+    // Main
+    main.main(style="padding: 24px; min-height: calc(100vh - 70px); background: #f8fafc;")
+      block main
+
+    script(src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js")
+    script(src="/admin/assets/js/notify.js")
+    script(src="/admin/assets/js/script.js")
