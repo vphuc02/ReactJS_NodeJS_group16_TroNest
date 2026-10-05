@@ -4,16 +4,16 @@ block title
   title Quản lý loại phòng trọ - TroNest
 
 block main
-  div(style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;")
+  div(class="admin-clean-040")
     div
-      h1.box-title(style="margin: 0 0 6px; font-size: 24px; font-weight: 800; color: #1e293b;")
+      h1.box-title(class="admin-clean-041")
         | Quản lý loại hình phòng trọ
-      p(style="margin: 0; color: #64748b; font-size: 14px;")
+      p(class="admin-clean-042")
         | Danh mục phân loại các hình thức cho thuê: Phòng trọ, Căn hộ mini, Chung cư mini, Ký túc xá...
 
-  .category-layout(style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px; align-items: start;")
+  .category-layout(class="admin-clean-048")
     // Danh sách loại phòng
-    .table-2(style="background: #fff; border-radius: 16px; overflow: hidden; border: 1px solid #e2e8f0; box-shadow: 0 4px 15px rgba(0,0,0,0.02);")
+    .table-2(class="admin-clean-024")
       table
         thead
           tr
@@ -26,85 +26,46 @@ block main
           if categories && categories.length > 0
             each cat in categories
               tr
-                td(style="font-size: 20px; color: #2563eb;")
+                td(class="admin-clean-089")
                   i(class=cat.icon || "fa-solid fa-house-chimney")
                 td
-                  b(style="color: #1e293b;")= cat.title
+                  b(class="admin-clean-025")= cat.title
                   if cat.description
-                    div(style="font-size: 12px; color: #64748b;")= cat.description
-                td(style="color: #64748b; font-size: 13px;")= cat.slug
+                    div(class="admin-clean-035")= cat.description
+                td(class="admin-clean-090")= cat.slug
                 td
                   span.badge.badge-blue= `${cat.roomCount || 0} phòng`
                 td
-                  button.btn.btn-danger(onclick=`deleteCategory('${cat._id}')` style="padding: 6px 10px; font-size: 12px;" title="Xóa loại phòng")
+                  button.btn.btn-danger(data-admin-action="delete-category" data-id=cat._id class="admin-clean-038" title="Xóa loại phòng")
                     i.fa-solid.fa-trash-can
           else
             tr
-              td(colspan="5" style="text-align: center; padding: 30px; color: #64748b;")
+              td(colspan="5" class="admin-clean-029")
                 | Chưa có loại phòng nào. Hãy thêm ở form bên phải.
 
     // Form thêm mới
-    .create-card(style="background: #fff; padding: 24px; border-radius: 16px; border: 1px solid #e2e8f0;")
-      h3(style="font-size: 16px; font-weight: 700; color: #1e293b; margin: 0 0 16px;")
-        i.fa-solid.fa-plus-circle(style="color: #2563eb; margin-right: 8px;")
+    .create-card(class="admin-clean-049")
+      h3(class="admin-clean-063")
+        i.fa-solid.fa-plus-circle(class="admin-clean-091")
         | Thêm loại phòng mới
       
       form#form-create-cat
-        .form-group(style="margin-bottom: 16px;")
-          label(style="display: block; font-size: 13px; font-weight: 700; color: #475569; margin-bottom: 6px;")
+        .form-group(class="admin-clean-092")
+          label(class="admin-clean-093")
             | Tên loại phòng 
-            span(style="color: #ef4444;") *
-          input#cat-title(type="text" name="title" placeholder="VD: Homestay nghỉ dưỡng" required style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px;")
+            span(class="admin-clean-094") *
+          input#cat-title(type="text" name="title" placeholder="VD: Homestay nghỉ dưỡng" required class="admin-clean-095")
 
-        .form-group(style="margin-bottom: 16px;")
-          label(style="display: block; font-size: 13px; font-weight: 700; color: #475569; margin-bottom: 6px;")
+        .form-group(class="admin-clean-092")
+          label(class="admin-clean-093")
             | FontAwesome Icon Class
-          input#cat-icon(type="text" name="icon" value="fa-solid fa-house-chimney" placeholder="fa-solid fa-bed" style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px;")
+          input#cat-icon(type="text" name="icon" value="fa-solid fa-house-chimney" placeholder="fa-solid fa-bed" class="admin-clean-095")
 
-        .form-group(style="margin-bottom: 20px;")
-          label(style="display: block; font-size: 13px; font-weight: 700; color: #475569; margin-bottom: 6px;")
+        .form-group(class="admin-clean-058")
+          label(class="admin-clean-093")
             | Mô tả ngắn
-          textarea#cat-desc(name="description" rows="3" placeholder="Mô tả đặc điểm loại hình phòng..." style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline: none;")
+          textarea#cat-desc(name="description" rows="3" placeholder="Mô tả đặc điểm loại hình phòng..." class="admin-clean-096")
 
-        button#btn-create-cat.btn.btn-primary(type="submit" style="width: 100%; justify-content: center; padding: 12px;")
+        button#btn-create-cat.btn.btn-primary(type="submit" class="admin-clean-097")
           i.fa-solid.fa-plus
           | Tạo loại phòng
-
-  script.
-    const formCat = document.querySelector("#form-create-cat");
-    if (formCat) {
-      formCat.addEventListener("submit", function(e) {
-        e.preventDefault();
-        const title = formCat.title.value;
-        const icon = formCat.icon.value;
-        const description = formCat.description.value;
-
-        fetch("/admin/categories/create", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ title, icon, description })
-        })
-        .then(res => res.json())
-        .then(data => {
-          if (data.code === 200) {
-            notyf.success(data.message);
-            setTimeout(() => location.reload(), 1200);
-          } else notyf.error(data.message);
-        });
-      });
-    }
-
-    function deleteCategory(id) {
-      if (!confirm("Bạn có chắc muốn xóa loại phòng này?")) return;
-      fetch('/admin/categories/delete/' + id, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.code === 200) {
-          notyf.success(data.message);
-          setTimeout(() => location.reload(), 1200);
-        } else notyf.error(data.message);
-      });
-    }

@@ -6,121 +6,63 @@ html(lang="vi")
     title Đăng ký tài khoản - TroNest
     link(rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css")
     link(rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css")
-    link(rel="stylesheet" href="/admin/assets/css/style.css")
-  body(style="background-color: #F7F6F2;")
-    .page-account(style="display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 40px 20px;")
-      .form-account(style="background: #fff; border-radius: 24px; padding: 45px 40px; width: 100%; max-width: 550px; border: 1px solid #D4E9E2; box-shadow: 0 10px 40px rgba(0,98,65,0.06);")
-        .inner-logo(style="text-align: center; margin-bottom: 20px;")
-          a(href="/" style="display: inline-flex; align-items: center; gap: 8px; font-size: 26px; font-weight: 800; color: #006241; text-decoration: none;")
-            i.fa-solid.fa-house-circle-check(style="color: #006241; font-size: 32px;")
+    link(rel="stylesheet" href="/client/assets/css/style.css")
+  body(class="auth-inline-01")
+    .page-account(class="auth-inline-02")
+      .form-account(class="auth-inline-21")
+        .inner-logo(class="auth-inline-22")
+          a(href="/" class="auth-inline-05")
+            i.fa-solid.fa-house-circle-check(class="auth-inline-06")
             span TroNest
         
-        h2.inner-title(style="font-size: 24px; font-weight: 800; color: #1E3932; text-align: center; margin-bottom: 8px;") Đăng ký tài khoản mới
-        p(style="text-align: center; color: #5C6F68; font-size: 14px; margin-bottom: 24px;") Trở thành thành viên của cộng đồng TroNest
+        h2.inner-title(class="auth-inline-07") Đăng ký tài khoản mới
+        p(class="auth-inline-23") Trở thành thành viên của cộng đồng TroNest
 
         form#register-form
           // Role selection tabs/radios
-          .role-selector(style="margin-bottom: 22px; background: #F7F6F2; padding: 6px; border-radius: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; border: 1px solid #D4E9E2;")
-            label(style="display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 700; transition: 0.2s; color: #1E3932;" id="label-role-customer")
-              input(type="radio" name="role" value="CUSTOMER" checked style="accent-color: #006241;")
+          .role-selector(class="auth-inline-24")
+            label(class="auth-inline-25" id="label-role-customer")
+              input(type="radio" name="role" value="CUSTOMER" checked class="auth-inline-15")
               span Khách thuê phòng
-            label(style="display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 700; transition: 0.2s; color: #1E3932;" id="label-role-landlord")
-              input(type="radio" name="role" value="LANDLORD" style="accent-color: #D48B38;")
+            label(class="auth-inline-25" id="label-role-landlord")
+              input(type="radio" name="role" value="LANDLORD" class="auth-inline-26")
               span Chủ trọ cho thuê
 
           // Notice for landlord
-          #landlord-notice(style="display: none; background: #FFFBEB; border: 1px solid #FEF3C7; color: #92400E; padding: 12px 16px; border-radius: 10px; font-size: 13px; margin-bottom: 20px; line-height: 1.5;")
-            i.fa-solid.fa-circle-info(style="margin-right: 6px; color: #D97706;")
+          #landlord-notice(hidden class="auth-inline-27")
+            i.fa-solid.fa-circle-info(class="auth-inline-28")
             | Lưu ý: Tài khoản Chủ trọ sau khi đăng ký sẽ ở trạng thái 
             b Chờ duyệt (PENDING)
             | . Admin sẽ kiểm tra và phê duyệt trước khi bạn có thể đăng bài.
 
-          .inner-group(style="margin-bottom: 16px;")
-            label(style="display: block; font-size: 13px; font-weight: 700; color: #1E3932; margin-bottom: 6px;") Họ và tên
-            input#fullName(type="text" name="fullName" placeholder="Nguyễn Văn A" required style="width: 100%; padding: 11px 14px; border: 1px solid #D4E9E2; border-radius: 10px; font-size: 14px; outline: none; background: #F7F6F2; color: #1E3932;")
+          .inner-group(class="auth-inline-29")
+            label(class="auth-inline-10") Họ và tên
+            input#fullName(type="text" name="fullName" placeholder="Nguyễn Văn A" required class="auth-inline-30")
 
-          .inner-group(style="margin-bottom: 16px;")
-            label(style="display: block; font-size: 13px; font-weight: 700; color: #1E3932; margin-bottom: 6px;") Email
-            input#email(type="email" name="email" placeholder="email@example.com" required style="width: 100%; padding: 11px 14px; border: 1px solid #D4E9E2; border-radius: 10px; font-size: 14px; outline: none; background: #F7F6F2; color: #1E3932;")
+          .inner-group(class="auth-inline-29")
+            label(class="auth-inline-10") Email
+            input#email(type="email" name="email" placeholder="email@example.com" required class="auth-inline-30")
 
-          .inner-group(style="margin-bottom: 16px;")
-            label(style="display: block; font-size: 13px; font-weight: 700; color: #1E3932; margin-bottom: 6px;") Số điện thoại
-            input#phone(type="tel" name="phone" placeholder="0987654321" required style="width: 100%; padding: 11px 14px; border: 1px solid #D4E9E2; border-radius: 10px; font-size: 14px; outline: none; background: #F7F6F2; color: #1E3932;")
+          .inner-group(class="auth-inline-29")
+            label(class="auth-inline-10") Số điện thoại
+            input#phone(type="tel" name="phone" placeholder="0987654321" required class="auth-inline-30")
 
-          .inner-group(style="margin-bottom: 16px;")
-            label(style="display: block; font-size: 13px; font-weight: 700; color: #1E3932; margin-bottom: 6px;") Mật khẩu
-            input#password(type="password" name="password" placeholder="Tối thiểu 6 ký tự" required minlength="6" style="width: 100%; padding: 11px 14px; border: 1px solid #D4E9E2; border-radius: 10px; font-size: 14px; outline: none; background: #F7F6F2; color: #1E3932;")
+          .inner-group(class="auth-inline-29")
+            label(class="auth-inline-10") Mật khẩu
+            input#password(type="password" name="password" placeholder="Tối thiểu 6 ký tự" required minlength="6" class="auth-inline-30")
 
-          .inner-group(style="margin-bottom: 22px;")
-            label(style="display: block; font-size: 13px; font-weight: 700; color: #1E3932; margin-bottom: 6px;") Địa chỉ
-            input#address(type="text" name="address" placeholder="Quận Cầu Giấy, Hà Nội" style="width: 100%; padding: 11px 14px; border: 1px solid #D4E9E2; border-radius: 10px; font-size: 14px; outline: none; background: #F7F6F2; color: #1E3932;")
+          .inner-group(class="auth-inline-31")
+            label(class="auth-inline-10") Địa chỉ
+            input#address(type="text" name="address" placeholder="Quận Cầu Giấy, Hà Nội" class="auth-inline-30")
 
-          button#btn-submit(type="submit" style="width: 100%; padding: 14px; background: #006241; color: #fff; font-weight: 700; border: none; border-radius: 10px; font-size: 15px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,98,65,0.25);")
+          button#btn-submit(type="submit" class="auth-inline-17")
             | Hoàn tất đăng ký
 
-        .inner-footer(style="text-align: center; margin-top: 24px; font-size: 14px; color: #5C6F68;")
+        .inner-footer(class="auth-inline-18")
           | Đã có tài khoản? 
-          a(href="/login" style="color: #006241; font-weight: 700; text-decoration: none;") Đăng nhập
+          a(href="/login" class="auth-inline-19") Đăng nhập
 
     script(src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js")
-    script(src="/admin/assets/js/notify.js")
-    script.
-      const roleRadios = document.querySelectorAll('input[name="role"]');
-      const landlordNotice = document.querySelector("#landlord-notice");
-      const btnSubmit = document.querySelector("#btn-submit");
-
-      roleRadios.forEach(radio => {
-        radio.addEventListener("change", function() {
-          if (this.value === "LANDLORD") {
-            landlordNotice.style.display = "block";
-            btnSubmit.style.background = "#D48B38";
-            btnSubmit.innerText = "Đăng ký làm Chủ trọ";
-          } else {
-            landlordNotice.style.display = "none";
-            btnSubmit.style.background = "#006241";
-            btnSubmit.innerText = "Hoàn tất đăng ký";
-          }
-        });
-      });
-
-      const form = document.querySelector("#register-form");
-      if (form) {
-        form.addEventListener("submit", function(e) {
-          e.preventDefault();
-          const fullName = form.fullName.value;
-          const email = form.email.value;
-          const phone = form.phone.value;
-          const password = form.password.value;
-          const address = form.address.value;
-          const role = form.querySelector('input[name="role"]:checked').value;
-
-          btnSubmit.disabled = true;
-          btnSubmit.innerText = "Đang đăng ký...";
-
-          fetch("/register", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ fullName, email, phone, password, address, role })
-          })
-          .then(res => res.json())
-          .then(data => {
-            btnSubmit.disabled = false;
-            btnSubmit.innerText = "Hoàn tất đăng ký";
-            if (data.code === 200) {
-              notyf.success(data.message);
-              setTimeout(() => {
-                window.location.href = "/login";
-              }, 2500);
-            } else {
-              notyf.error(data.message);
-            }
-          })
-          .catch(err => {
-            btnSubmit.disabled = false;
-            btnSubmit.innerText = "Hoàn tất đăng ký";
-            notyf.error("Lỗi kết nối máy chủ!");
-          });
-        });
-      }
+    script(src="/shared/assets/js/notify.js")
+    script(src="/shared/assets/js/http.js")
+    script(src="/client/assets/js/auth.js")

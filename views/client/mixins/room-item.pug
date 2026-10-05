@@ -1,6 +1,6 @@
 mixin roomItem(room, favoriteRoomIds)
   - const isFav = favoriteRoomIds && favoriteRoomIds.includes(room._id.toString());
-  .product-item(style="background: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,98,65,0.04); transition: all 0.3s ease; position: relative; border: 1px solid #D4E9E2; display: flex; flex-direction: column;")
+  .product-item(class="client-clean-147")
     // Favorite Button
     button.btn-fav(class=isFav ? 'active' : '' data-room-id=room._id.toString() title="Lưu vào danh sách yêu thích")
       if isFav
@@ -8,44 +8,44 @@ mixin roomItem(room, favoriteRoomIds)
       else
         i.fa-regular.fa-heart
 
-    .inner-image(style="position: relative; height: 210px; overflow: hidden;")
+    .inner-image(class="client-clean-148")
       a(href=`/rooms/detail/${room._id}`)
         img(
           alt=room.title
           src=room.thumbnail || "/client/assets/images/product-1.jpg"
-          style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease;"
+          class="client-clean-149"
         )
       if room.categoryId && room.categoryId.title
-        span(style="position: absolute; bottom: 12px; left: 12px; background: rgba(30, 57, 50, 0.85); backdrop-filter: blur(4px); color: #D4E9E2; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600;")
+        span(class="client-clean-150")
           = room.categoryId.title
 
-    .inner-content(style="padding: 16px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between;")
+    .inner-content(class="client-clean-151")
       div
-        h3.inner-title(style="font-size: 16px; font-weight: 700; line-height: 1.4; margin: 0 0 10px; height: 44px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;")
-          a(href=`/rooms/detail/${room._id}` style="color: #1E3932; text-decoration: none;")
+        h3.inner-title(class="client-clean-152")
+          a(href=`/rooms/detail/${room._id}` class="client-clean-153")
             = room.title
 
-        .inner-prices(style="display: flex; align-items: baseline; gap: 4px; margin-bottom: 12px;")
-          span(style="font-size: 20px; font-weight: 800; color: #006241;")
+        .inner-prices(class="client-clean-154")
+          span(class="client-clean-155")
             = room.price.toLocaleString('vi-VN')
-          span(style="font-size: 13px; color: #5C6F68; font-weight: 600;") đ/tháng
+          span(class="client-clean-156") đ/tháng
 
-        .inner-desc(style="display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 12px; font-size: 13px; color: #5C6F68; border-bottom: 1px dashed #D4E9E2; padding-bottom: 12px;")
-          div(style="display: flex; align-items: center; gap: 5px;")
-            i.fa-solid.fa-vector-square(style="color: #006241;")
+        .inner-desc(class="client-clean-157")
+          div(class="client-clean-158")
+            i.fa-solid.fa-vector-square(class="client-clean-059")
             span #{room.area} m²
-          div(style="display: flex; align-items: center; gap: 5px;")
-            i.fa-solid.fa-user-group(style="color: #006241;")
+          div(class="client-clean-158")
+            i.fa-solid.fa-user-group(class="client-clean-059")
             span #{room.capacity || 2} người
-          div(style="display: flex; align-items: center; gap: 5px;")
-            i.fa-solid.fa-location-dot(style="color: #006241;")
+          div(class="client-clean-158")
+            i.fa-solid.fa-location-dot(class="client-clean-059")
             span= room.district
 
-      div(style="display: flex; align-items: center; justify-content: space-between; margin-top: 10px; font-size: 13px; color: #5C6F68;")
-        div(style="display: flex; align-items: center; gap: 6px;")
-          i.fa-solid.fa-user-tie(style="color: #CBA258;")
-          span(style="max-width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600;")
+      div(class="client-clean-159")
+        div(class="client-clean-160")
+          i.fa-solid.fa-user-tie(class="client-clean-161")
+          span(class="client-clean-162")
             = room.landlordId ? room.landlordId.fullName : 'Chủ trọ'
-        a(href=`/rooms/detail/${room._id}` style="color: #006241; font-weight: 700; display: flex; align-items: center; gap: 4px;")
+        a(href=`/rooms/detail/${room._id}` class="client-clean-163")
           | Chi tiết
-          i.fa-solid.fa-arrow-right(style="font-size: 11px;")
+          i.fa-solid.fa-arrow-right(class="client-clean-164")

@@ -23,8 +23,8 @@ header.header
 
       // Logo
       .inner-logo
-        a(href="/" style="display: flex; align-items: center; gap: 8px; font-size: 24px; font-weight: 800; color: #006241;")
-          i.fa-solid.fa-house-circle-check(style="color: #006241; font-size: 28px;")
+        a(href="/" class="client-clean-143")
+          i.fa-solid.fa-house-circle-check(class="client-clean-144")
           span TroNest
 
       // Navigation Menu
@@ -32,35 +32,35 @@ header.header
         .inner-overlay
         .inner-menu-drawer
           .inner-menu-header
-            .inner-logo-drawer(style="display: flex; align-items: center; gap: 8px; font-size: 20px; font-weight: 800; color: #006241;")
-              i.fa-solid.fa-house-circle-check(style="color: #006241; font-size: 22px;")
+            .inner-logo-drawer(class="client-clean-145")
+              i.fa-solid.fa-house-circle-check(class="client-clean-146")
               span TroNest
             button.inner-menu-close(type="button" aria-label="Đóng menu")
               i.fa-solid.fa-xmark
           ul
             li
               a(href="/")
-                i.fa-solid.fa-house(style="color: #006241;")
+                i.fa-solid.fa-house(class="client-clean-059")
                 span Trang chủ
             li
               a(href="/rooms")
-                i.fa-solid.fa-list-check(style="color: #006241;")
+                i.fa-solid.fa-list-check(class="client-clean-059")
                 span Tất cả phòng
             li
               a(href="/rooms?district=Cầu Giấy")
-                i.fa-solid.fa-location-dot(style="color: #D48B38;")
+                i.fa-solid.fa-location-dot(class="client-clean-013")
                 span Cầu Giấy
             li
               a(href="/rooms?district=Đống Đa")
-                i.fa-solid.fa-location-dot(style="color: #D48B38;")
+                i.fa-solid.fa-location-dot(class="client-clean-013")
                 span Đống Đa
             li
               a(href="/rooms?district=Hai Bà Trưng")
-                i.fa-solid.fa-location-dot(style="color: #D48B38;")
+                i.fa-solid.fa-location-dot(class="client-clean-013")
                 span Hai Bà Trưng
             li
               a(href="/rooms?district=Nam Từ Liêm")
-                i.fa-solid.fa-location-dot(style="color: #D48B38;")
+                i.fa-solid.fa-location-dot(class="client-clean-013")
                 span Nam Từ Liêm
 
       // Action Area (Post room & User account)
@@ -96,7 +96,7 @@ header.header
               a.header-icon-btn.btn-favorites(href="/favorites" title="Phòng yêu thích")
                 i.fa-solid.fa-heart
 
-            a.header-icon-btn.btn-logout(href="/logout" title="Đăng xuất")
+            a.header-icon-btn.btn-logout(href="/logout" data-logout-url="/logout" title="Đăng xuất")
               i.fa-solid.fa-arrow-right-from-bracket
         else
           .auth-buttons

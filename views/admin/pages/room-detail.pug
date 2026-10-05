@@ -4,20 +4,20 @@ block title
   title= `Thẩm định bài đăng: ${room.title} - TroNest`
 
 block main
-  div(style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;")
+  div(class="admin-clean-040")
     div
-      h1.box-title(style="margin: 0 0 6px; font-size: 24px; font-weight: 800; color: #1e293b;")
+      h1.box-title(class="admin-clean-041")
         | Thẩm định bài đăng phòng trọ
-      p(style="margin: 0; color: #64748b; font-size: 14px;")
+      p(class="admin-clean-042")
         | Kiểm tra nội dung bài đăng trước khi ra quyết định phê duyệt hoặc từ chối
     
-    div(style="display: flex; gap: 10px;")
-      if room.status !== 'APPROVED'
-        button.btn.btn-success(onclick=`approveRoom('${room._id}')` style="padding: 10px 20px;")
+    div(class="admin-clean-043")
+      if room.status !== ROOM_STATUS.APPROVED
+        button.btn.btn-success(data-admin-action="approve-room" data-id=room._id class="admin-clean-044")
           i.fa-solid.fa-check
           | Phê duyệt xuất bản
-      if room.status !== 'REJECTED'
-        button.btn.btn-danger(onclick=`rejectRoom('${room._id}')` style="padding: 10px 20px;")
+      if room.status !== ROOM_STATUS.REJECTED
+        button.btn.btn-danger(data-admin-action="reject-room" data-id=room._id class="admin-clean-044")
           i.fa-solid.fa-xmark
           | Từ chối bài đăng
       a.btn.btn-secondary(href="/admin/rooms")
@@ -25,40 +25,40 @@ block main
         | Quay lại danh sách
 
   // Status Banner
-  div(style="margin-bottom: 24px;")
-    if room.status === 'APPROVED'
-      span.badge.badge-green(style="font-size: 14px; padding: 8px 16px;") Trạng thái: ĐÃ DUYỆT (Hiển thị công khai)
-    else if room.status === 'PENDING'
-      span.badge.badge-yellow(style="font-size: 14px; padding: 8px 16px;") Trạng thái: CHỜ DUYỆT (PENDING)
-    else if room.status === 'DRAFT'
-      span.badge.badge-gray(style="font-size: 14px; padding: 8px 16px;") Trạng thái: BẢN NHÁP (DRAFT)
-    else if room.status === 'REJECTED'
-      span.badge.badge-red(style="font-size: 14px; padding: 8px 16px;") Trạng thái: BỊ TỪ CHỐI (REJECTED)
+  div(class="admin-clean-045")
+    if room.status === ROOM_STATUS.APPROVED
+      span.badge.badge-green(class="admin-clean-046") Trạng thái: ĐÃ DUYỆT (Hiển thị công khai)
+    else if room.status === ROOM_STATUS.PENDING
+      span.badge.badge-yellow(class="admin-clean-046") Trạng thái: CHỜ DUYỆT (PENDING)
+    else if room.status === ROOM_STATUS.DRAFT
+      span.badge.badge-gray(class="admin-clean-046") Trạng thái: BẢN NHÁP (DRAFT)
+    else if room.status === ROOM_STATUS.REJECTED
+      span.badge.badge-red(class="admin-clean-046") Trạng thái: BỊ TỪ CHỐI (REJECTED)
       if room.rejectReason
-        div(style="margin-top: 10px; background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; padding: 12px; border-radius: 8px; font-size: 14px;")
+        div(class="admin-clean-047")
           b Lý do từ chối: 
           = room.rejectReason
 
-  .room-detail-grid(style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px; align-items: start;")
+  .room-detail-grid(class="admin-clean-048")
     // Cột nội dung phòng
-    .detail-card(style="background: #fff; padding: 24px; border-radius: 16px; border: 1px solid #e2e8f0;")
-      h2(style="font-size: 20px; font-weight: 800; color: #1e293b; margin: 0 0 16px;")= room.title
+    .detail-card(class="admin-clean-049")
+      h2(class="admin-clean-050")= room.title
       
-      div(style="height: 320px; border-radius: 12px; overflow: hidden; margin-bottom: 20px;")
-        img(src=room.thumbnail || "/client/assets/images/product-1.jpg" style="width: 100%; height: 100%; object-fit: cover;")
+      div(class="admin-clean-051")
+        img(src=room.thumbnail || "/client/assets/images/product-1.jpg" class="admin-clean-052")
 
-      div(style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; background: #f8fafc; padding: 16px; border-radius: 12px; margin-bottom: 20px;")
+      div(class="admin-clean-053")
         div
-          span(style="font-size: 12px; color: #64748b; display: block;") Giá thuê
-          b(style="font-size: 18px; color: #ff5100;") #{room.price.toLocaleString('vi-VN')} đ/tháng
+          span(class="admin-clean-054") Giá thuê
+          b(class="admin-clean-055") #{room.price.toLocaleString('vi-VN')} đ/tháng
         div
-          span(style="font-size: 12px; color: #64748b; display: block;") Diện tích
-          b(style="font-size: 18px; color: #1e293b;") #{room.area} m²
+          span(class="admin-clean-054") Diện tích
+          b(class="admin-clean-056") #{room.area} m²
         div
-          span(style="font-size: 12px; color: #64748b; display: block;") Sức chứa
-          b(style="font-size: 18px; color: #1e293b;") #{room.capacity || 2} người
+          span(class="admin-clean-054") Sức chứa
+          b(class="admin-clean-056") #{room.capacity || 2} người
 
-      div(style="margin-bottom: 20px; font-size: 14px; line-height: 1.8;")
+      div(class="admin-clean-057")
         div
           b Địa chỉ: 
           span #{room.address}, #{room.district}, #{room.province}
@@ -76,26 +76,26 @@ block main
           span= room.servicePrice
 
       if room.amenities && room.amenities.length > 0
-        div(style="margin-bottom: 20px;")
-          b(style="display: block; margin-bottom: 8px; font-size: 14px;") Tiện ích đi kèm:
-          div(style="display: flex; flex-wrap: wrap; gap: 8px;")
+        div(class="admin-clean-058")
+          b(class="admin-clean-059") Tiện ích đi kèm:
+          div(class="admin-clean-060")
             each am in room.amenities
-              span(style="background: #e2e8f0; padding: 4px 10px; border-radius: 6px; font-size: 13px; color: #334155;")= am
+              span(class="admin-clean-061")= am
 
       div
-        b(style="display: block; margin-bottom: 8px; font-size: 14px;") Mô tả bài đăng:
-        p(style="white-space: pre-line; color: #475569; font-size: 14px; line-height: 1.6; margin: 0;")= room.description
+        b(class="admin-clean-059") Mô tả bài đăng:
+        p(class="admin-clean-062")= room.description
 
     // Cột thông tin Chủ trọ
-    .landlord-info-card(style="background: #fff; padding: 24px; border-radius: 16px; border: 1px solid #e2e8f0;")
-      h3(style="font-size: 16px; font-weight: 700; color: #1e293b; margin: 0 0 16px;") Thông tin Chủ trọ
+    .landlord-info-card(class="admin-clean-049")
+      h3(class="admin-clean-063") Thông tin Chủ trọ
       if room.landlordId
-        div(style="text-align: center; margin-bottom: 16px;")
-          img(src=room.landlordId.avatar || "/admin/assets/images/avatar.jpg" style="width: 70px; height: 70px; border-radius: 50%; object-fit: cover; margin-bottom: 8px;")
-          h4(style="margin: 0; font-size: 16px; color: #1e293b;")= room.landlordId.fullName
-          span.badge.badge-green(style="margin-top: 6px;") Chủ trọ xác thực
+        div(class="admin-clean-064")
+          img(src=room.landlordId.avatar || "/admin/assets/images/avatar.jpg" class="admin-clean-065")
+          h4(class="admin-clean-066")= room.landlordId.fullName
+          span.badge.badge-green(class="admin-clean-067") Chủ trọ xác thực
 
-        div(style="font-size: 13px; color: #475569; line-height: 1.8;")
+        div(class="admin-clean-068")
           div
             b Email: 
             span= room.landlordId.email
@@ -109,37 +109,4 @@ block main
             b Ngày tham gia: 
             span= new Date(room.landlordId.createdAt).toLocaleDateString('vi-VN')
       else
-        p(style="color: #64748b; font-size: 14px;") Không có thông tin chủ trọ
-
-  script.
-    function approveRoom(id) {
-      if (!confirm("Xác nhận phê duyệt bài đăng này và cho phép hiển thị công khai trên website?")) return;
-      fetch('/admin/rooms/approve/' + id, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.code === 200) {
-          notyf.success(data.message);
-          setTimeout(() => location.reload(), 1200);
-        } else notyf.error(data.message);
-      });
-    }
-
-    function rejectRoom(id) {
-      const reason = prompt("Nhập lý do từ chối bài đăng phòng trọ:");
-      if (reason === null) return;
-      fetch('/admin/rooms/reject/' + id, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ reason })
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.code === 200) {
-          notyf.success(data.message);
-          setTimeout(() => location.reload(), 1200);
-        } else notyf.error(data.message);
-      });
-    }
+        p(class="admin-clean-069") Không có thông tin chủ trọ

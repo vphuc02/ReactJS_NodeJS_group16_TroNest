@@ -5,26 +5,26 @@ block title
   title Phòng trọ đã lưu yêu thích - TroNest
 
 block main
-  main(style="padding: 40px 0;")
+  main(class="client-clean-001")
     .container
-      div(style="margin-bottom: 24px;")
-        h1(style="font-size: 28px; font-weight: 800; color: #1E3932; margin: 0 0 8px; display: flex; align-items: center; gap: 12px;")
-          i.fa-solid.fa-heart(style="color: #D48B38;")
+      div(class="client-clean-094")
+        h1(class="client-clean-116")
+          i.fa-solid.fa-heart(class="client-clean-013")
           | Phòng Trọ Đã Lưu Yêu Thích
-        p(style="color: #5C6F68; font-size: 14px; margin: 0;")
+        p(class="client-clean-117")
           | Bạn đang lưu trữ 
-          b(style="color: #006241;")= rooms.length
+          b(class="client-clean-059")= rooms.length
           |  căn phòng yêu thích để so sánh và liên hệ
 
       if rooms && rooms.length > 0
-        .rooms-grid(style="display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 24px;")
+        .rooms-grid(class="client-clean-082")
           each room in rooms
             +roomItem(room, favoriteRoomIds)
       else
-        div(style="text-align: center; padding: 80px 20px; background: #fff; border-radius: 20px; border: 1px solid #D4E9E2;")
-          i.fa-regular.fa-heart(style="font-size: 56px; color: #D4E9E2; margin-bottom: 16px;")
-          h3(style="font-size: 20px; color: #1E3932; margin: 0 0 10px;") Chưa có phòng trọ nào trong danh sách yêu thích
-          p(style="color: #5C6F68; font-size: 14px; margin: 0 0 24px; max-width: 450px; margin-left: auto; margin-right: auto;")
+        div(class="client-clean-118")
+          i.fa-regular.fa-heart(class="client-clean-119")
+          h3(class="client-clean-120") Chưa có phòng trọ nào trong danh sách yêu thích
+          p(class="client-clean-121")
             | Khi bạn thấy một căn phòng ưng ý, hãy nhấn vào biểu tượng trái tim để lưu lại và theo dõi bất cứ lúc nào!
-          a(href="/rooms" style="display: inline-block; padding: 12px 24px; background: #006241; color: #fff; font-weight: 700; border-radius: 10px; text-decoration: none; box-shadow: 0 4px 12px rgba(0,98,65,0.25);")
+          a(href="/rooms" class="client-clean-122")
             | Khám phá phòng trọ ngay

@@ -27,56 +27,6 @@ html(lang="vi")
       href="/client/assets/css/style.css" 
       rel="stylesheet"
     )
-    style.
-      /* Custom styles bổ trợ cho TroNest */
-      .badge {
-        display: inline-block;
-        padding: 4px 10px;
-        border-radius: 6px;
-        font-size: 13px;
-        font-weight: 600;
-      }
-      .badge-green { background: #D4E9E2; color: #006241; }
-      .badge-yellow { background: #FEF3C7; color: #92400E; }
-      .badge-red { background: #FEE2E2; color: #991B1B; }
-      .badge-blue { background: #E0E7FF; color: #3730A3; }
-      .badge-gold { background: #FDF4E3; color: #B45309; border: 1px solid #FDE68A; }
-      .btn-fav {
-        position: absolute;
-        top: 12px;
-        right: 12px;
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.9);
-        border: none;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        z-index: 5;
-        font-size: 16px;
-        color: #94a3b8;
-      }
-      .btn-fav.active, .btn-fav:hover {
-        color: #D48B38;
-        background: #fff;
-        transform: scale(1.1);
-      }
-      .user-menu {
-        position: relative;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        cursor: pointer;
-      }
-      .user-avatar-small {
-        width: 34px;
-        height: 34px;
-        border-radius: 50%;
-        object-fit: cover;
-      }
   body
     // Header
     include ../partials/header.pug
@@ -93,49 +43,6 @@ html(lang="vi")
     script(src="https://unpkg.com/aos@2.3.1/dist/aos.js")
     script(src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js")
     script(src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js")
-    script(src="/admin/assets/js/notify.js")
+    script(src="/shared/assets/js/notify.js")
+    script(src="/shared/assets/js/http.js")
     script(src="/client/assets/js/script.js")
-    script.
-      if (typeof AOS !== 'undefined') {
-        AOS.init();
-      }
-      // Xử lý nút yêu thích bằng AJAX
-      document.addEventListener('click', function(e) {
-        const btnFav = e.target.closest('.btn-fav');
-        if (btnFav) {
-          e.preventDefault();
-          const roomId = btnFav.getAttribute('data-room-id');
-          fetch('/favorites/toggle/' + roomId, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Accept': 'application/json'
-            }
-          })
-          .then(res => {
-            if (res.status === 401) {
-              window.location.href = '/login?redirect=' + encodeURIComponent(window.location.pathname);
-              return null;
-            }
-            return res.json();
-          })
-          .then(data => {
-            if (!data) return;
-            if (data.code === 200) {
-              if (data.action === 'added') {
-                btnFav.classList.add('active');
-                btnFav.querySelector('i').className = 'fa-solid fa-heart';
-              } else {
-                btnFav.classList.remove('active');
-                btnFav.querySelector('i').className = 'fa-regular fa-heart';
-              }
-              if (typeof notyf !== 'undefined') {
-                notyf.success(data.message);
-              }
-            } else {
-              if (typeof notyf !== 'undefined') notyf.error(data.message);
-            }
-          })
-          .catch(err => console.error(err));
-        }
-      });

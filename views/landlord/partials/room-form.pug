@@ -1,0 +1,159 @@
+mixin roomForm(options)
+  - const isEdit = options.mode === 'edit';
+  - const roomData = options.room || {};
+  - const formId = isEdit ? 'form-edit-room' : 'form-create-room';
+  - const districts = ROOM_DISTRICTS;
+  - const amenitiesList = ['Điều hòa', 'Nóng lạnh', 'Wifi', 'Tủ lạnh', 'Máy giặt', 'Ban công', 'Thang máy', 'Tự do giờ giấc', 'Bảo vệ 24/7'];
+  - const sampleImgs = [{ url: '/client/assets/images/product-1.jpg', name: 'Hiện đại 1' }, { url: '/client/assets/images/product-2.jpg', name: 'Studio 2' }, { url: '/client/assets/images/product-3.jpg', name: 'Chung cư 3' }, { url: '/client/assets/images/banner-1.png', name: 'Sleepbox' }, { url: '/client/assets/images/banner-2.png', name: 'Phòng đơn' }, { url: '/client/assets/images/banner-3.png', name: 'Gác lửng' }];
+
+  .section-form.room-form-card
+    form(id=formId)
+      .form-group.room-form-group
+        label.room-form-label
+          | Tiêu đề bài đăng 
+          span.room-form-required *
+        input#title(type="text" name="title" value=isEdit ? roomData.title : undefined placeholder=isEdit ? undefined : "VD: Phòng trọ khép kín full nội thất gần ĐH Quốc Gia Cầu Giấy" required class="room-form-control")
+
+      div.room-form-grid-3
+        .form-group
+          label.room-form-label
+            | Loại phòng 
+            span.room-form-required *
+          select#categoryId(name="categoryId" required class="room-form-control")
+            if !isEdit
+              option(value="") -- Chọn loại phòng --
+            each cat in categories
+              option(value=cat._id selected=isEdit && roomData.categoryId && roomData.categoryId.toString() === cat._id.toString())= cat.title
+
+        .form-group
+          label.room-form-label
+            | Diện tích (m²) 
+            span.room-form-required *
+          input#area(type="number" name="area" value=isEdit ? roomData.area : undefined placeholder=isEdit ? undefined : "VD: 25" required min="5" class="room-form-control")
+
+        .form-group
+          label.room-form-label
+            | Sức chứa (người)
+          input#capacity(type="number" name="capacity" value=isEdit ? roomData.capacity : 2 min="1" class="room-form-control")
+
+      div.room-form-grid-2
+        .form-group
+          label.room-form-label
+            | Giá thuê (VND/tháng) 
+            span.room-form-required *
+          input#price(type="number" name="price" value=isEdit ? roomData.price : undefined placeholder=isEdit ? undefined : "VD: 3500000" required min="100000" step="50000" class="room-form-control")
+
+        .form-group
+          label.room-form-label
+            | Tiền đặt cọc (VND)
+          input#deposit(type="number" name="deposit" value=isEdit ? roomData.deposit : undefined placeholder=isEdit ? undefined : "VD: 3500000" min="0" step="50000" class="room-form-control")
+
+      div.room-form-grid-2
+        .form-group
+          label.room-form-label
+            | Quận / Huyện 
+            span.room-form-required *
+          select#district(name="district" required class="room-form-control")
+            each district in districts
+              option(value=district selected=(isEdit && roomData.district === district) || (!isEdit && district === ROOM_DEFAULTS.district))= district
+
+        .form-group
+          label.room-form-label
+            | Phường / Xã
+          input#ward(type="text" name="ward" value=isEdit ? roomData.ward : undefined placeholder=isEdit ? undefined : "VD: Dịch Vọng Hậu" class="room-form-control")
+
+      .form-group.room-form-group
+        label.room-form-label
+          | Địa chỉ chi tiết 
+          span.room-form-required *
+        input#address(type="text" name="address" value=isEdit ? roomData.address : undefined placeholder=isEdit ? undefined : "VD: Số 18, Ngõ 175 Xuân Thủy, Cầu Giấy, Hà Nội" required class="room-form-control")
+
+      .form-group.room-form-upload-box
+        div.room-form-upload-head
+          div
+            label.room-form-label-lg
+              i.fa-solid.fa-images.room-form-image-icon
+              | Hình ảnh phòng trọ (Tối đa 6 ảnh)
+              span.room-form-required-gap *
+            p.room-form-help
+              | Đăng tải từ 1 đến 6 hình ảnh. Ảnh có huy hiệu xanh 
+              strong [Ảnh đại diện]
+              |  sẽ hiển thị ngoài trang chủ.
+          #imageCounter.room-form-counter.image-counter-available
+            | Đã chọn: 
+            span#countText 0
+            | /6 ảnh
+
+        div.room-form-actions-row
+          input#fileInput.room-form-hidden-input(type="file" multiple accept="image/png,image/jpeg,image/jpg,image/webp,image/gif")
+          button#btnUploadComputer.btn.room-form-button-primary(type="button")
+            i.fa-solid.fa-cloud-arrow-up
+            | Tải ảnh từ thiết bị
+          button#btnToggleUrlInput.btn.room-form-button-muted(type="button")
+            i.fa-solid.fa-link
+            | Dán đường dẫn ảnh
+          button#btnToggleSampleBox.btn.room-form-button-muted(type="button")
+            i.fa-regular.fa-images
+            | Chọn ảnh mẫu
+
+        #urlInputBox.room-form-panel.is-hidden
+          div.room-form-inline-row
+            input#customImageUrl.room-form-url-input(type="text" placeholder="VD: /uploads/rooms/room-xxx.jpg")
+            button#btnAddUrlImage.btn.room-form-button-compact(type="button") Thêm ảnh
+
+        #sampleImagesBox.room-form-panel.room-form-panel-roomy.is-hidden
+          p.room-form-sample-title Bấm vào ảnh để thêm nhanh:
+          div.room-form-sample-grid
+            each sample in sampleImgs
+              div.sample-card.room-form-sample-card(data-image-url=sample.url title=`Bấm để thêm ${sample.name}`)
+                img(src=sample.url)
+                span.room-form-sample-name= sample.name
+
+        #uploadProgressBox.room-form-progress.is-hidden
+          i.fa-solid.fa-spinner.fa-spin
+          span#uploadProgressText Đang xử lý tải ảnh lên máy chủ...
+
+        #imagePreviewGrid.room-form-preview-grid
+          #addMoreSlot.room-form-add-slot
+            i.fa-solid.fa-plus
+            span Thêm ảnh
+
+      div.room-form-grid-fees
+        .form-group
+          label.room-form-label-sm Giá điện
+          input#electricityPrice(type="text" name="electricityPrice" value=isEdit ? roomData.electricityPrice : ROOM_DEFAULTS.electricityPrice class="room-form-control-sm")
+        .form-group
+          label.room-form-label-sm Giá nước
+          input#waterPrice(type="text" name="waterPrice" value=isEdit ? roomData.waterPrice : ROOM_DEFAULTS.waterPrice class="room-form-control-sm")
+        .form-group
+          label.room-form-label-sm Phí dịch vụ
+          input#servicePrice(type="text" name="servicePrice" value=isEdit ? roomData.servicePrice : ROOM_DEFAULTS.servicePrice class="room-form-control-sm")
+
+      .form-group.room-form-group
+        label(class="admin-clean-172") Tiện ích đi kèm
+        .amenities-list.room-form-amenities
+          each item in amenitiesList
+            - const checked = isEdit ? (roomData.amenities && roomData.amenities.includes(item)) : ['Điều hòa', 'Nóng lạnh', 'Wifi', 'Tự do giờ giấc'].includes(item);
+            label.room-form-amenity-label
+              input(type="checkbox" name="amenities" value=item checked=checked)
+              span= item
+
+      .form-group.room-form-group-xl
+        label.room-form-label Mô tả chi tiết phòng
+        textarea#description(name="description" rows="5" placeholder=isEdit ? undefined : "Mô tả cụ thể về phòng, giờ giấc, nội thất, khu vực xung quanh..." class="room-form-textarea")= isEdit ? roomData.description : ''
+
+      div.room-form-footer-actions
+        if isEdit
+          button#btn-save.btn.btn-secondary(type="button")
+            i.fa-regular.fa-floppy-disk
+            | Cập nhật bài
+          button#btn-resubmit.btn.btn-primary(type="button")
+            i.fa-solid.fa-paper-plane
+            | Gửi Admin duyệt lại (PENDING)
+        else
+          button#btn-draft.btn.btn-secondary(type="button")
+            i.fa-regular.fa-floppy-disk
+            | Lưu bản nháp (DRAFT)
+          button#btn-submit.btn.btn-primary(type="button")
+            i.fa-solid.fa-paper-plane
+            | Gửi Admin duyệt (PENDING)

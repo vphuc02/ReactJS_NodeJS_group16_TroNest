@@ -4,68 +4,68 @@ block title
   title Tổng quan Chủ trọ - TroNest
 
 block main
-  h1.box-title(style="margin-bottom: 24px; font-size: 24px; font-weight: 800; color: #1e293b;")
+  h1.box-title(class="admin-clean-001")
     | Tổng quan Chủ trọ
 
   // Cảnh báo trạng thái tài khoản
-  if landlordStatus === 'PENDING'
-    .alert-banner(style="background: #fffbeb; border: 1px solid #fde68a; border-left: 5px solid #d97706; padding: 16px 20px; border-radius: 12px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between;")
-      div(style="display: flex; align-items: center; gap: 14px;")
-        i.fa-solid.fa-clock(style="font-size: 24px; color: #d97706;")
+  if landlordStatus === USER_STATUS.PENDING
+    .alert-banner(class="admin-clean-128")
+      div(class="admin-clean-129")
+        i.fa-solid.fa-clock(class="admin-clean-130")
         div
-          b(style="font-size: 15px; color: #92400e; display: block;") Tài khoản của bạn đang trong trạng thái Chờ phê duyệt (PENDING)
-          span(style="font-size: 13px; color: #b45309;") Vui lòng chờ Admin kiểm duyệt thông tin trước khi có thể đăng bài phòng trọ.
+          b(class="admin-clean-131") Tài khoản của bạn đang trong trạng thái Chờ phê duyệt (PENDING)
+          span(class="admin-clean-132") Vui lòng chờ Admin kiểm duyệt thông tin trước khi có thể đăng bài phòng trọ.
       span.badge.badge-yellow Chờ duyệt
-  else if landlordStatus === 'REJECTED'
-    .alert-banner(style="background: #fef2f2; border: 1px solid #fecaca; border-left: 5px solid #dc2626; padding: 16px 20px; border-radius: 12px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between;")
-      div(style="display: flex; align-items: center; gap: 14px;")
-        i.fa-solid.fa-triangle-exclamation(style="font-size: 24px; color: #dc2626;")
+  else if landlordStatus === USER_STATUS.REJECTED
+    .alert-banner(class="admin-clean-133")
+      div(class="admin-clean-129")
+        i.fa-solid.fa-triangle-exclamation(class="admin-clean-134")
         div
-          b(style="font-size: 15px; color: #991b1b; display: block;") Tài khoản của bạn đã bị từ chối phê duyệt!
-          span(style="font-size: 13px; color: #b91c1c;") Lý do: #{rejectReason || 'Thông tin chưa hợp lệ'}
+          b(class="admin-clean-135") Tài khoản của bạn đã bị từ chối phê duyệt!
+          span(class="admin-clean-136") Lý do: #{rejectReason || 'Thông tin chưa hợp lệ'}
       span.badge.badge-red Bị từ chối
 
   // 4 Thẻ thống kê bài đăng
-  .stats-grid(style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 30px;")
-    .stat-card(style="background: #fff; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 16px;")
-      div(style="width: 50px; height: 50px; border-radius: 12px; background: #e0e7ff; color: #4338ca; display: flex; align-items: center; justify-content: center; font-size: 22px;")
+  .stats-grid(class="admin-clean-002")
+    .stat-card(class="admin-clean-011")
+      div(class="admin-clean-012")
         i.fa-solid.fa-house
       div
-        span(style="font-size: 13px; color: #64748b; font-weight: 600;") Tổng số bài đăng
-        h3(style="font-size: 24px; font-weight: 800; color: #1e293b; margin: 4px 0 0;")= totalRooms
+        span(class="admin-clean-013") Tổng số bài đăng
+        h3(class="admin-clean-014")= totalRooms
 
-    .stat-card(style="background: #fff; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 16px;")
-      div(style="width: 50px; height: 50px; border-radius: 12px; background: #dcfce7; color: #15803d; display: flex; align-items: center; justify-content: center; font-size: 22px;")
+    .stat-card(class="admin-clean-011")
+      div(class="admin-clean-015")
         i.fa-solid.fa-circle-check
       div
-        span(style="font-size: 13px; color: #64748b; font-weight: 600;") Đã duyệt (APPROVED)
-        h3(style="font-size: 24px; font-weight: 800; color: #16a34a; margin: 4px 0 0;")= approvedRooms
+        span(class="admin-clean-013") Đã duyệt (APPROVED)
+        h3(class="admin-clean-016")= approvedRooms
 
-    .stat-card(style="background: #fff; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 16px;")
-      div(style="width: 50px; height: 50px; border-radius: 12px; background: #fef9c3; color: #a16207; display: flex; align-items: center; justify-content: center; font-size: 22px;")
+    .stat-card(class="admin-clean-011")
+      div(class="admin-clean-137")
         i.fa-solid.fa-clock
       div
-        span(style="font-size: 13px; color: #64748b; font-weight: 600;") Chờ Admin duyệt (PENDING)
-        h3(style="font-size: 24px; font-weight: 800; color: #ca8a04; margin: 4px 0 0;")= pendingRooms
+        span(class="admin-clean-013") Chờ Admin duyệt (PENDING)
+        h3(class="admin-clean-138")= pendingRooms
 
-    .stat-card(style="background: #fff; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 16px;")
-      div(style="width: 50px; height: 50px; border-radius: 12px; background: #f1f5f9; color: #475569; display: flex; align-items: center; justify-content: center; font-size: 22px;")
+    .stat-card(class="admin-clean-011")
+      div(class="admin-clean-017")
         i.fa-solid.fa-file-lines
       div
-        span(style="font-size: 13px; color: #64748b; font-weight: 600;") Bản nháp (DRAFT)
-        h3(style="font-size: 24px; font-weight: 800; color: #475569; margin: 4px 0 0;")= draftRooms
+        span(class="admin-clean-013") Bản nháp (DRAFT)
+        h3(class="admin-clean-139")= draftRooms
 
-    .stat-card(style="background: #fff; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 16px;")
-      div(style="width: 50px; height: 50px; border-radius: 12px; background: #fee2e2; color: #b91c1c; display: flex; align-items: center; justify-content: center; font-size: 22px;")
+    .stat-card(class="admin-clean-011")
+      div(class="admin-clean-140")
         i.fa-solid.fa-circle-xmark
       div
-        span(style="font-size: 13px; color: #64748b; font-weight: 600;") Bị từ chối (REJECTED)
-        h3(style="font-size: 24px; font-weight: 800; color: #dc2626; margin: 4px 0 0;")= rejectedRooms
+        span(class="admin-clean-013") Bị từ chối (REJECTED)
+        h3(class="admin-clean-141")= rejectedRooms
 
   // Action Bar
-  div(style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;")
-    h2(style="font-size: 18px; font-weight: 700; color: #1e293b; margin: 0;") Bài đăng gần đây
-    if landlordStatus === 'APPROVED'
+  div(class="admin-clean-142")
+    h2(class="admin-clean-021") Bài đăng gần đây
+    if landlordStatus === USER_STATUS.APPROVED
       a.btn.btn-primary(href="/landlord/rooms/create")
         i.fa-solid.fa-plus
         | Đăng phòng mới
@@ -75,7 +75,7 @@ block main
         | Đăng phòng mới (Đang khóa)
 
   // Danh sách gần đây
-  .table-2(style="background: #fff; border-radius: 16px; overflow: hidden; border: 1px solid #e2e8f0;")
+  .table-2(class="admin-clean-143")
     table
       thead
         tr
@@ -90,31 +90,31 @@ block main
         if recentRooms && recentRooms.length > 0
           each room in recentRooms
             tr
-              td(style="width: 80px;")
-                img(src=room.thumbnail || "/client/assets/images/product-1.jpg" style="width: 60px; height: 45px; object-fit: cover; border-radius: 6px;")
+              td(class="admin-clean-032")
+                img(src=room.thumbnail || "/client/assets/images/product-1.jpg" class="admin-clean-144")
               td
-                b(style="color: #1e293b;")= room.title
-                div(style="font-size: 12px; color: #64748b;")= room.address
+                b(class="admin-clean-025")= room.title
+                div(class="admin-clean-035")= room.address
               td= room.categoryId ? room.categoryId.title : '-'
-              td(style="font-weight: 700; color: #ff5100;") #{room.price.toLocaleString('vi-VN')} đ
+              td(class="admin-clean-037") #{room.price.toLocaleString('vi-VN')} đ
               td #{room.area} m²
               td
-                if room.status === 'APPROVED'
+                if room.status === ROOM_STATUS.APPROVED
                   span.badge.badge-green Đã duyệt (APPROVED)
-                else if room.status === 'PENDING'
+                else if room.status === ROOM_STATUS.PENDING
                   span.badge.badge-yellow Chờ duyệt (PENDING)
-                else if room.status === 'DRAFT'
+                else if room.status === ROOM_STATUS.DRAFT
                   span.badge.badge-gray Bản nháp (DRAFT)
-                else if room.status === 'REJECTED'
+                else if room.status === ROOM_STATUS.REJECTED
                   span.badge.badge-red Bị từ chối (REJECTED)
               td
-                div(style="display: flex; gap: 8px;")
-                  a.btn.btn-secondary(href=`/landlord/rooms/edit/${room._id}` style="padding: 6px 10px; font-size: 12px;" title="Chỉnh sửa")
+                div(class="admin-clean-027")
+                  a.btn.btn-secondary(href=`/landlord/rooms/edit/${room._id}` class="admin-clean-038" title="Chỉnh sửa")
                     i.fa-solid.fa-pen-to-square
-                  if room.status === 'APPROVED'
-                    a.btn.btn-success(href=`/rooms/detail/${room._id}` target="_blank" style="padding: 6px 10px; font-size: 12px;" title="Xem trên web")
+                  if room.status === ROOM_STATUS.APPROVED
+                    a.btn.btn-success(href=`/rooms/detail/${room._id}` target="_blank" class="admin-clean-038" title="Xem trên web")
                       i.fa-solid.fa-eye
         else
           tr
-            td(colspan="7" style="text-align: center; padding: 40px; color: #64748b;")
+            td(colspan="7" class="admin-clean-088")
               | Bạn chưa có bài đăng nào. Hãy bấm "Đăng phòng mới" để tạo bài đầu tiên!

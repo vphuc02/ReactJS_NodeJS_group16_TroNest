@@ -4,41 +4,41 @@ block title
   title Quản lý và Phê duyệt bài đăng phòng trọ - TroNest
 
 block main
-  div(style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;")
+  div(class="admin-clean-040")
     div
-      h1.box-title(style="margin: 0 0 6px; font-size: 24px; font-weight: 800; color: #1e293b;")
+      h1.box-title(class="admin-clean-041")
         | Quản lý & Phê duyệt Bài đăng phòng trọ
-      p(style="margin: 0; color: #64748b; font-size: 14px;")
+      p(class="admin-clean-042")
         | Kiểm duyệt nội dung bài đăng phòng trước khi cho phép hiển thị công khai trên website
 
   // Filter Tabs
-  .filter-tabs(style="display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 4px;")
+  .filter-tabs(class="admin-clean-070")
     a.btn(href="/admin/rooms" class=!statusFilter ? 'btn-primary' : 'btn-secondary')
       | Tất cả (#{counts.all})
-    a.btn(href="/admin/rooms?status=PENDING" class=statusFilter === 'PENDING' ? 'btn-primary' : 'btn-secondary')
-      i.fa-solid.fa-clock(style="color: #ca8a04;")
+    a.btn(href="/admin/rooms?status=" + ROOM_STATUS.PENDING class=statusFilter === ROOM_STATUS.PENDING ? 'btn-primary' : 'btn-secondary')
+      i.fa-solid.fa-clock(class="admin-clean-071")
       | Chờ duyệt (#{counts.pending})
-    a.btn(href="/admin/rooms?status=APPROVED" class=statusFilter === 'APPROVED' ? 'btn-primary' : 'btn-secondary')
-      i.fa-solid.fa-circle-check(style="color: #16a34a;")
+    a.btn(href="/admin/rooms?status=" + ROOM_STATUS.APPROVED class=statusFilter === ROOM_STATUS.APPROVED ? 'btn-primary' : 'btn-secondary')
+      i.fa-solid.fa-circle-check(class="admin-clean-072")
       | Đã duyệt (#{counts.approved})
-    a.btn(href="/admin/rooms?status=REJECTED" class=statusFilter === 'REJECTED' ? 'btn-primary' : 'btn-secondary')
-      i.fa-solid.fa-circle-xmark(style="color: #dc2626;")
+    a.btn(href="/admin/rooms?status=" + ROOM_STATUS.REJECTED class=statusFilter === ROOM_STATUS.REJECTED ? 'btn-primary' : 'btn-secondary')
+      i.fa-solid.fa-circle-xmark(class="admin-clean-073")
       | Bị từ chối (#{counts.rejected})
-    a.btn(href="/admin/rooms?status=DRAFT" class=statusFilter === 'DRAFT' ? 'btn-primary' : 'btn-secondary')
-      i.fa-solid.fa-file-lines(style="color: #64748b;")
+    a.btn(href="/admin/rooms?status=" + ROOM_STATUS.DRAFT class=statusFilter === ROOM_STATUS.DRAFT ? 'btn-primary' : 'btn-secondary')
+      i.fa-solid.fa-file-lines(class="admin-clean-074")
       | Bản nháp (#{counts.draft})
 
   // Search Box
-  form(action="/admin/rooms" method="GET" style="display: flex; gap: 12px; margin-bottom: 20px; max-width: 450px;")
+  form(action="/admin/rooms" method="GET" class="admin-clean-075")
     if statusFilter
       input(type="hidden" name="status" value=statusFilter)
-    div(style="flex: 1; display: flex; align-items: center; gap: 8px; background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px 12px;")
-      i.fa-solid.fa-magnifying-glass(style="color: #94a3b8;")
-      input(type="text" name="keyword" value=keyword placeholder="Tìm tiêu đề bài đăng..." style="border: none; outline: none; width: 100%; font-size: 14px;")
+    div(class="admin-clean-076")
+      i.fa-solid.fa-magnifying-glass(class="admin-clean-077")
+      input(type="text" name="keyword" value=keyword placeholder="Tìm tiêu đề bài đăng..." class="admin-clean-078")
     button.btn.btn-primary(type="submit") Tìm kiếm
 
   // Table
-  .table-2(style="background: #fff; border-radius: 16px; overflow: hidden; border: 1px solid #e2e8f0; box-shadow: 0 4px 15px rgba(0,0,0,0.02);")
+  .table-2(class="admin-clean-024")
     table
       thead
         tr
@@ -52,101 +52,53 @@ block main
         if rooms && rooms.length > 0
           each room in rooms
             tr
-              td(style="width: 85px;")
-                img(src=room.thumbnail || "/client/assets/images/product-1.jpg" style="width: 70px; height: 50px; object-fit: cover; border-radius: 6px;")
+              td(class="admin-clean-079")
+                img(src=room.thumbnail || "/client/assets/images/product-1.jpg" class="admin-clean-080")
               td
-                b(style="color: #1e293b; font-size: 15px; display: block; margin-bottom: 4px;")= room.title
-                div(style="font-size: 12px; color: #64748b;")= room.address
+                b(class="admin-clean-081")= room.title
+                div(class="admin-clean-035")= room.address
                 if room.categoryId
-                  span(style="display: inline-block; margin-top: 4px; font-size: 11px; background: #f1f5f9; padding: 2px 8px; border-radius: 4px; color: #475569;")
+                  span(class="admin-clean-082")
                     = room.categoryId.title
-                if room.status === 'REJECTED' && room.rejectReason
-                  div(style="margin-top: 6px; font-size: 12px; color: #b91c1c; background: #fef2f2; border: 1px solid #fecaca; padding: 4px 8px; border-radius: 4px;")
+                if room.status === ROOM_STATUS.REJECTED && room.rejectReason
+                  div(class="admin-clean-083")
                     b Lý do: 
                     = room.rejectReason
               td
-                b(style="color: #1e293b; display: block;")= room.landlordId ? room.landlordId.fullName : '-'
-                span(style="font-size: 13px; color: #2563eb; font-weight: 600;")= room.landlordId ? room.landlordId.phone : ''
+                b(class="admin-clean-034")= room.landlordId ? room.landlordId.fullName : '-'
+                span(class="admin-clean-084")= room.landlordId ? room.landlordId.phone : ''
               td
-                div(style="font-weight: 700; color: #ff5100; font-size: 15px;")
+                div(class="admin-clean-085")
                   = room.price.toLocaleString('vi-VN') + ' đ'
-                div(style="font-size: 12px; color: #64748b;") #{room.area} m² - #{room.capacity || 2} người
+                div(class="admin-clean-035") #{room.area} m² - #{room.capacity || 2} người
               td
-                if room.status === 'APPROVED'
+                if room.status === ROOM_STATUS.APPROVED
                   span.badge.badge-green Đã duyệt (APPROVED)
-                else if room.status === 'PENDING'
+                else if room.status === ROOM_STATUS.PENDING
                   span.badge.badge-yellow Chờ duyệt (PENDING)
-                else if room.status === 'DRAFT'
+                else if room.status === ROOM_STATUS.DRAFT
                   span.badge.badge-gray Bản nháp (DRAFT)
-                else if room.status === 'REJECTED'
+                else if room.status === ROOM_STATUS.REJECTED
                   span.badge.badge-red Bị từ chối (REJECTED)
               td
-                div(style="display: flex; gap: 8px; flex-wrap: wrap;")
-                  a.btn.btn-secondary(href=`/admin/rooms/detail/${room._id}` style="padding: 6px 10px; font-size: 12px;" title="Thẩm định nội dung")
+                div(class="admin-clean-086")
+                  a.btn.btn-secondary(href=`/admin/rooms/detail/${room._id}` class="admin-clean-038" title="Thẩm định nội dung")
                     i.fa-solid.fa-magnifying-glass
                     span Thẩm định
                   
-                  if room.status !== 'APPROVED'
-                    button.btn.btn-success(onclick=`approveRoom('${room._id}')` style="padding: 6px 10px; font-size: 12px;" title="Duyệt bài đăng")
+                  if room.status !== ROOM_STATUS.APPROVED
+                    button.btn.btn-success(data-admin-action="approve-room" data-id=room._id class="admin-clean-038" title="Duyệt bài đăng")
                       i.fa-solid.fa-check
                       span Duyệt
                   
-                  if room.status !== 'REJECTED'
-                    button.btn.btn-danger(onclick=`rejectRoom('${room._id}')` style="padding: 6px 10px; font-size: 12px;" title="Từ chối bài đăng")
+                  if room.status !== ROOM_STATUS.REJECTED
+                    button.btn.btn-danger(data-admin-action="reject-room" data-id=room._id class="admin-clean-038" title="Từ chối bài đăng")
                       i.fa-solid.fa-xmark
                       span Từ chối
 
-                  button.btn.btn-secondary(onclick=`deleteRoom('${room._id}')` style="padding: 6px 10px; font-size: 12px; color: #dc2626;" title="Xóa vĩnh viễn")
+                  button.btn.btn-secondary(data-admin-action="delete-room" data-id=room._id class="admin-clean-087" title="Xóa vĩnh viễn")
                     i.fa-solid.fa-trash-can
         else
           tr
-            td(colspan="6" style="text-align: center; padding: 40px; color: #64748b;")
+            td(colspan="6" class="admin-clean-088")
               | Không có bài đăng nào trong danh mục này.
-
-  script.
-    function approveRoom(id) {
-      if (!confirm("Xác nhận phê duyệt bài đăng này để hiển thị công khai trên website?")) return;
-      fetch('/admin/rooms/approve/' + id, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.code === 200) {
-          notyf.success(data.message);
-          setTimeout(() => location.reload(), 1200);
-        } else notyf.error(data.message);
-      });
-    }
-
-    function rejectRoom(id) {
-      const reason = prompt("Nhập lý do từ chối bài đăng phòng trọ:");
-      if (reason === null) return;
-      fetch('/admin/rooms/reject/' + id, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ reason })
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.code === 200) {
-          notyf.success(data.message);
-          setTimeout(() => location.reload(), 1200);
-        } else notyf.error(data.message);
-      });
-    }
-
-    function deleteRoom(id) {
-      if (!confirm("Bạn có chắc chắn muốn xóa bài đăng này khỏi hệ thống?")) return;
-      fetch('/admin/rooms/delete/' + id, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.code === 200) {
-          notyf.success(data.message);
-          setTimeout(() => location.reload(), 1200);
-        } else notyf.error(data.message);
-      });
-    }

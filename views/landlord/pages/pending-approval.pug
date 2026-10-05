@@ -4,32 +4,32 @@ block title
   title Tài khoản chưa được phê duyệt - TroNest
 
 block main
-  .section-pending(style="padding: 40px; max-width: 650px; margin: 40px auto; background: #fff; border-radius: 20px; border: 1px solid #e2e8f0; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.04);")
-    if status === 'PENDING'
-      div(style="width: 70px; height: 70px; border-radius: 50%; background: #fef9c3; color: #ca8a04; display: flex; align-items: center; justify-content: center; font-size: 32px; margin: 0 auto 20px;")
+  .section-pending(class="admin-clean-158")
+    if status === USER_STATUS.PENDING
+      div(class="admin-clean-159")
         i.fa-solid.fa-clock-rotate-left
-      h1(style="font-size: 22px; font-weight: 800; color: #1e293b; margin: 0 0 12px;")
+      h1(class="admin-clean-160")
         | Tài Khoản Chủ Trọ Đang Chờ Phê Duyệt
-      p(style="font-size: 15px; color: #64748b; line-height: 1.6; margin: 0 0 24px;")
+      p(class="admin-clean-161")
         | Cảm ơn bạn đã đăng ký làm Chủ trọ tại TroNest! Theo quy định, để đảm bảo an toàn cho khách thuê, tài khoản của bạn cần được 
         b Admin kiểm tra và phê duyệt
         |  trước khi được phép đăng tin phòng trọ.
-      div(style="background: #f8fafc; padding: 16px; border-radius: 12px; margin-bottom: 24px; font-size: 13px; color: #475569;")
+      div(class="admin-clean-162")
         | Trạng thái hiện tại: 
         span.badge.badge-yellow PENDING (Đang chờ duyệt)
-    else if status === 'REJECTED'
-      div(style="width: 70px; height: 70px; border-radius: 50%; background: #fee2e2; color: #dc2626; display: flex; align-items: center; justify-content: center; font-size: 32px; margin: 0 auto 20px;")
+    else if status === USER_STATUS.REJECTED
+      div(class="admin-clean-163")
         i.fa-solid.fa-triangle-exclamation
-      h1(style="font-size: 22px; font-weight: 800; color: #1e293b; margin: 0 0 12px;")
+      h1(class="admin-clean-160")
         | Tài Khoản Chủ Trọ Bị Từ Chối
-      p(style="font-size: 15px; color: #64748b; line-height: 1.6; margin: 0 0 16px;")
+      p(class="admin-clean-164")
         | Rất tiếc, tài khoản Chủ trọ của bạn chưa đáp ứng tiêu chuẩn của hệ thống hoặc thông tin chưa chính xác.
       if rejectReason
-        div(style="background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; padding: 14px; border-radius: 10px; font-size: 14px; margin-bottom: 24px; text-align: left;")
+        div(class="admin-clean-165")
           b Lý do từ chối: 
           span= rejectReason
 
-    div(style="display: flex; justify-content: center; gap: 12px;")
+    div(class="admin-clean-166")
       a.btn.btn-secondary(href="/landlord/dashboard")
         i.fa-solid.fa-gauge-high
         | Bảng điều khiển

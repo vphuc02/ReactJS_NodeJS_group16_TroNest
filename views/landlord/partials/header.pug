@@ -1,35 +1,35 @@
-header.header(style="background: #fff; border-bottom: 1px solid #e2e8f0; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center;")
-  div(style="display: flex; align-items: center; gap: 16px;")
-    a(href="/landlord/dashboard" style="display: flex; align-items: center; gap: 8px; font-size: 20px; font-weight: 800; color: #ff5100; text-decoration: none;")
+header.header(class="admin-clean-118")
+  div(class="admin-clean-119")
+    a(href="/landlord/dashboard" class="admin-clean-167")
       i.fa-solid.fa-house-chimney-user
       span TroNest Chủ Trọ
 
     // Status badge of Landlord account
     if user
-      if user.status === 'APPROVED'
-        span.badge.badge-green(style="font-size: 12px;")
-          i.fa-solid.fa-circle-check(style="margin-right: 4px;")
+      if user.status === USER_STATUS.APPROVED
+        span.badge.badge-green(class="admin-clean-168")
+          i.fa-solid.fa-circle-check(class="admin-clean-169")
           | Tài khoản đã duyệt
-      else if user.status === 'PENDING'
-        span.badge.badge-yellow(style="font-size: 12px;")
-          i.fa-solid.fa-clock(style="margin-right: 4px;")
+      else if user.status === USER_STATUS.PENDING
+        span.badge.badge-yellow(class="admin-clean-168")
+          i.fa-solid.fa-clock(class="admin-clean-169")
           | Tài khoản Chờ Admin duyệt
-      else if user.status === 'REJECTED'
-        span.badge.badge-red(style="font-size: 12px;")
-          i.fa-solid.fa-circle-xmark(style="margin-right: 4px;")
+      else if user.status === USER_STATUS.REJECTED
+        span.badge.badge-red(class="admin-clean-168")
+          i.fa-solid.fa-circle-xmark(class="admin-clean-169")
           | Tài khoản Bị từ chối
 
-  div(style="display: flex; align-items: center; gap: 20px;")
-    a(href="/" target="_blank" style="font-size: 14px; font-weight: 600; color: #4502C7; display: flex; align-items: center; gap: 6px; text-decoration: none;")
+  div(class="admin-clean-121")
+    a(href="/" target="_blank" class="admin-clean-122")
       i.fa-solid.fa-globe
       | Xem website chính
 
     if user
-      .user-info(style="display: flex; align-items: center; gap: 10px;")
-        img(src=user.avatar || "/admin/assets/images/avatar.jpg" alt=user.fullName style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 2px solid #fed7aa;")
+      .user-info(class="admin-clean-020")
+        img(src=user.avatar || "/admin/assets/images/avatar.jpg" alt=user.fullName class="admin-clean-170")
         div
-          span(style="display: block; font-size: 14px; font-weight: 700; color: #1e293b;")= user.fullName
-          span(style="display: block; font-size: 12px; color: #64748b;")= user.phone || user.email
+          span(class="admin-clean-124")= user.fullName
+          span(class="admin-clean-171")= user.phone || user.email
 
-      a(href="/logout" title="Đăng xuất" style="color: #ef4444; font-size: 16px; margin-left: 10px; text-decoration: none;")
+      a.btn-logout(href="/logout" data-logout-url="/logout" title="Đăng xuất" class="admin-clean-126")
         i.fa-solid.fa-power-off
