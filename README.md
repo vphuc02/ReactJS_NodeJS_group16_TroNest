@@ -97,8 +97,6 @@ cp .env.example .env
 
 ### Khởi động Server:
 ```bash
-npm start
-# hoặc
 yarn start
 ```
 
@@ -106,5 +104,5 @@ Server sẽ chạy tại: **`http://localhost:3000`**
 
 ### Khởi tạo lại Dữ liệu mẫu (Seed Data) bất cứ lúc nào:
 ```bash
-node seeds/seed.js
+yarn seed
 ```

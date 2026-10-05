@@ -1,9 +1,12 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
-  "name": "TroNest",
+  "name": "tronest",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "cookie-parser": "^1.4.7",
@@ -13,10 +16,19 @@
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.10.4",
     "multer": "^2.4.0",
-    "nodemon": "^3.1.14",
     "pug": "^3.0.4"
   },
+  "devDependencies": {
+    "eslint": "^9.36.0",
+    "nodemon": "^3.1.14",
+    "prettier": "^3.6.2"
+  },
   "scripts": {
-    "start": "nodemon index.js"
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "seed": "node seeds/seed.js",
+    "test": "echo \"No test specified yet\" && exit 0",
+    "lint": "eslint .",
+    "format": "prettier --write ."
   }
 }
