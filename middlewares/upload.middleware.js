@@ -1,6 +1,7 @@
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const { getImageExtension } = require('../helpers/security.helper');
 
 const uploadDir = path.join(__dirname, '../public/uploads/rooms');
 if (!fs.existsSync(uploadDir)) {
@@ -12,18 +13,14 @@ const storage = multer.diskStorage({
     cb(null, uploadDir);
   },
   filename: function (req, file, cb) {
-    const ext = path.extname(file.originalname).toLowerCase();
+    const ext = getImageExtension(file);
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
     cb(null, 'room-' + uniqueSuffix + ext);
   }
 });
 
 const fileFilter = (req, file, cb) => {
-  const allowedTypes = /jpeg|jpg|png|webp|gif/;
-  const ext = path.extname(file.originalname).toLowerCase().replace('.', '');
-  const mime = file.mimetype.toLowerCase();
-
-  if (allowedTypes.test(ext) || mime.startsWith('image/')) {
+  if (getImageExtension(file)) {
     return cb(null, true);
   }
   cb(new Error('Chỉ chấp nhận các tệp hình ảnh hợp lệ (jpg, jpeg, png, webp, gif)!'));
