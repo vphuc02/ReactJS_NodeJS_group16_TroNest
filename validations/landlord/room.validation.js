@@ -1,4 +1,5 @@
 const Joi = require('joi');
+const { ROOM_STATUS } = require('../../configs/system.config');
 
 module.exports.createPost = async (req, res, next) => {
   const schema = Joi.object({
@@ -46,7 +47,7 @@ module.exports.createPost = async (req, res, next) => {
     electricityPrice: Joi.string().allow('', null).optional(),
     waterPrice: Joi.string().allow('', null).optional(),
     servicePrice: Joi.string().allow('', null).optional(),
-    actionStatus: Joi.string().valid('DRAFT', 'PENDING').optional()
+    actionStatus: Joi.string().valid(ROOM_STATUS.DRAFT, ROOM_STATUS.PENDING).optional()
   });
 
   const { error } = schema.validate(req.body, { abortEarly: true, allowUnknown: true });

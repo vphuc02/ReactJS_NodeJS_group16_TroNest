@@ -1,38 +1,31 @@
 const Room = require('../../models/room.model');
+const { ROOM_STATUS } = require('../../configs/system.config');
 
 // [GET] /landlord/dashboard
 module.exports.index = async (req, res) => {
-  try {
-    const landlordId = req.user._id;
+  const landlordId = req.user._id;
 
-    const totalRooms = await Room.countDocuments({ landlordId });
-    const draftRooms = await Room.countDocuments({ landlordId, status: 'DRAFT' });
-    const pendingRooms = await Room.countDocuments({ landlordId, status: 'PENDING' });
-    const approvedRooms = await Room.countDocuments({ landlordId, status: 'APPROVED' });
-    const rejectedRooms = await Room.countDocuments({ landlordId, status: 'REJECTED' });
+  const totalRooms = await Room.countDocuments({ landlordId });
+  const draftRooms = await Room.countDocuments({ landlordId, status: ROOM_STATUS.DRAFT });
+  const pendingRooms = await Room.countDocuments({ landlordId, status: ROOM_STATUS.PENDING });
+  const approvedRooms = await Room.countDocuments({ landlordId, status: ROOM_STATUS.APPROVED });
+  const rejectedRooms = await Room.countDocuments({ landlordId, status: ROOM_STATUS.REJECTED });
 
-    const recentRooms = await Room.find({ landlordId })
-      .sort({ updatedAt: -1 })
-      .limit(5)
-      .populate('categoryId', 'title')
-      .lean();
+  const recentRooms = await Room.find({ landlordId })
+    .sort({ updatedAt: -1 })
+    .limit(5)
+    .populate('categoryId', 'title')
+    .lean();
 
-    res.render('landlord/pages/dashboard', {
-      title: 'Bảng điều khiển Chủ trọ - TroNest',
-      totalRooms,
-      draftRooms,
-      pendingRooms,
-      approvedRooms,
-      rejectedRooms,
-      recentRooms,
-      landlordStatus: req.user.status,
-      rejectReason: req.user.rejectReason
-    });
-  } catch (error) {
-    console.error('Error in landlord dashboard:', error);
-    res.status(500).render('client/pages/error', {
-      title: 'Lỗi',
-      message: 'Không thể tải bảng điều khiển Chủ trọ'
-    });
-  }
+  res.render('landlord/pages/dashboard', {
+    title: 'Bảng điều khiển Chủ trọ - TroNest',
+    totalRooms,
+    draftRooms,
+    pendingRooms,
+    approvedRooms,
+    rejectedRooms,
+    recentRooms,
+    landlordStatus: req.user.status,
+    rejectReason: req.user.rejectReason
+  });
 };

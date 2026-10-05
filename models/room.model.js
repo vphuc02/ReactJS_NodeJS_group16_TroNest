@@ -1,15 +1,12 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
+const { ROOM_DEFAULTS, ROOM_STATUS } = require('../configs/system.config');
 
 const roomSchema = new Schema(
   {
     title: {
       type: String,
       required: true,
-      trim: true
-    },
-    slug: {
-      type: String,
       trim: true
     },
     categoryId: {
@@ -42,15 +39,15 @@ const roomSchema = new Schema(
     },
     province: {
       type: String,
-      default: 'Hà Nội'
+      default: ROOM_DEFAULTS.province
     },
     district: {
       type: String,
-      default: 'Cầu Giấy'
+      default: ROOM_DEFAULTS.district
     },
     ward: {
       type: String,
-      default: 'Dịch Vọng Hậu'
+      default: ROOM_DEFAULTS.ward
     },
     address: {
       type: String,
@@ -59,11 +56,11 @@ const roomSchema = new Schema(
     },
     thumbnail: {
       type: String,
-      default: '/client/assets/images/product-1.jpg'
+      default: ROOM_DEFAULTS.thumbnail
     },
     images: {
       type: [String],
-      default: ['/client/assets/images/product-1.jpg']
+      default: ROOM_DEFAULTS.images
     },
     description: {
       type: String,
@@ -75,20 +72,20 @@ const roomSchema = new Schema(
     },
     electricityPrice: {
       type: String,
-      default: '3.800 đ/kWh'
+      default: ROOM_DEFAULTS.electricityPrice
     },
     waterPrice: {
       type: String,
-      default: '30.000 đ/m³'
+      default: ROOM_DEFAULTS.waterPrice
     },
     servicePrice: {
       type: String,
-      default: '100.000 đ/tháng'
+      default: ROOM_DEFAULTS.servicePrice
     },
     status: {
       type: String,
-      enum: ['DRAFT', 'PENDING', 'APPROVED', 'REJECTED'],
-      default: 'DRAFT'
+      enum: Object.values(ROOM_STATUS),
+      default: ROOM_STATUS.DRAFT
     },
     rejectReason: {
       type: String,
@@ -110,6 +107,9 @@ const roomSchema = new Schema(
 
 // Tạo index hỗ trợ tìm kiếm nhanh
 roomSchema.index({ title: 'text', address: 'text', district: 'text' });
+roomSchema.index({ status: 1 });
+roomSchema.index({ landlordId: 1 });
+roomSchema.index({ categoryId: 1 });
 
 const Room = mongoose.model('Room', roomSchema, 'rooms');
 

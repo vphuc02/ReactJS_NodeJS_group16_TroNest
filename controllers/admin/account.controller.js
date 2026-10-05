@@ -1,106 +1,83 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../../models/user.model');
-const { JWT_SECRET, ROLES } = require('../../configs/system.config');
+const { JWT_SECRET, ROLES, USER_STATUS } = require('../../configs/system.config');
+const { cookieOptions } = require('../../helpers/http.helper');
 
-// [GET] /admin/account/login (hoặc /admin/login)
+// [GET] /admin/login
 module.exports.loginGet = (req, res) => {
-  try {
-    const token = req.cookies.token_admin || req.cookies.token;
-    if (token) {
-      try {
-        const decoded = jwt.verify(token, JWT_SECRET);
-        if (decoded.role === ROLES.ADMIN) {
-          return res.redirect('/admin/dashboard');
-        }
-      } catch (e) {
-        res.clearCookie('token_admin');
+  const token = req.cookies.token_admin;
+  if (token) {
+    try {
+      const decoded = jwt.verify(token, JWT_SECRET);
+      if (decoded.role === ROLES.ADMIN) {
+        return res.redirect('/admin/dashboard');
       }
+    } catch {
+      res.clearCookie('token_admin');
     }
-    res.render('admin/pages/login', {
-      title: 'Đăng nhập Quản trị viên - TroNest'
-    });
-  } catch (error) {
-    console.error('Error in admin loginGet:', error);
-    res.redirect('/');
   }
+
+  res.render('admin/pages/login', {
+    title: 'Đăng nhập Quản trị viên - TroNest'
+  });
 };
 
-// [POST] /admin/account/login
+// [POST] /admin/login
 module.exports.loginPost = async (req, res) => {
-  try {
-    const { email, password, rememberPassword } = req.body;
+  const { email, password, rememberPassword } = req.body;
+  const invalidLogin = {
+    code: 400,
+    message: 'Tài khoản hoặc mật khẩu không chính xác!'
+  };
 
-    const user = await User.findOne({
-      email: email.toLowerCase().trim()
-    });
+  const user = await User.findOne({
+    email: email.toLowerCase().trim()
+  });
 
-    if (!user) {
-      return res.json({
-        code: 'error',
-        message: 'Tài khoản Quản trị viên không tồn tại!'
-      });
-    }
+  if (!user || user.role !== ROLES.ADMIN) {
+    return res.status(400).json(invalidLogin);
+  }
 
-    // Chặn nếu là tài khoản người dùng hoặc chủ trọ (không có quyền ADMIN)
-    if (user.role !== ROLES.ADMIN) {
-      return res.json({
-        code: 'error',
-        message: 'Tài khoản của bạn không có quyền Quản trị viên!'
-      });
-    }
-
-    if (user.status === 'INACTIVE') {
-      return res.json({
-        code: 'error',
-        message: 'Tài khoản Quản trị viên đã bị khóa!'
-      });
-    }
-
-    const isMatchedPassword = bcrypt.compareSync(password, user.password);
-    if (!isMatchedPassword) {
-      return res.json({
-        code: 'error',
-        message: 'Mật khẩu không chính xác!'
-      });
-    }
-
-    const expiresIn = rememberPassword ? '7d' : '1d';
-    const token = jwt.sign(
-      {
-        id: user._id,
-        email: user.email,
-        role: user.role
-      },
-      JWT_SECRET,
-      { expiresIn }
-    );
-
-    const maxAge = (rememberPassword ? 7 : 1) * 24 * 60 * 60 * 1000;
-    res.cookie('token_admin', token, { maxAge, httpOnly: true });
-    res.cookie('token', token, { maxAge, httpOnly: true });
-
-    return res.json({
-      code: 200,
-      message: 'Đăng nhập Quản trị thành công!'
-    });
-  } catch (error) {
-    console.error('Error in admin account loginPost:', error);
-    return res.json({
-      code: 'error',
-      message: 'Đăng nhập thất bại, vui lòng thử lại sau!'
+  if (user.status === USER_STATUS.INACTIVE) {
+    return res.status(403).json({
+      code: 403,
+      message: 'Tài khoản Quản trị viên đã bị khóa!'
     });
   }
+
+  const isMatchedPassword = await bcrypt.compare(password, user.password);
+  if (!isMatchedPassword) {
+    return res.status(400).json(invalidLogin);
+  }
+
+  const expiresIn = rememberPassword ? '7d' : '1d';
+  const token = jwt.sign(
+    {
+      id: user._id,
+      email: user.email,
+      role: user.role
+    },
+    JWT_SECRET,
+    { expiresIn }
+  );
+
+  const maxAge = (rememberPassword ? 7 : 1) * 24 * 60 * 60 * 1000;
+  res.cookie('token_admin', token, cookieOptions(maxAge));
+
+  return res.json({
+    code: 200,
+    message: 'Đăng nhập Quản trị thành công!'
+  });
 };
 
-// [GET] /admin/account/logout (hoặc /admin/logout)
-module.exports.logoutGet = (req, res) => {
-  try {
-    res.clearCookie('token_admin');
-    res.clearCookie('token');
-    res.redirect('/admin/login');
-  } catch (error) {
-    console.error('Error in admin logoutGet:', error);
-    res.redirect('/admin/login');
-  }
+// [POST] /admin/logout
+module.exports.logoutPost = (req, res) => {
+  res.clearCookie('token_admin');
+  return res.json({
+    code: 200,
+    message: 'Đăng xuất thành công!',
+    redirectUrl: '/admin/login'
+  });
 };
+

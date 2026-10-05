@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
+const { USER_STATUS } = require('../configs/system.config');
 
 const categorySchema = new Schema(
   {
@@ -22,8 +23,8 @@ const categorySchema = new Schema(
     },
     status: {
       type: String,
-      enum: ['ACTIVE', 'INACTIVE'],
-      default: 'ACTIVE'
+      enum: [USER_STATUS.ACTIVE, USER_STATUS.INACTIVE],
+      default: USER_STATUS.ACTIVE
     }
   },
   {

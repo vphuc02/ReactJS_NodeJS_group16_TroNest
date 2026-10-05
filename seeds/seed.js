@@ -1,14 +1,18 @@
 require('dotenv').config();
-const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const User = require('../models/user.model');
 const Category = require('../models/category.model');
 const Room = require('../models/room.model');
 const Favorite = require('../models/favorite.model');
 const { connectDB } = require('../configs/database.config');
+const { ROLES, ROOM_STATUS, USER_STATUS } = require('../configs/system.config');
 
 const seedData = async () => {
   try {
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('Refusing to run seed in production because it deletes existing data.');
+    }
+
     await connectDB();
     console.log('--- Đang xóa dữ liệu cũ để khởi tạo mới ---');
     await User.deleteMany({});
@@ -16,17 +20,17 @@ const seedData = async () => {
     await Room.deleteMany({});
     await Favorite.deleteMany({});
 
-    const passwordHash = bcrypt.hashSync('123456', 10);
+    const passwordHash = await bcrypt.hash('123456', 10);
 
     console.log('--- Đang tạo tài khoản người dùng ---');
-    const admin = await User.create({
+    await User.create({
       fullName: 'Quản Trị Viên (Admin)',
       email: 'admin@tronest.com',
       password: passwordHash,
       phone: '0901234567',
       address: 'Hà Nội',
-      role: 'ADMIN',
-      status: 'ACTIVE',
+      role: ROLES.ADMIN,
+      status: USER_STATUS.ACTIVE,
       avatar: '/admin/assets/images/avatar.jpg'
     });
 
@@ -36,19 +40,19 @@ const seedData = async () => {
       password: passwordHash,
       phone: '0987654321',
       address: 'Số 15 Cầu Giấy, Hà Nội',
-      role: 'LANDLORD',
-      status: 'APPROVED',
+      role: ROLES.LANDLORD,
+      status: USER_STATUS.APPROVED,
       avatar: '/admin/assets/images/avatar.jpg'
     });
 
-    const landlordPending = await User.create({
+    await User.create({
       fullName: 'Trần Quang Hùng (Chủ trọ mới)',
       email: 'chutro.hung@tronest.com',
       password: passwordHash,
       phone: '0912345678',
       address: 'Số 88 Giải Phóng, Hai Bà Trưng, Hà Nội',
-      role: 'LANDLORD',
-      status: 'PENDING',
+      role: ROLES.LANDLORD,
+      status: USER_STATUS.PENDING,
       avatar: '/admin/assets/images/avatar.jpg'
     });
 
@@ -58,8 +62,8 @@ const seedData = async () => {
       password: passwordHash,
       phone: '0905123456',
       address: 'Thanh Xuân, Hà Nội',
-      role: 'CUSTOMER',
-      status: 'ACTIVE',
+      role: ROLES.CUSTOMER,
+      status: USER_STATUS.ACTIVE,
       avatar: '/admin/assets/images/avatar.jpg'
     });
 
@@ -69,7 +73,7 @@ const seedData = async () => {
       slug: 'phong-tro-khep-kin',
       description: 'Phòng trọ có vệ sinh riêng biệt, tiện nghi đầy đủ, giờ giấc tự do.',
       icon: 'fa-solid fa-door-closed',
-      status: 'ACTIVE'
+      status: USER_STATUS.ACTIVE
     });
 
     const catStudio = await Category.create({
@@ -77,7 +81,7 @@ const seedData = async () => {
       slug: 'can-ho-mini-studio',
       description: 'Phòng dạng studio đầy đủ nội thất cao cấp: bếp, ban công, máy giặt.',
       icon: 'fa-solid fa-building-user',
-      status: 'ACTIVE'
+      status: USER_STATUS.ACTIVE
     });
 
     const catChungCuMini = await Category.create({
@@ -85,7 +89,7 @@ const seedData = async () => {
       slug: 'chung-cu-mini',
       description: 'Căn hộ chung cư mini 1-2 phòng ngủ, thang máy, bảo vệ 24/7.',
       icon: 'fa-solid fa-city',
-      status: 'ACTIVE'
+      status: USER_STATUS.ACTIVE
     });
 
     const catKTX = await Category.create({
@@ -93,15 +97,15 @@ const seedData = async () => {
       slug: 'ky-tuc-xa-sleepbox',
       description: 'Giường tầng cao cấp hoặc hộp ngủ riêng tư, đầy đủ máy lạnh, giá siêu tiết kiệm cho sinh viên.',
       icon: 'fa-solid fa-bed',
-      status: 'ACTIVE'
+      status: USER_STATUS.ACTIVE
     });
 
-    const catNhaNguyenCan = await Category.create({
+    await Category.create({
       title: 'Nhà nguyên căn',
       slug: 'nha-nguyen-can',
       description: 'Nhà riêng nhiều tầng, thích hợp cho nhóm bạn hoặc hộ gia đình ở lâu dài.',
       icon: 'fa-solid fa-house-chimney',
-      status: 'ACTIVE'
+      status: USER_STATUS.ACTIVE
     });
 
     console.log('--- Đang tạo các bài đăng phòng trọ ---');
@@ -131,7 +135,7 @@ const seedData = async () => {
         electricityPrice: '3.800 đ/kWh',
         waterPrice: '30.000 đ/m³',
         servicePrice: '100.000 đ/tháng/người',
-        status: 'APPROVED',
+        status: ROOM_STATUS.APPROVED,
         views: 245,
         isFeatured: true
       },
@@ -160,7 +164,7 @@ const seedData = async () => {
         electricityPrice: '3.800 đ/kWh',
         waterPrice: '100.000 đ/người',
         servicePrice: '150.000 đ/phòng',
-        status: 'APPROVED',
+        status: ROOM_STATUS.APPROVED,
         views: 310,
         isFeatured: true
       },
@@ -189,7 +193,7 @@ const seedData = async () => {
         electricityPrice: '3.500 đ/kWh',
         waterPrice: '28.000 đ/m³',
         servicePrice: '120.000 đ/phòng',
-        status: 'APPROVED',
+        status: ROOM_STATUS.APPROVED,
         views: 180,
         isFeatured: false
       },
@@ -217,7 +221,7 @@ const seedData = async () => {
         electricityPrice: 'Miễn phí',
         waterPrice: 'Miễn phí',
         servicePrice: 'Đã bao gồm',
-        status: 'APPROVED',
+        status: ROOM_STATUS.APPROVED,
         views: 420,
         isFeatured: true
       },
@@ -242,7 +246,7 @@ const seedData = async () => {
         electricityPrice: '4.000 đ/kWh',
         waterPrice: '35.000 đ/m³',
         servicePrice: '50.000 đ/tháng',
-        status: 'PENDING',
+        status: ROOM_STATUS.PENDING,
         views: 12
       },
       // Bài PENDING 2 (Chờ duyệt)
@@ -266,7 +270,7 @@ const seedData = async () => {
         electricityPrice: '3.600 đ/kWh',
         waterPrice: '30.000 đ/m³',
         servicePrice: '150.000 đ/phòng',
-        status: 'PENDING',
+        status: ROOM_STATUS.PENDING,
         views: 5
       },
       // Bài DRAFT (Bản nháp của chủ trọ)
@@ -290,7 +294,7 @@ const seedData = async () => {
         electricityPrice: '3.800 đ/kWh',
         waterPrice: '30.000 đ/m³',
         servicePrice: '100.000 đ/người',
-        status: 'DRAFT',
+        status: ROOM_STATUS.DRAFT,
         views: 0
       },
       // Bài REJECTED (Bị Admin từ chối kèm lý do)
@@ -314,7 +318,7 @@ const seedData = async () => {
         electricityPrice: 'Giá dân',
         waterPrice: 'Giá dân',
         servicePrice: '0',
-        status: 'REJECTED',
+        status: ROOM_STATUS.REJECTED,
         rejectReason: 'Địa chỉ bài đăng chưa cụ thể (thiếu số nhà, tên đường rõ ràng) và hình ảnh chưa rõ nét. Vui lòng cập nhật lại thông tin chính xác để được duyệt!',
         views: 3
       }

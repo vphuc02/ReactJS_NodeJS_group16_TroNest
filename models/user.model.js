@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
+const { ROLES, USER_STATUS } = require('../configs/system.config');
 
 const userSchema = new Schema(
   {
@@ -34,16 +35,16 @@ const userSchema = new Schema(
     },
     role: {
       type: String,
-      enum: ['ADMIN', 'LANDLORD', 'CUSTOMER'],
-      default: 'CUSTOMER'
+      enum: Object.values(ROLES),
+      default: ROLES.CUSTOMER
     },
     // LANDLORD: PENDING -> APPROVED | REJECTED
     // CUSTOMER: ACTIVE | INACTIVE
     // ADMIN: ACTIVE
     status: {
       type: String,
-      enum: ['PENDING', 'APPROVED', 'REJECTED', 'ACTIVE', 'INACTIVE'],
-      default: 'ACTIVE'
+      enum: Object.values(USER_STATUS),
+      default: USER_STATUS.ACTIVE
     },
     rejectReason: {
       type: String,

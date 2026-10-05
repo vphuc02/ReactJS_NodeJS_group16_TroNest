@@ -6,9 +6,15 @@ const landlordRoutes = require('./landlord.route');
 const roomRoutes = require('./room.route');
 const userRoutes = require('./user.route');
 const categoryRoutes = require('./category.route');
-const accountRoutes = require('./account.route');
 const accountController = require('../../controllers/admin/account.controller');
 const { requireAdminAuth } = require('../../middlewares/auth.middleware');
+const { createRateLimiter } = require('../../middlewares/security.middleware');
+
+const adminLoginRateLimit = createRateLimiter({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  message: 'Bạn đã thử đăng nhập quá nhiều lần, vui lòng thử lại sau 15 phút.'
+});
 
 // Điều hướng mặc định về Dashboard
 router.get('/', (req, res) => {
@@ -17,10 +23,8 @@ router.get('/', (req, res) => {
 
 // Trang đăng nhập / đăng xuất riêng biệt cho Admin
 router.get('/login', accountController.loginGet);
-router.get('/logout', accountController.logoutGet);
-
-// Phân hệ Account (cho chuẩn Project-1: /admin/account/login, /admin/account/logout)
-router.use('/account', accountRoutes);
+router.post('/login', adminLoginRateLimit, accountController.loginPost);
+router.post('/logout', accountController.logoutPost);
 
 // Yêu cầu quyền ADMIN riêng biệt cho toàn bộ các tính năng quản trị bên dưới
 router.use(requireAdminAuth);
