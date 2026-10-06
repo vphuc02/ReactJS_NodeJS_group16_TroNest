@@ -2,6 +2,7 @@ const Room = require('../../models/room.model');
 const { ROOM_STATUS } = require('../../configs/system.config');
 const { escapeRegex } = require('../../helpers/security.helper');
 const { AppError } = require('../../helpers/error.helper');
+const { removeUnreferencedImages } = require('../../helpers/room.helper');
 
 // [GET] /admin/rooms
 module.exports.index = async (req, res) => {
@@ -107,6 +108,8 @@ module.exports.delete = async (req, res) => {
   if (!room) {
     throw new AppError(404, 'Bài đăng không tồn tại!');
   }
+
+  await removeUnreferencedImages([...(room.images || []), room.thumbnail]);
 
   return res.json({
     code: 200,

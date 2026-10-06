@@ -12,7 +12,10 @@ module.exports = [
         __dirname: 'readonly',
         Buffer: 'readonly',
         setTimeout: 'readonly',
-        clearTimeout: 'readonly'
+        clearTimeout: 'readonly',
+        setInterval: 'readonly',
+        clearInterval: 'readonly',
+        URL: 'readonly'
       }
     },
     rules: {

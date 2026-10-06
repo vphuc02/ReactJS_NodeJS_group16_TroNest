@@ -24,11 +24,41 @@ const escapeRegex = (value) => {
 };
 
 const isSafeLocalRedirect = (value) => {
-  return typeof value === 'string' && value.startsWith('/') && !value.startsWith('//');
+  if (typeof value !== 'string') return false;
+  const trimmed = value.trim();
+
+  // Must start with a single '/' and cannot start with '//' or contain any '\'
+  if (!trimmed.startsWith('/') || trimmed.startsWith('//') || trimmed.includes('\\')) {
+    return false;
+  }
+
+  // Prevent URL-encoded slashes or backslashes (e.g. /%5cexample.org or /%2fexample.org)
+  try {
+    const decoded = decodeURIComponent(trimmed);
+    if (!decoded.startsWith('/') || decoded.startsWith('//') || decoded.includes('\\')) {
+      return false;
+    }
+  } catch {
+    return false;
+  }
+
+  // Verify against WHATWG URL parser with a dummy local origin
+  try {
+    const parsed = new URL(trimmed, 'http://localhost');
+    if (parsed.origin !== 'http://localhost') {
+      return false;
+    }
+    if (!parsed.pathname.startsWith('/') || parsed.pathname.startsWith('//')) {
+      return false;
+    }
+    return true;
+  } catch {
+    return false;
+  }
 };
 
 const getSafeRedirect = (value, fallback = '/') => {
-  return isSafeLocalRedirect(value) ? value : fallback;
+  return isSafeLocalRedirect(value) ? value.trim() : fallback;
 };
 
 const getImageExtension = (file) => {
@@ -44,8 +74,10 @@ const getImageExtension = (file) => {
 
 const isSafeStoredImagePath = (value) => {
   if (typeof value !== 'string') return false;
-  return /^\/uploads\/rooms\/room-[a-zA-Z0-9-]+\.(jpe?g|png|webp|gif)$/i.test(value)
-    || /^\/client\/assets\/images\/[a-zA-Z0-9._-]+\.(jpe?g|png|webp|gif)$/i.test(value);
+  return (
+    /^\/uploads\/rooms\/room-[a-zA-Z0-9-]+\.(jpe?g|png|webp|gif)$/i.test(value) ||
+    /^\/client\/assets\/images\/[a-zA-Z0-9._-]+\.(jpe?g|png|webp|gif)$/i.test(value)
+  );
 };
 
 const jsonForInlineScript = (value) => {

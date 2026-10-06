@@ -1,11 +1,10 @@
 const mongoose = require('mongoose');
-const fs = require('fs/promises');
-const path = require('path');
 const Room = require('../../models/room.model');
 const Category = require('../../models/category.model');
 const { ROOM_DEFAULTS, ROOM_STATUS, USER_STATUS } = require('../../configs/system.config');
 const { escapeRegex, isSafeStoredImagePath } = require('../../helpers/security.helper');
 const { AppError } = require('../../helpers/error.helper');
+const { removeUnreferencedImages } = require('../../helpers/room.helper');
 
 const DEFAULT_ROOM_VALUES = {
   ...ROOM_DEFAULTS
@@ -18,13 +17,12 @@ const parseArrayField = (value) => {
 };
 
 const parseImages = ({ images, thumbnail, fallbackThumbnail }) => {
-  let parsedImages = parseArrayField(images)
-    .filter(isSafeStoredImagePath)
-    .slice(0, 6);
+  let parsedImages = parseArrayField(images).filter(isSafeStoredImagePath).slice(0, 6);
 
-  let chosenThumb = typeof thumbnail === 'string' && isSafeStoredImagePath(thumbnail.trim())
-    ? thumbnail.trim()
-    : parsedImages[0] || fallbackThumbnail || DEFAULT_ROOM_VALUES.thumbnail;
+  let chosenThumb =
+    typeof thumbnail === 'string' && isSafeStoredImagePath(thumbnail.trim())
+      ? thumbnail.trim()
+      : parsedImages[0] || fallbackThumbnail || DEFAULT_ROOM_VALUES.thumbnail;
 
   if (!isSafeStoredImagePath(chosenThumb)) {
     chosenThumb = DEFAULT_ROOM_VALUES.thumbnail;
@@ -62,28 +60,16 @@ const buildRoomPayload = (body, currentRoom = null) => {
     images: parsedImages,
     description: body.description || '',
     amenities: parseArrayField(body.amenities),
-    electricityPrice: body.electricityPrice || currentRoom?.electricityPrice || DEFAULT_ROOM_VALUES.electricityPrice,
+    electricityPrice:
+      body.electricityPrice ||
+      currentRoom?.electricityPrice ||
+      DEFAULT_ROOM_VALUES.electricityPrice,
     waterPrice: body.waterPrice || currentRoom?.waterPrice || DEFAULT_ROOM_VALUES.waterPrice,
     servicePrice: body.servicePrice || currentRoom?.servicePrice || DEFAULT_ROOM_VALUES.servicePrice
   };
 };
 
 const isValidId = (id) => mongoose.Types.ObjectId.isValid(id);
-
-const removeUnreferencedImages = async (imagePaths, excludedRoomId = null) => {
-  const candidates = [...new Set(imagePaths || [])].filter((value) => value?.startsWith('/uploads/rooms/'));
-
-  for (const imagePath of candidates) {
-    const stillUsed = await Room.exists({
-      ...(excludedRoomId ? { _id: { $ne: excludedRoomId } } : {}),
-      $or: [{ thumbnail: imagePath }, { images: imagePath }]
-    });
-
-    if (!stillUsed) {
-      await fs.unlink(path.join(__dirname, '../../public', imagePath)).catch(() => {});
-    }
-  }
-};
 
 // [GET] /landlord/rooms
 module.exports.index = async (req, res) => {
@@ -133,7 +119,8 @@ module.exports.createPost = async (req, res) => {
     });
   }
 
-  const chosenStatus = actionStatus === ROOM_STATUS.PENDING ? ROOM_STATUS.PENDING : ROOM_STATUS.DRAFT;
+  const chosenStatus =
+    actionStatus === ROOM_STATUS.PENDING ? ROOM_STATUS.PENDING : ROOM_STATUS.DRAFT;
   const newRoom = new Room({
     ...buildRoomPayload(req.body),
     landlordId: req.user._id,
@@ -144,9 +131,10 @@ module.exports.createPost = async (req, res) => {
 
   return res.json({
     code: 200,
-    message: chosenStatus === ROOM_STATUS.PENDING
-      ? 'Bài đăng đã được gửi đi và đang chờ Admin phê duyệt!'
-      : 'Bài đăng đã được lưu vào bản nháp (DRAFT)!',
+    message:
+      chosenStatus === ROOM_STATUS.PENDING
+        ? 'Bài đăng đã được gửi đi và đang chờ Admin phê duyệt!'
+        : 'Bài đăng đã được lưu vào bản nháp (DRAFT)!',
     roomId: newRoom._id
   });
 };
@@ -208,13 +196,20 @@ module.exports.editPost = async (req, res) => {
   }
 
   await room.save();
-  await removeUnreferencedImages(previousImages, room._id);
+
+  const currentImages = new Set([room.thumbnail, ...(room.images || [])]);
+  const removedImages = previousImages.filter((img) => img && !currentImages.has(img));
+
+  if (removedImages.length > 0) {
+    await removeUnreferencedImages(removedImages);
+  }
 
   return res.json({
     code: 200,
-    message: room.status === ROOM_STATUS.PENDING
-      ? 'Bài đăng đã được cập nhật và gửi Admin phê duyệt!'
-      : 'Cập nhật bài đăng thành công!'
+    message:
+      room.status === ROOM_STATUS.PENDING
+        ? 'Bài đăng đã được cập nhật và gửi Admin phê duyệt!'
+        : 'Cập nhật bài đăng thành công!'
   });
 };
 
@@ -234,7 +229,7 @@ module.exports.deletePost = async (req, res) => {
     throw new AppError(404, 'Bài đăng không tồn tại hoặc bạn không có quyền xóa!');
   }
 
-  await removeUnreferencedImages([...room.images, room.thumbnail]);
+  await removeUnreferencedImages([...(room.images || []), room.thumbnail]);
 
   return res.json({
     code: 200,

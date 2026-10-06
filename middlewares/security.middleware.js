@@ -47,18 +47,45 @@ const createRateLimiter = ({
 } = {}) => {
   const attempts = new Map();
 
-  return (req, res, next) => {
-    const key = `${req.ip}:${req.originalUrl}`;
-    const now = Date.now();
-    const entry = attempts.get(key) || { count: 0, resetAt: now + windowMs };
+  const cleanupExpired = (now = Date.now()) => {
+    for (const [key, entry] of attempts.entries()) {
+      if (entry.resetAt <= now) {
+        attempts.delete(key);
+      }
+    }
+  };
 
-    if (entry.resetAt <= now) {
-      entry.count = 0;
-      entry.resetAt = now + windowMs;
+  const timer = setInterval(
+    () => {
+      cleanupExpired();
+    },
+    Math.min(windowMs, 60000)
+  );
+
+  if (timer.unref) {
+    timer.unref();
+  }
+
+  return (req, res, next) => {
+    const rawUrl = req.originalUrl || req.url || '';
+    const pathOnly = rawUrl.split('?')[0] || req.path || '/';
+    const normalizedPath = pathOnly.toLowerCase().replace(/\/+$/, '') || '/';
+    const clientIp = req.ip || req.socket?.remoteAddress || 'unknown';
+    const key = `${clientIp}:${normalizedPath}`;
+    const now = Date.now();
+
+    if (attempts.size > 1000) {
+      cleanupExpired(now);
     }
 
-    entry.count += 1;
-    attempts.set(key, entry);
+    let entry = attempts.get(key);
+
+    if (!entry || entry.resetAt <= now) {
+      entry = { count: 1, resetAt: now + windowMs };
+      attempts.set(key, entry);
+    } else {
+      entry.count += 1;
+    }
 
     if (entry.count > max) {
       return res.status(429).json({ code: 429, message });
