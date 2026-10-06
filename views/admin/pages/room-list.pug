@@ -1,4 +1,5 @@
 extends ../layouts/default.pug
+include ../../shared/pagination.pug
 
 block title
   title Quản lý và Phê duyệt bài đăng phòng trọ - TroNest
@@ -86,12 +87,12 @@ block main
                     i.fa-solid.fa-magnifying-glass
                     span Thẩm định
                   
-                  if room.status !== ROOM_STATUS.APPROVED
+                  if room.status === ROOM_STATUS.PENDING
                     button.btn.btn-success(data-admin-action="approve-room" data-id=room._id class="admin-clean-038" title="Duyệt bài đăng")
                       i.fa-solid.fa-check
                       span Duyệt
                   
-                  if room.status !== ROOM_STATUS.REJECTED
+                  if room.status === ROOM_STATUS.PENDING
                     button.btn.btn-danger(data-admin-action="reject-room" data-id=room._id class="admin-clean-038" title="Từ chối bài đăng")
                       i.fa-solid.fa-xmark
                       span Từ chối
@@ -102,3 +103,5 @@ block main
           tr
             td(colspan="6" class="admin-clean-088")
               | Không có bài đăng nào trong danh mục này.
+
+  +pagination(paging, query, '/admin/rooms')

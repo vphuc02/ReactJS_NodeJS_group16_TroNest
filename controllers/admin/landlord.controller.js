@@ -3,10 +3,13 @@ const Room = require('../../models/room.model');
 const { ROLES, USER_STATUS } = require('../../configs/system.config');
 const { escapeRegex } = require('../../helpers/security.helper');
 const { AppError } = require('../../helpers/error.helper');
+const { queryText, queryPage, pagination } = require('../../helpers/query.helper');
 
 // [GET] /admin/landlords
 module.exports.index = async (req, res) => {
-  const { status, keyword } = req.query;
+  const status = queryText(req.query.status);
+  const keyword = queryText(req.query.keyword);
+  const page = queryPage(req.query.page);
 
   const filter = { role: ROLES.LANDLORD };
   if (status && [USER_STATUS.PENDING, USER_STATUS.APPROVED, USER_STATUS.REJECTED].includes(status)) {
@@ -21,12 +24,17 @@ module.exports.index = async (req, res) => {
     ];
   }
 
-  const landlords = await User.find(filter).sort({ createdAt: -1 }).lean();
+  const paging = pagination(await User.countDocuments(filter), page);
+  const landlords = await User.find(filter).select('-password')
+    .sort({ createdAt: -1, _id: -1 }).skip(paging.skip).limit(paging.limit).lean();
 
   // Thống kê số phòng của từng chủ trọ
-  for (let l of landlords) {
-    l.roomCount = await Room.countDocuments({ landlordId: l._id });
-  }
+  const roomCounts = await Room.aggregate([
+    { $match: { landlordId: { $in: landlords.map((landlord) => landlord._id) } } },
+    { $group: { _id: '$landlordId', count: { $sum: 1 } } }
+  ]);
+  const countById = new Map(roomCounts.map((item) => [String(item._id), item.count]));
+  landlords.forEach((landlord) => { landlord.roomCount = countById.get(String(landlord._id)) || 0; });
 
   const counts = {
     all: await User.countDocuments({ role: ROLES.LANDLORD }),
@@ -38,6 +46,8 @@ module.exports.index = async (req, res) => {
   res.render('admin/pages/landlord-list', {
     title: 'Quản lý duyệt Chủ trọ - TroNest',
     landlords,
+    paging,
+    query: { status, keyword },
     statusFilter: status || '',
     keyword: keyword || '',
     counts

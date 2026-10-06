@@ -5,6 +5,8 @@ const { ROOM_DEFAULTS, ROOM_STATUS, USER_STATUS } = require('../../configs/syste
 const { escapeRegex, isSafeStoredImagePath } = require('../../helpers/security.helper');
 const { AppError } = require('../../helpers/error.helper');
 const { removeUnreferencedImages } = require('../../helpers/room.helper');
+const { queryText, queryPage, pagination } = require('../../helpers/query.helper');
+const Favorite = require('../../models/favorite.model');
 
 const DEFAULT_ROOM_VALUES = {
   ...ROOM_DEFAULTS
@@ -74,7 +76,9 @@ const isValidId = (id) => mongoose.Types.ObjectId.isValid(id);
 // [GET] /landlord/rooms
 module.exports.index = async (req, res) => {
   const landlordId = req.user._id;
-  const { status, keyword } = req.query;
+  const status = queryText(req.query.status);
+  const keyword = queryText(req.query.keyword);
+  const page = queryPage(req.query.page);
 
   const filter = { landlordId };
   if (status && Object.values(ROOM_STATUS).includes(status)) {
@@ -84,14 +88,17 @@ module.exports.index = async (req, res) => {
     filter.title = { $regex: escapeRegex(keyword.trim()), $options: 'i' };
   }
 
+  const paging = pagination(await Room.countDocuments(filter), page);
   const rooms = await Room.find(filter)
-    .sort({ updatedAt: -1 })
+    .sort({ updatedAt: -1, _id: -1 }).skip(paging.skip).limit(paging.limit)
     .populate('categoryId', 'title')
     .lean();
 
   res.render('landlord/pages/room-list', {
     title: 'Quản lý bài đăng phòng trọ - TroNest',
     rooms,
+    paging,
+    query: { status, keyword },
     statusFilter: status || '',
     keyword: keyword || '',
     landlordStatus: req.user.status
@@ -112,7 +119,7 @@ module.exports.createGet = async (req, res) => {
 module.exports.createPost = async (req, res) => {
   const { title, categoryId, price, area, address, actionStatus } = req.body;
 
-  if (!title || !categoryId || !price || !area || !address) {
+  if (!title || !categoryId || price == null || !area || !address) {
     return res.status(400).json({
       code: 400,
       message: 'Vui lòng điền đầy đủ các thông tin bắt buộc!'
@@ -229,6 +236,7 @@ module.exports.deletePost = async (req, res) => {
     throw new AppError(404, 'Bài đăng không tồn tại hoặc bạn không có quyền xóa!');
   }
 
+  await Favorite.deleteMany({ roomId: room._id });
   await removeUnreferencedImages([...(room.images || []), room.thumbnail]);
 
   return res.json({

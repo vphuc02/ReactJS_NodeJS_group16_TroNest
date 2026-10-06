@@ -63,12 +63,16 @@ document.addEventListener("click", (event) => {
   }
 
   const btnFav = event.target.closest(".btn-fav");
-  if (!btnFav) return;
+  if (!btnFav || btnFav.disabled) return;
 
   event.preventDefault();
   const roomId = btnFav.getAttribute("data-room-id");
+  const action = btnFav.classList.contains("active") ? "remove" : "add";
+  const buttons = Array.from(document.querySelectorAll(".btn-fav"))
+    .filter((button) => button.dataset.roomId === roomId);
+  buttons.forEach((button) => { button.disabled = true; });
 
-  fetch(`/favorites/toggle/${roomId}`, {
+  fetch(`/favorites/${action}/${roomId}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -87,13 +91,17 @@ document.addEventListener("click", (event) => {
       if (!data) return;
 
       if (data.code === 200) {
-        const icon = btnFav.querySelector("i");
         const added = data.action === "added";
-        btnFav.classList.toggle("active", added);
-        if (icon) {
-          icon.className = added ? "fa-solid fa-heart" : "fa-regular fa-heart";
-        }
+        buttons.forEach((button) => {
+          button.classList.toggle("active", added);
+          button.setAttribute("aria-pressed", String(added));
+          const icon = button.querySelector("i");
+          if (icon) icon.className = added ? "fa-solid fa-heart" : "fa-regular fa-heart";
+        });
         window.notyf?.success(data.message);
+        if (!added && window.location.pathname.replace(/\/$/, "") === "/favorites") {
+          window.location.reload();
+        }
         return;
       }
 
@@ -101,5 +109,8 @@ document.addEventListener("click", (event) => {
     })
     .catch(() => {
       window.notyf?.error("Khong the cap nhat phong yeu thich.");
+    })
+    .finally(() => {
+      buttons.forEach((button) => { button.disabled = false; });
     });
 });

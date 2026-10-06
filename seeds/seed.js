@@ -13,6 +13,10 @@ const seedData = async () => {
       throw new Error('Refusing to run seed in production because it deletes existing data.');
     }
 
+    if (!process.argv.includes('--reset')) {
+      throw new Error('Seed deletes existing data. Use yarn seed --reset only against a development database.');
+    }
+
     await connectDB();
     console.log('--- Đang xóa dữ liệu cũ để khởi tạo mới ---');
     await User.deleteMany({});

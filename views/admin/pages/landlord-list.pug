@@ -1,4 +1,5 @@
 extends ../layouts/default.pug
+include ../../shared/pagination.pug
 
 block title
   title Quản lý và Phê duyệt Chủ trọ - TroNest
@@ -84,3 +85,5 @@ block main
           tr
             td(colspan="6" class="admin-clean-088")
               | Không tìm thấy tài khoản Chủ trọ nào phù hợp.
+
+  +pagination(paging, query, '/admin/landlords')

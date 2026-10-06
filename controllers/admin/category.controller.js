@@ -1,18 +1,26 @@
 const Category = require('../../models/category.model');
 const Room = require('../../models/room.model');
 const { AppError } = require('../../helpers/error.helper');
+const { queryPage, pagination } = require('../../helpers/query.helper');
 
 // [GET] /admin/categories
 module.exports.index = async (req, res) => {
-  const categories = await Category.find().sort({ createdAt: -1 }).lean();
+  const paging = pagination(await Category.countDocuments(), queryPage(req.query.page));
+  const categories = await Category.find().sort({ createdAt: -1, _id: -1 })
+    .skip(paging.skip).limit(paging.limit).lean();
 
-  for (let cat of categories) {
-    cat.roomCount = await Room.countDocuments({ categoryId: cat._id });
-  }
+  const roomCounts = await Room.aggregate([
+    { $match: { categoryId: { $in: categories.map((category) => category._id) } } },
+    { $group: { _id: '$categoryId', count: { $sum: 1 } } }
+  ]);
+  const countById = new Map(roomCounts.map((item) => [String(item._id), item.count]));
+  categories.forEach((category) => { category.roomCount = countById.get(String(category._id)) || 0; });
 
   res.render('admin/pages/category-list', {
     title: 'Quản lý loại phòng trọ - TroNest',
-    categories
+    categories,
+    paging,
+    query: {}
   });
 };
 
@@ -54,6 +62,9 @@ module.exports.createPost = async (req, res) => {
 // [POST] /admin/categories/delete/:id
 module.exports.deletePost = async (req, res) => {
   const { id } = req.params;
+  if (await Room.exists({ categoryId: id })) {
+    throw new AppError(409, 'Không thể xóa loại phòng đang được sử dụng!');
+  }
   const deleted = await Category.findByIdAndDelete(id);
 
   if (!deleted) {

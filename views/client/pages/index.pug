@@ -32,14 +32,8 @@ block main
               label(class="client-clean-063") Quận / Huyện
               select(name="district" class="client-clean-067")
                 option(value="") Tất cả quận huyện
-                option(value="Cầu Giấy") Cầu Giấy
-                option(value="Đống Đa") Đống Đa
-                option(value="Hai Bà Trưng") Hai Bà Trưng
-                option(value="Thanh Xuân") Thanh Xuân
-                option(value="Nam Từ Liêm") Nam Từ Liêm
-                option(value="Bắc Từ Liêm") Bắc Từ Liêm
-                option(value="Ba Đình") Ba Đình
-                option(value="Hoàng Mai") Hoàng Mai
+                each district in ROOM_DISTRICTS
+                  option(value=district)= district
 
             // Khoảng giá
             div(class="client-clean-066")

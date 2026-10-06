@@ -3,10 +3,14 @@ const { ROOM_STATUS } = require('../../configs/system.config');
 const { escapeRegex } = require('../../helpers/security.helper');
 const { AppError } = require('../../helpers/error.helper');
 const { removeUnreferencedImages } = require('../../helpers/room.helper');
+const { queryText, queryPage, pagination } = require('../../helpers/query.helper');
+const Favorite = require('../../models/favorite.model');
 
 // [GET] /admin/rooms
 module.exports.index = async (req, res) => {
-  const { status, keyword } = req.query;
+  const status = queryText(req.query.status);
+  const keyword = queryText(req.query.keyword);
+  const page = queryPage(req.query.page);
 
   const filter = {};
   if (status && Object.values(ROOM_STATUS).includes(status)) {
@@ -16,8 +20,9 @@ module.exports.index = async (req, res) => {
     filter.title = { $regex: escapeRegex(keyword.trim()), $options: 'i' };
   }
 
+  const paging = pagination(await Room.countDocuments(filter), page);
   const rooms = await Room.find(filter)
-    .sort({ updatedAt: -1 })
+    .sort({ updatedAt: -1, _id: -1 }).skip(paging.skip).limit(paging.limit)
     .populate('landlordId', 'fullName phone email')
     .populate('categoryId', 'title')
     .lean();
@@ -33,6 +38,8 @@ module.exports.index = async (req, res) => {
   res.render('admin/pages/room-list', {
     title: 'Quản lý & Duyệt bài đăng phòng trọ - TroNest',
     rooms,
+    paging,
+    query: { status, keyword },
     statusFilter: status || '',
     keyword: keyword || '',
     counts
@@ -60,13 +67,16 @@ module.exports.detail = async (req, res) => {
 // [POST] /admin/rooms/approve/:id
 module.exports.approve = async (req, res) => {
   const { id } = req.params;
-  const room = await Room.findByIdAndUpdate(
-    id,
+  const room = await Room.findOneAndUpdate(
+    { _id: id, status: ROOM_STATUS.PENDING },
     { status: ROOM_STATUS.APPROVED, rejectReason: '' },
     { new: true }
   );
 
   if (!room) {
+    if (await Room.exists({ _id: id })) {
+      throw new AppError(409, 'Chỉ được duyệt bài đang chờ. Vui lòng tải lại danh sách!');
+    }
     throw new AppError(404, 'Bài đăng không tồn tại!');
   }
 
@@ -81,8 +91,11 @@ module.exports.reject = async (req, res) => {
   const { id } = req.params;
   const { reason } = req.body;
 
-  const room = await Room.findByIdAndUpdate(
-    id,
+  if (reason !== undefined && (typeof reason !== 'string' || reason.length > 1000)) {
+    throw new AppError(400, 'Lý do từ chối không hợp lệ (tối đa 1000 ký tự)!');
+  }
+  const room = await Room.findOneAndUpdate(
+    { _id: id, status: ROOM_STATUS.PENDING },
     {
       status: ROOM_STATUS.REJECTED,
       rejectReason: reason || 'Nội dung bài đăng không đáp ứng tiêu chuẩn của TroNest.'
@@ -91,6 +104,9 @@ module.exports.reject = async (req, res) => {
   );
 
   if (!room) {
+    if (await Room.exists({ _id: id })) {
+      throw new AppError(409, 'Chỉ được từ chối bài đang chờ. Vui lòng tải lại danh sách!');
+    }
     throw new AppError(404, 'Bài đăng không tồn tại!');
   }
 
@@ -109,6 +125,7 @@ module.exports.delete = async (req, res) => {
     throw new AppError(404, 'Bài đăng không tồn tại!');
   }
 
+  await Favorite.deleteMany({ roomId: room._id });
   await removeUnreferencedImages([...(room.images || []), room.thumbnail]);
 
   return res.json({

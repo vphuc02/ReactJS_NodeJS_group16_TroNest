@@ -1,4 +1,5 @@
 extends ../layouts/default.pug
+include ../../shared/pagination.pug
 
 block title
   title Quản lý người dùng - TroNest
@@ -61,7 +62,9 @@ block main
                 else
                   span.badge.badge-gray Khách hàng
               td
-                if u.status === USER_STATUS.ACTIVE || u.status === USER_STATUS.APPROVED
+                if u.isBlocked || u.status === USER_STATUS.INACTIVE
+                  span.badge.badge-red Đã khóa
+                else if u.status === USER_STATUS.ACTIVE || u.status === USER_STATUS.APPROVED
                   span.badge.badge-green= u.status
                 else if u.status === USER_STATUS.PENDING
                   span.badge.badge-yellow PENDING
@@ -69,8 +72,8 @@ block main
                   span.badge.badge-red= u.status
               td
                 if u.role !== ROLES.ADMIN
-                  button.btn.admin-small-action(data-admin-action="toggle-user-status" data-id=u._id class=u.status === USER_STATUS.INACTIVE ? 'btn-success' : 'btn-danger')
-                    if u.status === USER_STATUS.INACTIVE
+                  button.btn.admin-small-action(data-admin-action="toggle-user-status" data-id=u._id class=u.isBlocked || u.status === USER_STATUS.INACTIVE ? 'btn-success' : 'btn-danger')
+                    if u.isBlocked || u.status === USER_STATUS.INACTIVE
                       i.fa-solid.fa-lock-open
                       | Mở khóa
                     else
@@ -82,3 +85,5 @@ block main
           tr
             td(colspan="6" class="admin-clean-088")
               | Không tìm thấy người dùng phù hợp.
+
+  +pagination(paging, query, '/admin/users')

@@ -20,7 +20,7 @@ module.exports.attachUser = async (req, res, next) => {
     const decoded = jwt.verify(token, JWT_SECRET);
     const user = await User.findById(decoded.id).select('-password');
 
-    if (!user || user.status === USER_STATUS.INACTIVE) {
+    if (!user || user.isBlocked || user.status === USER_STATUS.INACTIVE) {
       res.clearCookie('token');
       res.clearCookie('token_admin');
       req.user = null;
@@ -63,7 +63,7 @@ module.exports.requireAdminAuth = (req, res, next) => {
     return res.redirect('/admin/login');
   }
 
-  if (adminUser.role !== ROLES.ADMIN || adminUser.status === USER_STATUS.INACTIVE) {
+  if (adminUser.role !== ROLES.ADMIN || adminUser.isBlocked || adminUser.status === USER_STATUS.INACTIVE) {
     res.clearCookie('token_admin');
     if (wantsJson(req)) {
       return res.status(403).json({

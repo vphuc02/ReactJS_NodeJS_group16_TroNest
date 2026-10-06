@@ -5,18 +5,16 @@ const Favorite = require('../../models/favorite.model');
 const { ROOM_STATUS, USER_STATUS } = require('../../configs/system.config');
 const { escapeRegex } = require('../../helpers/security.helper');
 const { AppError } = require('../../helpers/error.helper');
+const { queryText, queryPage, pagination } = require('../../helpers/query.helper');
 
 // [GET] /rooms
 module.exports.index = async (req, res) => {
-  const {
-    keyword,
-    category,
-    district,
-    priceRange,
-    areaRange,
-    sort,
-    page = 1
-  } = req.query;
+  const query = Object.fromEntries(
+    ['keyword', 'category', 'district', 'priceRange', 'areaRange', 'sort']
+      .map((key) => [key, queryText(req.query[key])])
+  );
+  const { keyword, category, district, priceRange, areaRange, sort } = query;
+  const page = queryPage(req.query.page);
 
   const filter = {
     status: ROOM_STATUS.APPROVED
@@ -38,6 +36,8 @@ module.exports.index = async (req, res) => {
       const foundCategory = await Category.findOne({ slug: category });
       if (foundCategory) {
         filter.categoryId = foundCategory._id;
+      } else {
+        filter._id = { $in: [] };
       }
     }
   }
@@ -77,15 +77,14 @@ module.exports.index = async (req, res) => {
     sortOption = { views: -1 };
   }
 
-  const currentPage = parseInt(page, 10) || 1;
   const limit = 9;
-  const skip = (currentPage - 1) * limit;
 
   const totalRooms = await Room.countDocuments(filter);
-  const totalPages = Math.ceil(totalRooms / limit) || 1;
+  const paging = pagination(totalRooms, page, limit);
+  const { currentPage, totalPages, skip } = paging;
 
   const rooms = await Room.find(filter)
-    .sort(sortOption)
+    .sort({ ...sortOption, _id: -1 })
     .skip(skip)
     .limit(limit)
     .populate('categoryId', 'title slug')
@@ -107,7 +106,8 @@ module.exports.index = async (req, res) => {
     totalRooms,
     currentPage,
     totalPages,
-    query: req.query,
+    paging,
+    query,
     favoriteRoomIds
   });
 };
@@ -146,7 +146,10 @@ module.exports.detail = async (req, res) => {
   const relatedRooms = await Room.find({
     _id: { $ne: room._id },
     status: ROOM_STATUS.APPROVED,
-    $or: [{ categoryId: room.categoryId._id }, { district: room.district }]
+    $or: [
+      ...(room.categoryId ? [{ categoryId: room.categoryId._id }] : []),
+      { district: room.district }
+    ]
   })
     .limit(3)
     .populate('categoryId', 'title slug')

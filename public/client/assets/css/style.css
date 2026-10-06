@@ -2491,4 +2491,44 @@ input, button, textarea {
 .auth-inline-31 { margin-bottom: 22px; }
 .auth-submit-landlord { background: #D48B38 !important; box-shadow: 0 4px 12px rgba(212,139,56,0.3) !important; }
 
+.layout-room-list > *,
+.room-detail-layout > *,
+.footer .inner-col,
+.rooms-grid > * { min-width: 0; }
+
+.room-content .sort-bar,
+.room-content .sort-bar > div { flex-wrap: wrap; }
+
+.room-main,
+.landlord-sidebar,
+.footer .inner-col { overflow-wrap: anywhere; }
+
+.btn-fav:disabled { cursor: wait; opacity: 0.65; }
+
+@media (max-width: 991.98px) {
+  .layout-room-list.client-clean-097,
+  .room-detail-layout.client-clean-005 { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  .filter-sidebar.client-clean-098,
+  .landlord-sidebar.client-clean-035 { position: static; }
+  .footer .inner-wrap.client-clean-130 { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+}
+
+@media (max-width: 575.98px) {
+  .rooms-grid.client-clean-109,
+  .rooms-grid.client-clean-055,
+  .rooms-grid.client-clean-082 { grid-template-columns: minmax(0, 1fr); }
+  .footer .inner-wrap.client-clean-130 { grid-template-columns: minmax(0, 1fr); }
+  .highlight-specs.client-clean-019 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .service-fees .client-clean-026 { grid-template-columns: minmax(0, 1fr); }
+  .filter-sidebar.client-clean-098 { padding: 16px; }
+  .room-content .client-clean-108 { gap: 8px; }
+  .room-content .room-sort-link { white-space: normal; }
+  .room-main .client-clean-007 { flex-wrap: wrap; }
+  .room-main .client-clean-009,
+  .client-clean-095 { font-size: 26px; overflow-wrap: anywhere; }
+  .header .inner-wrap { flex-wrap: wrap; row-gap: 12px; }
+  .header .header-actions { flex: 0 0 100%; justify-content: flex-end; min-width: 0; }
+  .header .auth-buttons { flex-wrap: wrap; }
+}
+
 

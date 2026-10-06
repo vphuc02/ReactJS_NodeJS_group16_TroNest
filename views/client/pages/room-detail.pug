@@ -13,7 +13,10 @@ block main
         span /
         a(href="/rooms" class="client-clean-003") Phòng trọ
         span /
-        a(href=`/rooms?category=${room.categoryId.slug}` class="client-clean-003")= room.categoryId.title
+        if room.categoryId
+          a(href=`/rooms?category=${room.categoryId.slug}` class="client-clean-003")= room.categoryId.title
+        else
+          span Loại phòng không còn hoạt động
         span /
         span(class="client-clean-004")= room.district
 
@@ -23,7 +26,7 @@ block main
           // Title & Meta
           div(class="client-clean-007")
             div
-              span.badge.badge-green(class="client-clean-008")= room.categoryId.title
+              span.badge.badge-green(class="client-clean-008")= room.categoryId ? room.categoryId.title : 'Phòng trọ'
               h1(class="client-clean-009")= room.title
               div(class="client-clean-010")
                 span

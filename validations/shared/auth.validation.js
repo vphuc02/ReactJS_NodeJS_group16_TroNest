@@ -43,7 +43,7 @@ const registerSchema = Joi.object({
 
 const validateJson = (schema) => {
   return (req, res, next) => {
-    const { error } = schema.validate(req.body, { abortEarly: true, allowUnknown: true });
+    const { error, value } = schema.required().validate(req.body, { abortEarly: true, allowUnknown: true });
 
     if (error) {
       return res.status(400).json({
@@ -52,6 +52,7 @@ const validateJson = (schema) => {
       });
     }
 
+    req.body = value;
     next();
   };
 };

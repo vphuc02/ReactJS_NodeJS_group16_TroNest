@@ -1,4 +1,5 @@
 extends ../layouts/default.pug
+include ../../shared/pagination.pug
 
 block title
   title Danh sách bài đăng phòng trọ - TroNest
@@ -99,3 +100,5 @@ block main
             td(colspan="6" class="admin-clean-151")
               i.fa-solid.fa-folder-open(class="admin-clean-152")
               | Không có bài đăng nào trong mục này.
+
+  +pagination(paging, query, '/landlord/rooms')

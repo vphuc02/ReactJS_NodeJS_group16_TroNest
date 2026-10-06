@@ -1,5 +1,6 @@
 extends ../layouts/default.pug
 include ../mixins/room-item.pug
+include ../../shared/pagination.pug
 
 block title
   title Danh sách phòng trọ cho thuê - TroNest
@@ -36,14 +37,8 @@ block main
               label(class="client-clean-103") Quận / Huyện
               select(name="district" class="client-clean-104")
                 option(value="") -- Tất cả quận huyện --
-                option(value="Cầu Giấy" selected=query.district === 'Cầu Giấy') Cầu Giấy
-                option(value="Đống Đa" selected=query.district === 'Đống Đa') Đống Đa
-                option(value="Hai Bà Trưng" selected=query.district === 'Hai Bà Trưng') Hai Bà Trưng
-                option(value="Thanh Xuân" selected=query.district === 'Thanh Xuân') Thanh Xuân
-                option(value="Nam Từ Liêm" selected=query.district === 'Nam Từ Liêm') Nam Từ Liêm
-                option(value="Bắc Từ Liêm" selected=query.district === 'Bắc Từ Liêm') Bắc Từ Liêm
-                option(value="Ba Đình" selected=query.district === 'Ba Đình') Ba Đình
-                option(value="Hoàng Mai" selected=query.district === 'Hoàng Mai') Hoàng Mai
+                each district in ROOM_DISTRICTS
+                  option(value=district selected=query.district === district)= district
 
             // Loại phòng
             .form-group(class="client-clean-102")
@@ -95,11 +90,7 @@ block main
                 +roomItem(room, favoriteRoomIds)
 
             // Pagination
-            if totalPages > 1
-              .pagination(class="client-clean-110")
-                - for (let p = 1; p <= totalPages; p++)
-                  a.room-page-link(href=`/rooms?${new URLSearchParams({...query, page: p}).toString()}` class=p === currentPage ? 'is-active' : '')
-                    = p
+            +pagination(paging, query, '/rooms')
           else
             div(class="client-clean-111")
               i.fa-solid.fa-house-circle-xmark(class="client-clean-112")

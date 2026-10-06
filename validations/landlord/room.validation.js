@@ -1,5 +1,7 @@
 const Joi = require('joi');
-const { ROOM_STATUS } = require('../../configs/system.config');
+const { ROOM_STATUS, USER_STATUS } = require('../../configs/system.config');
+const Category = require('../../models/category.model');
+const { AppError } = require('../../helpers/error.helper');
 
 module.exports.createPost = async (req, res, next) => {
   const schema = Joi.object({
@@ -9,7 +11,7 @@ module.exports.createPost = async (req, res, next) => {
       'string.max': 'Tiêu đề bài đăng không được vượt quá 200 ký tự!',
       'any.required': 'Vui lòng nhập tiêu đề bài đăng!'
     }),
-    categoryId: Joi.string().required().messages({
+    categoryId: Joi.string().hex().length(24).required().messages({
       'string.empty': 'Vui lòng chọn loại phòng trọ!',
       'any.required': 'Vui lòng chọn loại phòng trọ!'
     }),
@@ -27,7 +29,7 @@ module.exports.createPost = async (req, res, next) => {
       'number.min': 'Diện tích phải lớn hơn 0 m²!',
       'any.required': 'Vui lòng nhập diện tích phòng!'
     }),
-    capacity: Joi.number().min(1).allow(null, '').optional(),
+    capacity: Joi.number().integer().min(1).allow(null, '').optional(),
     province: Joi.string().allow('', null).optional(),
     district: Joi.string().allow('', null).optional(),
     ward: Joi.string().allow('', null).optional(),
@@ -50,7 +52,7 @@ module.exports.createPost = async (req, res, next) => {
     actionStatus: Joi.string().valid(ROOM_STATUS.DRAFT, ROOM_STATUS.PENDING).optional()
   });
 
-  const { error } = schema.validate(req.body, { abortEarly: true, allowUnknown: true });
+  const { error, value } = schema.required().validate(req.body, { abortEarly: true, allowUnknown: true });
 
   if (error) {
     return res.status(400).json({
@@ -59,6 +61,10 @@ module.exports.createPost = async (req, res, next) => {
     });
   }
 
+  if (!await Category.exists({ _id: value.categoryId, status: USER_STATUS.ACTIVE })) {
+    throw new AppError(400, 'Loại phòng không tồn tại hoặc đã ngừng hoạt động!');
+  }
+  req.body = value;
   next();
 };
 

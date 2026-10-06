@@ -1,4 +1,5 @@
 extends ../layouts/default.pug
+include ../../shared/pagination.pug
 
 block title
   title Quản lý loại phòng trọ - TroNest
@@ -69,3 +70,5 @@ block main
         button#btn-create-cat.btn.btn-primary(type="submit" class="admin-clean-097")
           i.fa-solid.fa-plus
           | Tạo loại phòng
+
+  +pagination(paging, query, '/admin/categories')

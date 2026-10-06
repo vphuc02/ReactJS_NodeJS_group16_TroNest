@@ -46,6 +46,10 @@ const userSchema = new Schema(
       enum: Object.values(USER_STATUS),
       default: USER_STATUS.ACTIVE
     },
+    isBlocked: {
+      type: Boolean,
+      default: false
+    },
     rejectReason: {
       type: String,
       default: ''

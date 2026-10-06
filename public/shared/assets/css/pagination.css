@@ -1,0 +1,32 @@
+.list-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin: 24px 0;
+}
+
+.list-pagination a,
+.list-pagination span {
+  padding: 8px 12px;
+  line-height: 1.4;
+}
+
+.list-pagination a {
+  border: 1px solid #cbd5d1;
+  border-radius: 4px;
+  color: #16513d;
+  background: #fff;
+  text-decoration: none;
+}
+
+.list-pagination a[aria-current="page"] {
+  background: #16513d;
+  color: #fff;
+}
+
+.list-pagination a:focus-visible {
+  outline: 2px solid #a74329;
+  outline-offset: 2px;
+}

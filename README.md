@@ -9,10 +9,10 @@ TroNest là nền tảng quản lý, tìm kiếm và đăng tin phòng trọ, c�
 Hệ thống có **3 roles chính**:
 
 ### 1. Quản Trị Viên (Admin)
-- Đăng nhập hệ thống quản trị tại `/admin/login` hoặc `/login`.
+- Đăng nhập hệ thống quản trị tại `/admin/login` (cổng riêng).
 - **Duyệt tài khoản Chủ trọ**: Xem danh sách chủ trọ mới đăng ký (trạng thái `PENDING`), phê duyệt (`APPROVED`) hoặc từ chối (`REJECTED`) kèm lý do.
 - **Duyệt bài đăng phòng trọ**: Thẩm định bài đăng của chủ trọ, duyệt bài (`APPROVED`) để bài xuất bản ra ngoài website hoặc từ chối (`REJECTED`) kèm lý do chỉnh sửa.
-- **Quản lý người dùng**: Khóa / mở khóa tài khoản người dùng (`ACTIVE` / `INACTIVE`).
+- **Quản lý người dùng**: Khóa / mở khóa bằng `isBlocked`, độc lập với trạng thái phê duyệt chủ trọ.
 - **Quản lý danh mục loại phòng trọ**: Thêm / xóa loại hình phòng trọ.
 - **Bảng điều khiển thống kê (Dashboard)**: Thống kê tổng số phòng, số bài chờ duyệt, số chủ trọ chờ duyệt, tổng khách hàng...
 
@@ -67,7 +67,7 @@ Tất cả tài khoản đều có mật khẩu mặc định là: **`123456`**
 - **Phòng yêu thích**: `http://localhost:3000/favorites`
 - **Đăng nhập**: `http://localhost:3000/login`
 - **Đăng ký**: `http://localhost:3000/register`
-- **Đăng xuất**: `http://localhost:3000/logout`
+- **Đăng xuất**: `POST /logout` qua nút đăng xuất (có CSRF token).
 
 ### Portal Chủ Trọ (Landlord)
 - **Tổng quan bài đăng**: `http://localhost:3000/landlord/dashboard`
@@ -83,11 +83,13 @@ Tất cả tài khoản đều có mật khẩu mặc định là: **`123456`**
 - **Thẩm định bài đăng**: `http://localhost:3000/admin/rooms/detail/:id`
 - **Quản lý người dùng**: `http://localhost:3000/admin/users`
 - **Quản lý loại phòng**: `http://localhost:3000/admin/categories`
-- **Đăng xuất Admin**: `http://localhost:3000/admin/logout`
+- **Đăng xuất Admin**: `POST /admin/logout` qua nút đăng xuất (có CSRF token).
 
 ---
 
 ## 4. Hướng Dẫn Chạy Dự Án
+
+Yêu cầu Node.js >= 20.19.0 và Yarn. Cài dependency bằng `yarn install`.
 
 ### Cấu hình biến môi trường (.env):
 Sao chép từ file mẫu và cấu hình thông tin của bạn:
@@ -102,7 +104,20 @@ yarn start
 
 Server sẽ chạy tại: **`http://localhost:3000`**
 
-### Khởi tạo lại Dữ liệu mẫu (Seed Data) bất cứ lúc nào:
+Chạy phát triển với tự động tải lại: `yarn dev`. Đặt `NODE_ENV=production` trên môi trường triển khai HTTPS.
+
+### Khởi tạo lại Dữ liệu mẫu (Seed Data):
+Lệnh này xóa dữ liệu hiện tại trong database được cấu hình. Chỉ dùng database phát triển riêng; seed bị chặn khi `NODE_ENV=production` và yêu cầu cờ xác nhận `--reset`.
 ```bash
-yarn seed
+yarn seed --reset
 ```
+
+### Ảnh tải lên
+- Tối đa 6 ảnh/lượt, 10 MB/ảnh và 25 megapixel. Ảnh được giải mã rồi lưu lại dạng WebP tĩnh; GIF động chỉ giữ khung đầu.
+- Ảnh mới có định danh chủ trọ trong tên file; quota 200 MB/chủ trọ được tính từ các file này, kể cả ảnh chưa gắn vào bài. Ảnh cũ không có định danh chủ trọ không được tính vào quota mới.
+- Quota và giới hạn tải đồng thời hiện dành cho một tiến trình Node dùng ổ đĩa cục bộ. Khi triển khai nhiều worker cần dùng bộ đếm/khóa dùng chung.
+- `yarn uploads:cleanup` chỉ liệt kê ảnh không còn được bài nào tham chiếu và đã cũ hơn 24 giờ.
+- `yarn uploads:cleanup --apply` mới thực sự xóa các ảnh đó. Chạy khi tạm ngừng thao tác ghi bài/upload để tránh ảnh được gắn vào bài trong lúc dọn.
+
+### Trạng thái tài khoản cũ
+Khóa/mở khóa mới dùng `isBlocked`, giữ nguyên trạng thái duyệt. Chủ trọ cũ mang trạng thái `INACTIVE` sẽ chuyển về `PENDING` khi mở khóa vì dữ liệu cũ không lưu trạng thái duyệt trước lúc khóa.

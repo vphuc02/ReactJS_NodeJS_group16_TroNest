@@ -7,6 +7,7 @@ const roomRoutes = require('./room.route');
 const userRoutes = require('./user.route');
 const categoryRoutes = require('./category.route');
 const accountController = require('../../controllers/admin/account.controller');
+const accountValidation = require('../../validations/shared/auth.validation');
 const { requireAdminAuth } = require('../../middlewares/auth.middleware');
 const { createRateLimiter } = require('../../middlewares/security.middleware');
 
@@ -23,7 +24,7 @@ router.get('/', (req, res) => {
 
 // Trang đăng nhập / đăng xuất riêng biệt cho Admin
 router.get('/login', accountController.loginGet);
-router.post('/login', adminLoginRateLimit, accountController.loginPost);
+router.post('/login', adminLoginRateLimit, accountValidation.loginPost, accountController.loginPost);
 router.post('/logout', accountController.logoutPost);
 
 // Yêu cầu quyền ADMIN riêng biệt cho toàn bộ các tính năng quản trị bên dưới

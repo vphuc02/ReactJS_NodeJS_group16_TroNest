@@ -12,11 +12,11 @@ block main
         | Kiểm tra nội dung bài đăng trước khi ra quyết định phê duyệt hoặc từ chối
     
     div(class="admin-clean-043")
-      if room.status !== ROOM_STATUS.APPROVED
+      if room.status === ROOM_STATUS.PENDING
         button.btn.btn-success(data-admin-action="approve-room" data-id=room._id class="admin-clean-044")
           i.fa-solid.fa-check
           | Phê duyệt xuất bản
-      if room.status !== ROOM_STATUS.REJECTED
+      if room.status === ROOM_STATUS.PENDING
         button.btn.btn-danger(data-admin-action="reject-room" data-id=room._id class="admin-clean-044")
           i.fa-solid.fa-xmark
           | Từ chối bài đăng

@@ -6,16 +6,8 @@ const { cookieOptions } = require('../../helpers/http.helper');
 
 // [GET] /admin/login
 module.exports.loginGet = (req, res) => {
-  const token = req.cookies.token_admin;
-  if (token) {
-    try {
-      const decoded = jwt.verify(token, JWT_SECRET);
-      if (decoded.role === ROLES.ADMIN) {
-        return res.redirect('/admin/dashboard');
-      }
-    } catch {
-      res.clearCookie('token_admin');
-    }
+  if (req.user?.role === ROLES.ADMIN && !req.user.isBlocked && req.user.status !== USER_STATUS.INACTIVE) {
+    return res.redirect('/admin/dashboard');
   }
 
   res.render('admin/pages/login', {
@@ -39,16 +31,16 @@ module.exports.loginPost = async (req, res) => {
     return res.status(400).json(invalidLogin);
   }
 
-  if (user.status === USER_STATUS.INACTIVE) {
+  const isMatchedPassword = await bcrypt.compare(password, user.password);
+  if (!isMatchedPassword) {
+    return res.status(400).json(invalidLogin);
+  }
+
+  if (user.isBlocked || user.status === USER_STATUS.INACTIVE) {
     return res.status(403).json({
       code: 403,
       message: 'Tài khoản Quản trị viên đã bị khóa!'
     });
-  }
-
-  const isMatchedPassword = await bcrypt.compare(password, user.password);
-  if (!isMatchedPassword) {
-    return res.status(400).json(invalidLogin);
   }
 
   const expiresIn = rememberPassword ? '7d' : '1d';

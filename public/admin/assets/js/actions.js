@@ -54,17 +54,20 @@
 
   document.addEventListener("click", async (event) => {
     const button = event.target.closest("[data-admin-action]");
-    if (!button) return;
+    if (!button || button.disabled) return;
 
     const handler = actionHandlers[button.dataset.adminAction];
     if (!handler) return;
 
     event.preventDefault();
+    button.disabled = true;
     try {
       await handler(button.dataset.id);
     } catch (error) {
       console.error(error);
       window.notyf.error("Không thể xử lý thao tác, vui lòng thử lại!");
+    } finally {
+      button.disabled = false;
     }
   });
 

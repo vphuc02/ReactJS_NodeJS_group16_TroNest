@@ -22,19 +22,28 @@ const notFoundHandler = (req, res) => {
   return res.status(404).render('client/pages/error', payload);
 };
 
-const errorHandler = (error, req, res, _next) => {
+const errorHandler = (error, req, res, next) => {
   if (process.env.NODE_ENV !== 'test') {
     console.error(error);
   }
 
   if (res.headersSent) {
-    return;
+    return next(error);
   }
 
-  let statusCode = error.statusCode || 500;
+  const requestedStatus = error.statusCode || error.status;
+  let statusCode = Number.isInteger(requestedStatus) && requestedStatus >= 400 && requestedStatus <= 599
+    ? requestedStatus
+    : 500;
   let message = error.publicMessage || 'Đã xảy ra lỗi máy chủ, vui lòng thử lại sau.';
 
-  if (error.name === 'CastError') {
+  if (error.type === 'entity.parse.failed') {
+    statusCode = 400;
+    message = 'Dữ liệu JSON không hợp lệ!';
+  } else if (error.type === 'entity.too.large') {
+    statusCode = 413;
+    message = 'Dữ liệu gửi lên vượt quá dung lượng cho phép!';
+  } else if (error.name === 'CastError') {
     statusCode = 404;
     message = 'Không tìm thấy dữ liệu yêu cầu hoặc định dạng định danh không hợp lệ!';
   } else if (error.name === 'ValidationError') {

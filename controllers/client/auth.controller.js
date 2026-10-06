@@ -39,16 +39,16 @@ module.exports.loginPost = async (req, res) => {
     return res.status(400).json(invalidLogin);
   }
 
-  if (user.status === USER_STATUS.INACTIVE) {
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) {
+    return res.status(400).json(invalidLogin);
+  }
+
+  if (user.isBlocked || user.status === USER_STATUS.INACTIVE) {
     return res.status(403).json({
       code: 403,
       message: 'Tài khoản của bạn đã bị khóa bởi Quản trị viên!'
     });
-  }
-
-  const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch) {
-    return res.status(400).json(invalidLogin);
   }
 
   const expiresIn = rememberPassword ? '7d' : '1d';

@@ -1,0 +1,19 @@
+mixin pagination(paging, query, baseUrl)
+  if paging && paging.totalPages > 1
+    nav.list-pagination(aria-label="Phân trang")
+      if paging.currentPage > 1
+        a(href=`${baseUrl}?${new URLSearchParams({...query, page: paging.currentPage - 1})}` aria-label="Trang trước") Trước
+      - const firstPage = Math.max(1, paging.currentPage - 2)
+      - const lastPage = Math.min(paging.totalPages, paging.currentPage + 2)
+      if firstPage > 1
+        a(href=`${baseUrl}?${new URLSearchParams({...query, page: 1})}`) 1
+        if firstPage > 2
+          span ...
+      - for (let p = firstPage; p <= lastPage; p++)
+        a(href=`${baseUrl}?${new URLSearchParams({...query, page: p})}` aria-current=p === paging.currentPage ? 'page' : undefined)= p
+      if lastPage < paging.totalPages
+        if lastPage < paging.totalPages - 1
+          span ...
+        a(href=`${baseUrl}?${new URLSearchParams({...query, page: paging.totalPages})}`)= paging.totalPages
+      if paging.currentPage < paging.totalPages
+        a(href=`${baseUrl}?${new URLSearchParams({...query, page: paging.currentPage + 1})}` aria-label="Trang sau") Sau

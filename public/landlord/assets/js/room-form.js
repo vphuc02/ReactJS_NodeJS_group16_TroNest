@@ -175,6 +175,7 @@
     try {
       const response = await fetch("/landlord/rooms/upload-images", {
         method: "POST",
+        headers: { Accept: "application/json" },
         body: formData
       });
       const data = await response.json();
