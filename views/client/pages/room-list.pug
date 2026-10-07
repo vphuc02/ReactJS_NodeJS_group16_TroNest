@@ -32,13 +32,19 @@ block main
               label(class="client-clean-103") Từ khóa
               input(type="text" name="keyword" value=query.keyword || "" placeholder="Tên đường, địa chỉ..." class="client-clean-104")
 
-            // Quận Huyện
+            // Tỉnh / Thành phố
             .form-group(class="client-clean-102")
-              label(class="client-clean-103") Quận / Huyện
-              select(name="district" class="client-clean-104")
-                option(value="") -- Tất cả quận huyện --
-                each district in ROOM_DISTRICTS
-                  option(value=district selected=query.district === district)= district
+              label(class="client-clean-103" for="filter-province") Tỉnh / Thành phố
+              select#filter-province(name="province" class="client-clean-104" data-location-province data-ward-target="#filter-ward")
+                option(value="") -- Toàn quốc --
+                each p in VN_PROVINCES
+                  option(value=p.shortName data-code=p.code selected=query.province === p.shortName)= p.name
+
+            // Phường / Xã
+            .form-group(class="client-clean-102")
+              label(class="client-clean-103" for="filter-ward") Phường / Xã
+              select#filter-ward(name="ward" class="client-clean-104" data-selected=query.ward || "" disabled)
+                option(value="") -- Chọn tỉnh trước --
 
             // Loại phòng
             .form-group(class="client-clean-102")

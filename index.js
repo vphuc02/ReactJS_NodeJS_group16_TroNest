@@ -7,6 +7,7 @@ const { PORT, ROLES, ROOM_DEFAULTS, ROOM_DISTRICTS, ROOM_STATUS, USER_STATUS } =
 const { attachUser } = require('./middlewares/auth.middleware');
 const { csrfProtection, securityHeaders } = require('./middlewares/security.middleware');
 const { errorHandler, notFoundHandler } = require('./middlewares/error.middleware');
+const { VN_PROVINCES } = require('./helpers/geo.helper');
 
 const clientRouter = require('./routers/client/index.route');
 const landlordRouter = require('./routers/landlord/index.route');
@@ -19,6 +20,7 @@ app.locals.ROOM_STATUS = ROOM_STATUS;
 app.locals.ROLES = ROLES;
 app.locals.ROOM_DEFAULTS = ROOM_DEFAULTS;
 app.locals.ROOM_DISTRICTS = ROOM_DISTRICTS;
+app.locals.VN_PROVINCES = VN_PROVINCES;
 
 // Body Parser Middleware
 app.use(express.json());
@@ -45,6 +47,7 @@ app.use(attachUser);
 app.use('/admin', adminRouter);
 app.use('/landlord', landlordRouter);
 app.use('/', clientRouter);
+app.use('/api/geo', require('./routes/api/geo'));
 
 // Central error handlers
 app.use(notFoundHandler);

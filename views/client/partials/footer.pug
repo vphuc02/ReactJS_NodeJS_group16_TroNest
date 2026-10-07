@@ -18,11 +18,8 @@ footer.footer(class="client-clean-129")
       .inner-col
         h4(class="client-clean-136") Khu vực nổi bật
         ul(class="client-clean-137")
-          li: a(href="/rooms?district=Cầu Giấy" class="client-clean-138") Phòng trọ Cầu Giấy
-          li: a(href="/rooms?district=Đống Đa" class="client-clean-138") Phòng trọ Đống Đa
-          li: a(href="/rooms?district=Hai Bà Trưng" class="client-clean-138") Phòng trọ Hai Bà Trưng
-          li: a(href="/rooms?district=Thanh Xuân" class="client-clean-138") Phòng trọ Thanh Xuân
-          li: a(href="/rooms?district=Nam Từ Liêm" class="client-clean-138") Phòng trọ Nam Từ Liêm
+          each city in ['Hà Nội', 'Hồ Chí Minh', 'Đà Nẵng', 'Hải Phòng', 'Cần Thơ']
+            li: a(href=`/rooms?province=${encodeURIComponent(city)}` class="client-clean-138") Phòng trọ #{city}
 
       .inner-col
         h4(class="client-clean-136") Loại phòng trọ
