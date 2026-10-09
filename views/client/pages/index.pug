@@ -27,13 +27,19 @@ block main
                 i.fa-solid.fa-magnifying-glass(class="client-clean-059")
                 input(type="text" name="keyword" placeholder="Nhập tên đường, địa chỉ..." class="client-clean-065")
 
-            // Quận Huyện
+            // Tỉnh / Thành phố
             div(class="client-clean-066")
-              label(class="client-clean-063") Quận / Huyện
-              select(name="district" class="client-clean-067")
-                option(value="") Tất cả quận huyện
-                each district in ROOM_DISTRICTS
-                  option(value=district)= district
+              label(class="client-clean-063" for="home-province") Tỉnh / Thành phố
+              select#home-province(name="province" class="client-clean-067" data-location-province data-ward-target="#home-ward")
+                option(value="") Toàn quốc
+                each p in VN_PROVINCES
+                  option(value=p.shortName data-code=p.code)= p.name
+
+            // Phường / Xã
+            div(class="client-clean-066")
+              label(class="client-clean-063" for="home-ward") Phường / Xã
+              select#home-ward(name="ward" class="client-clean-067" disabled)
+                option(value="") Chọn tỉnh trước
 
             // Khoảng giá
             div(class="client-clean-066")

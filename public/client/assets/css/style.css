@@ -2532,3 +2532,6 @@ input, button, textarea {
 }
 
 
+
+/* Location filter: ward select disabled until a province is chosen */
+.client-clean-067:disabled, .client-clean-104:disabled { opacity: 0.6; cursor: not-allowed; }

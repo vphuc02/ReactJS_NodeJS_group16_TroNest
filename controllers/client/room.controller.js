@@ -6,27 +6,55 @@ const { ROOM_STATUS, USER_STATUS } = require('../../configs/system.config');
 const { escapeRegex } = require('../../helpers/security.helper');
 const { AppError } = require('../../helpers/error.helper');
 const { queryText, queryPage, pagination } = require('../../helpers/query.helper');
+const { stripUnitPrefix } = require('../../helpers/geo.helper');
 
 // [GET] /rooms
 module.exports.index = async (req, res) => {
   const query = Object.fromEntries(
-    ['keyword', 'category', 'district', 'priceRange', 'areaRange', 'sort']
+    ['keyword', 'category', 'province', 'ward', 'district', 'priceRange', 'areaRange', 'sort']
       .map((key) => [key, queryText(req.query[key])])
   );
-  const { keyword, category, district, priceRange, areaRange, sort } = query;
+  const { keyword, category, province, ward, district, priceRange, areaRange, sort } = query;
   const page = queryPage(req.query.page);
 
   const filter = {
     status: ROOM_STATUS.APPROVED
   };
+  const andConditions = [];
+
+  // Province filter, e.g. ?province=Hà Nội
+  if (province && province.trim() !== '') {
+    filter.province = { $regex: escapeRegex(stripUnitPrefix(province)), $options: 'i' };
+  }
+
+  // Ward filter, e.g. ?ward=Phường Ba Đình
+  // Older rooms stored the old district name, so also match district/address.
+  if (ward && ward.trim() !== '') {
+    const safeWard = escapeRegex(stripUnitPrefix(ward));
+    andConditions.push({
+      $or: [
+        { ward: { $regex: safeWard, $options: 'i' } },
+        { district: { $regex: safeWard, $options: 'i' } },
+        { address: { $regex: safeWard, $options: 'i' } }
+      ]
+    });
+  }
 
   if (keyword && keyword.trim() !== '') {
     const safeKeyword = escapeRegex(keyword.trim());
-    filter.$or = [
-      { title: { $regex: safeKeyword, $options: 'i' } },
-      { address: { $regex: safeKeyword, $options: 'i' } },
-      { district: { $regex: safeKeyword, $options: 'i' } }
-    ];
+    andConditions.push({
+      $or: [
+        { title: { $regex: safeKeyword, $options: 'i' } },
+        { address: { $regex: safeKeyword, $options: 'i' } },
+        { ward: { $regex: safeKeyword, $options: 'i' } },
+        { district: { $regex: safeKeyword, $options: 'i' } },
+        { province: { $regex: safeKeyword, $options: 'i' } }
+      ]
+    });
+  }
+
+  if (andConditions.length > 0) {
+    filter.$and = andConditions;
   }
 
   if (category && category !== '') {
@@ -42,6 +70,7 @@ module.exports.index = async (req, res) => {
     }
   }
 
+  // Legacy ?district= links (old bookmarks)
   if (district && district.trim() !== '') {
     filter.district = { $regex: escapeRegex(district.trim()), $options: 'i' };
   }
