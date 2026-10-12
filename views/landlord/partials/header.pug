@@ -1,35 +1,91 @@
-header.header(class="admin-clean-118")
-  div(class="admin-clean-119")
-    a(href="/landlord/dashboard" class="admin-clean-167")
-      i.fa-solid.fa-house-chimney-user
-      span TroNest Chủ Trọ
-
-    // Status badge of Landlord account
-    if user
-      if user.status === USER_STATUS.APPROVED
-        span.badge.badge-green(class="admin-clean-168")
-          i.fa-solid.fa-circle-check(class="admin-clean-169")
-          | Tài khoản đã duyệt
-      else if user.status === USER_STATUS.PENDING
-        span.badge.badge-yellow(class="admin-clean-168")
-          i.fa-solid.fa-clock(class="admin-clean-169")
-          | Tài khoản Chờ Admin duyệt
-      else if user.status === USER_STATUS.REJECTED
-        span.badge.badge-red(class="admin-clean-168")
-          i.fa-solid.fa-circle-xmark(class="admin-clean-169")
-          | Tài khoản Bị từ chối
-
-  div(class="admin-clean-121")
-    a(href="/" target="_blank" class="admin-clean-122")
-      i.fa-solid.fa-globe
-      | Xem website chính
+//- Header Chủ Trọ TroNest (Hiện đại, tích xanh gọn gàng & Chuông thông báo)
+header.header(class="h-16 bg-white border-b border-slate-200 px-4 sm:px-8 flex items-center justify-between sticky top-0 z-30 shadow-sm")
+  //- Bên trái: Mobile menu button & Lời chào kèm tích xanh thu nhỏ gọn gàng
+  div(class="flex items-center gap-3")
+    button.inner-button-menu(type="button" class="lg:hidden text-slate-600 hover:text-slate-900 p-1 rounded-lg border-0 bg-transparent cursor-pointer")
+      i.fa-solid.fa-bars(class="text-lg")
 
     if user
-      .user-info(class="admin-clean-020")
-        img(src=user.avatar || "/admin/assets/images/avatar.jpg" alt=user.fullName class="admin-clean-170")
-        div
-          span(class="admin-clean-124")= user.fullName
-          span(class="admin-clean-171")= user.phone || user.email
+      div(class="flex items-center gap-1.5 flex-wrap")
+        span(class="text-xs sm:text-sm font-medium text-slate-500 hidden sm:inline") Xin chào,
+        span(class="text-xs sm:text-sm font-bold text-slate-800")= user.fullName ? user.fullName.replace(/\s*\([^)]*\)/g, '') : 'Chủ trọ'
+        
+        //- Thu nhỏ badge thành icon tích xanh bên cạnh tên chủ trọ cho gọn gàng
+        if user.status === USER_STATUS.APPROVED
+          span(class="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 text-[11px] font-semibold px-2 py-0.5 rounded-full border border-emerald-200 ml-1" title="Tài khoản chủ trọ đã được phê duyệt xác thực")
+            i.fa-solid.fa-circle-check(class="text-[11px] text-emerald-600")
+            span Đã xác thực
+        else if user.status === USER_STATUS.PENDING
+          span(class="inline-flex items-center gap-1 bg-amber-50 text-amber-700 text-[11px] font-semibold px-2 py-0.5 rounded-full border border-amber-200 ml-1" title="Tài khoản đang chờ Admin phê duyệt")
+            i.fa-solid.fa-clock(class="text-[11px] text-amber-500")
+            span Chờ duyệt
+        else if user.status === USER_STATUS.REJECTED
+          span(class="inline-flex items-center gap-1 bg-rose-50 text-rose-700 text-[11px] font-semibold px-2 py-0.5 rounded-full border border-rose-200 ml-1" title="Tài khoản bị từ chối")
+            i.fa-solid.fa-circle-xmark(class="text-[11px] text-rose-600")
+            span Bị từ chối
 
-      a.btn-logout(href="/logout" data-logout-url="/logout" title="Đăng xuất" class="admin-clean-126")
-        i.fa-solid.fa-power-off
+  //- Bên phải: Chuông thông báo, Xem website & Thông tin tài khoản
+  div(class="flex items-center gap-3 sm:gap-4")
+    //- Chuông thông báo (Notification Bell)
+    div(class="relative dropdown-notify")
+      button#btn-landlord-notify(type="button" class="relative w-9 h-9 rounded-full hover:bg-slate-100 text-slate-600 hover:text-[#E05638] flex items-center justify-center transition-colors border border-slate-200/80 bg-white shadow-xs cursor-pointer" title="Thông báo hệ thống" aria-label="Thông báo")
+        i.fa-regular.fa-bell(class="text-sm")
+        span.notify-indicator(class="absolute top-1 right-1 w-2 h-2 rounded-full bg-[#E05638] ring-2 ring-white")
+
+      //- Popup menu danh sách thông báo
+      .notify-popover(id="landlord-notify-menu" class="hidden absolute right-0 mt-2 w-80 sm:w-88 bg-white rounded-2xl shadow-xl border border-slate-200/90 py-3 z-50")
+        div(class="px-4 pb-2 border-b border-slate-100 flex items-center justify-between")
+          span(class="font-bold text-xs text-slate-800") Thông báo bài đăng
+          span(class="text-[11px] text-[#E05638] font-semibold") Mới nhất
+        div(class="max-h-72 overflow-y-auto divide-y divide-slate-50")
+          div(class="p-3 hover:bg-slate-50 transition-colors cursor-pointer")
+            div(class="flex items-start gap-2.5")
+              span(class="w-7 h-7 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0")
+                i.fa-solid.fa-circle-check(class="text-xs")
+              div
+                p(class="text-xs font-semibold text-slate-800 m-0") Bài đăng đã được duyệt
+                p(class="text-[11px] text-slate-500 m-0 mt-0.5") Phòng trọ của bạn đã được xuất bản ra website chính.
+                span(class="text-[10px] text-slate-400") Vừa xong
+          div(class="p-3 hover:bg-slate-50 transition-colors cursor-pointer")
+            div(class="flex items-start gap-2.5")
+              span(class="w-7 h-7 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center shrink-0")
+                i.fa-solid.fa-info(class="text-xs")
+              div
+                p(class="text-xs font-semibold text-slate-800 m-0") Mẹo đăng tin hiệu quả
+                p(class="text-[11px] text-slate-500 m-0 mt-0.5") Thêm từ 3-5 ảnh rõ nét để bài đăng nhận được nhiều liên hệ nhất!
+                span(class="text-[10px] text-slate-400") Hôm nay
+        div(class="px-4 pt-2 border-t border-slate-100 text-center")
+          a(href="/landlord/rooms" class="text-[11px] font-semibold text-[#E05638] hover:underline no-underline") Quản lý tất cả tin đăng →
+
+    //- Link xem website chính
+    a(
+      href="/"
+      target="_blank"
+      class="text-xs font-semibold text-slate-600 hover:text-[#E05638] flex items-center gap-1 transition-colors no-underline hidden md:flex"
+      title="Mở website chính trong tab mới"
+    )
+      span ↗
+      span Xem website chính
+
+    div(class="h-4 w-px bg-slate-200 hidden sm:block")
+
+    //- User Profile Info
+    if user
+      div(class="flex items-center gap-2.5")
+        img(
+          src=user.avatar || "/admin/assets/images/avatar.jpg"
+          alt=user.fullName
+          class="w-8 h-8 rounded-full object-cover border border-slate-200 ring-2 ring-slate-100 shrink-0"
+        )
+        div(class="hidden xl:flex flex-col text-left")
+          span(class="text-xs font-semibold text-slate-800 leading-tight")= user.fullName ? user.fullName.replace(/\s*\([^)]*\)/g, '') : 'Chủ trọ'
+          span(class="text-[10px] text-slate-400")= user.phone || user.email
+
+      a.btn-logout(
+        href="/logout"
+        data-logout-url="/logout"
+        title="Đăng xuất"
+        class="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors no-underline ml-1"
+      )
+        i.fa-solid.fa-arrow-right-from-bracket(class="text-xs")
+

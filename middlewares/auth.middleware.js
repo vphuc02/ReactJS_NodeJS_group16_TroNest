@@ -5,6 +5,7 @@ const { wantsJson } = require('../helpers/http.helper');
 
 // Middleware gắn thông tin user vào req và res.locals (dùng toàn cục)
 module.exports.attachUser = async (req, res, next) => {
+  res.locals.currentPath = req.originalUrl ? req.originalUrl.split('?')[0] : req.path;
   try {
     // Nếu request thuộc /admin thì ưu tiên đọc cookie token_admin
     const token = req.originalUrl.startsWith('/admin')

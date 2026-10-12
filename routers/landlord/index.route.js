@@ -9,6 +9,11 @@ const { ROLES } = require('../../configs/system.config');
 // Chặn truy cập nếu không phải Landlord hoặc Admin
 router.use(requireAuth([ROLES.LANDLORD, ROLES.ADMIN]));
 
+router.use((req, res, next) => {
+  res.locals.currentPath = req.baseUrl + (req.path === '/' ? '' : req.path);
+  next();
+});
+
 router.get('/', (req, res) => {
   res.redirect('/landlord/dashboard');
 });
