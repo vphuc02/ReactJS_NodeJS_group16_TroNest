@@ -7,6 +7,33 @@ const { AppError } = require('../../helpers/error.helper');
 const { removeUnreferencedImages } = require('../../helpers/room.helper');
 const { queryText, queryPage, pagination } = require('../../helpers/query.helper');
 const Favorite = require('../../models/favorite.model');
+const { geocodeAddress } = require('../../helpers/geocode.helper');
+
+/**
+ * Tự động geocode địa chỉ phòng và cập nhật trường location vào DB.
+ * Chạy ngầm (không await) để không làm chậm phản hồi cho người dùng.
+ */
+function scheduleGeocodeRoom(room) {
+  const addressFull = [room.address, room.district, room.ward, room.province]
+    .filter(Boolean)
+    .join(', ');
+  geocodeAddress(addressFull, room.province)
+    .then(async (coords) => {
+      if (!coords) return;
+      await Room.updateOne(
+        { _id: room._id },
+        {
+          $set: {
+            'location.type': 'Point',
+            'location.coordinates': [coords.lng, coords.lat]
+          }
+        }
+      );
+    })
+    .catch(() => {
+      // Geocode thất bại không gây lỗi cho user — sẽ retry lần sau
+    });
+}
 
 const DEFAULT_ROOM_VALUES = {
   ...ROOM_DEFAULTS
@@ -136,6 +163,9 @@ module.exports.createPost = async (req, res) => {
 
   await newRoom.save();
 
+  // Tự động geocode địa chỉ → lưu tọa độ GPS (chạy ngầm, không chờ)
+  scheduleGeocodeRoom(newRoom);
+
   return res.json({
     code: 200,
     message:
@@ -203,6 +233,9 @@ module.exports.editPost = async (req, res) => {
   }
 
   await room.save();
+
+  // Re-geocode nếu địa chỉ thay đổi (chạy ngầm)
+  scheduleGeocodeRoom(room);
 
   const currentImages = new Set([room.thumbnail, ...(room.images || [])]);
   const removedImages = previousImages.filter((img) => img && !currentImages.has(img));

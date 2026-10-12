@@ -48,6 +48,7 @@ app.use('/admin', adminRouter);
 app.use('/landlord', landlordRouter);
 app.use('/', clientRouter);
 app.use('/api/geo', require('./routes/api/geo'));
+app.use('/api/geo', require('./routes/api/nearby'));
 
 // Central error handlers
 app.use(notFoundHandler);
@@ -67,4 +68,9 @@ const startServer = async () => {
   });
 };
 
-startServer();
+if (require.main === module) {
+  startServer();
+}
+
+module.exports = app;
+module.exports.startServer = startServer;

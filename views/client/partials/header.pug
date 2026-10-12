@@ -1,89 +1,105 @@
-// Top Header
-.top-header
-  .container
-    .inner-wrap
-      .inner-item
-        i.fa-solid.fa-phone
-        | Hotline: 0987.654.321
-      .inner-item
-        i.fa-solid.fa-envelope
-        | contact@tronest.com
-      .inner-item
-        i.fa-solid.fa-location-dot
-        | Hệ thống phòng trọ sinh viên & người đi làm toàn quốc
-// End Top Header
+//- Header - TroNest Floating Pill Navbar (Tailwind CSS)
+header.header(class="fixed top-5 inset-x-0 z-50 px-3 sm:px-6 pointer-events-none")
+  .container-pill(class="w-full max-w-6xl mx-auto pointer-events-auto")
+    nav.navbar-pill(class="rounded-full bg-white/90 backdrop-blur-md border border-neutral-100 shadow-[0_4px_24px_rgba(0,0,0,0.06)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-all duration-300 px-3 sm:px-5 py-2 sm:py-2.5 flex items-center justify-between gap-2 sm:gap-4")
+      
+      //- Bên trái: Logo TroNest màu cam đất/cam tươi #EA580C kèm icon ngôi nhà
+      div(class="flex items-center gap-2 flex-shrink-0")
+        //- Menu Mobile Toggle
+        button.inner-menu-mobile(type="button" aria-label="Mở menu" class="md:hidden w-8 h-8 sm:w-9 sm:h-9 rounded-full border border-neutral-200 bg-neutral-50 hover:bg-orange-50 text-neutral-700 hover:text-[#EA580C] flex items-center justify-center transition-all duration-200")
+          i.fa-solid.fa-bars(class="text-xs sm:text-sm")
+        
+        a(href="/" title="TroNest - Tìm kiếm và Đăng tin phòng trọ" class="flex items-center gap-2 group no-underline")
+          span(class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-orange-100/80 flex items-center justify-center text-[#EA580C] group-hover:bg-[#EA580C] group-hover:text-white transition-all duration-200 shadow-sm")
+            i.fa-solid.fa-house-chimney(class="text-sm sm:text-base")
+          span(class="text-lg sm:text-2xl font-extrabold tracking-tight text-[#EA580C]") TroNest
 
-// Header
-header.header
-  .container
-    .inner-wrap
-      // Menu Mobile
-      button.inner-menu-mobile(type="button" aria-label="Mở menu")
-        i.fa-solid.fa-bars
+      //- Ở giữa/phải: Các liên kết 'Trang Chủ', 'Tất Cả Phòng' với font chữ xám đậm, hover chuyển sang cam
+      ul(class="hidden md:flex items-center gap-1 lg:gap-2 list-none m-0 p-0")
+        li
+          a(href="/" class="px-3.5 lg:px-4 py-2 rounded-full text-sm font-semibold text-neutral-700 hover:text-[#EA580C] hover:bg-orange-50/70 transition-all duration-200 no-underline flex items-center gap-1.5")
+            span Trang Chủ
+        li
+          a(href="/rooms" class="px-3.5 lg:px-4 py-2 rounded-full text-sm font-semibold text-neutral-700 hover:text-[#EA580C] hover:bg-orange-50/70 transition-all duration-200 no-underline flex items-center gap-1.5")
+            span Tất Cả Phòng
 
-      // Logo
-      .inner-logo
-        a(href="/" class="client-clean-143")
-          i.fa-solid.fa-house-circle-check(class="client-clean-144")
-          span TroNest
-
-      // Navigation Menu
-      nav.inner-menu
-        .inner-overlay
-        .inner-menu-drawer
-          .inner-menu-header
-            .inner-logo-drawer(class="client-clean-145")
-              i.fa-solid.fa-house-circle-check(class="client-clean-146")
-              span TroNest
-            button.inner-menu-close(type="button" aria-label="Đóng menu")
-              i.fa-solid.fa-xmark
-          ul
-            li
-              a(href="/")
-                i.fa-solid.fa-house(class="client-clean-059")
-                span Trang chủ
-            li
-              a(href="/rooms")
-                i.fa-solid.fa-list-check(class="client-clean-059")
-                span Tất cả phòng
-
-      // Action Area (Post room & User account)
-      .header-actions
-        if user && user.role === 'LANDLORD'
-          a.btn-post-room(href="/landlord/rooms/create" title="Đăng tin trọ")
-            i.fa-solid.fa-plus
-            span.btn-text Đăng tin trọ
-        else if user && user.role === 'ADMIN'
-          a.btn-post-room.btn-admin(href="/admin/dashboard" title="Cổng Quản trị")
-            i.fa-solid.fa-shield-halved
-            span.btn-text Cổng Quản trị
-        else
-          a.btn-post-room(href="/landlord/rooms/create" title="Đăng tin trọ")
-            i.fa-solid.fa-plus
-            span.btn-text Đăng tin trọ
-
+      //- Cụm Action
+      div(class="flex items-center gap-1.5 sm:gap-2 flex-shrink-0")
         if user
-          .user-profile-menu
-            a.user-profile-card(href=user.role === 'LANDLORD' ? '/landlord/dashboard' : (user.role === 'ADMIN' ? '/admin/dashboard' : '/favorites') title="Tài khoản cá nhân")
-              img.user-avatar-small(src=user.avatar || "/admin/assets/images/avatar.jpg" alt=user.fullName)
-              .user-profile-info
-                span.user-name= user.fullName ? user.fullName.replace(/\s*\([^)]*\)/g, '') : ''
-                span.user-role-badge(class=`badge-${user.role.toLowerCase()}`)
-                  if user.role === 'LANDLORD'
-                    | Chủ trọ
-                  else if user.role === 'ADMIN'
-                    | Quản trị viên
-                  else
-                    | Khách thuê
-            
-            if user.role === 'CUSTOMER'
-              a.header-icon-btn.btn-favorites(href="/favorites" title="Phòng yêu thích")
-                i.fa-solid.fa-heart
+          //- Trạng thái đã đăng nhập
+          if user.role === 'ADMIN'
+            a(href="/admin/dashboard" title="Cổng Quản trị" class="rounded-full bg-neutral-800 hover:bg-neutral-900 text-white px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold shadow-sm flex items-center gap-1.5 no-underline transition-all duration-200")
+              i.fa-solid.fa-shield-halved(class="text-amber-400")
+              span(class="hidden sm:inline") Cổng Quản trị
+          else
+            //- Nút nổi bật nhất: '+ Đăng tin trọ' bo tròn rounded-full, nền màu cam thương hiệu, chữ trắng
+            a(href="/landlord/rooms/create" title="Đăng tin trọ" class="rounded-full bg-[#EA580C] hover:bg-[#C2410C] text-white px-3 sm:px-5 py-1.5 sm:py-2.5 text-xs sm:text-sm font-semibold shadow-md shadow-orange-500/25 hover:shadow-lg hover:shadow-orange-500/35 active:scale-95 transition-all duration-200 flex items-center gap-1.5 no-underline")
+              i.fa-solid.fa-plus(class="text-xs")
+              span(class="hidden xs:inline sm:inline") Đăng tin trọ
 
-            a.header-icon-btn.btn-logout(href="/logout" data-logout-url="/logout" title="Đăng xuất")
-              i.fa-solid.fa-arrow-right-from-bracket
+          //- Thẻ người dùng
+          div(class="flex items-center gap-1.5 pl-1")
+            a(href=user.role === 'LANDLORD' ? '/landlord/dashboard' : (user.role === 'ADMIN' ? '/admin/dashboard' : '/favorites') title="Tài khoản cá nhân" class="flex items-center gap-1.5 sm:gap-2 py-1 px-1.5 sm:px-3 rounded-full border border-neutral-200 bg-white hover:bg-orange-50/50 hover:border-orange-300 transition-all duration-200 no-underline")
+              img(src=user.avatar || "/admin/assets/images/avatar.jpg" alt=user.fullName class="w-6 h-6 sm:w-7 sm:h-7 rounded-full object-cover border border-neutral-200")
+              span(class="text-xs font-semibold text-neutral-700 hidden lg:inline")= user.fullName ? user.fullName.replace(/\s*\([^)]*\)/g, '') : ''
+              span(class="text-[10px] sm:text-[11px] px-1.5 sm:px-2 py-0.5 rounded-full font-medium " + (user.role === 'LANDLORD' ? 'bg-orange-100 text-[#EA580C]' : (user.role === 'ADMIN' ? 'bg-neutral-800 text-amber-300' : 'bg-emerald-100 text-emerald-700')))
+                if user.role === 'LANDLORD'
+                  | Chủ trọ
+                else if user.role === 'ADMIN'
+                  | Quản trị
+                else
+                  | Khách thuê
+
+            if user.role === 'CUSTOMER'
+              a(href="/favorites" title="Phòng yêu thích" class="w-7 h-7 sm:w-8 sm:h-8 rounded-full border border-neutral-200 bg-white flex items-center justify-center text-neutral-500 hover:text-[#EA580C] hover:border-orange-300 hover:bg-orange-50 transition-all duration-200 no-underline")
+                i.fa-solid.fa-heart(class="text-[11px] sm:text-xs")
+
+            a(href="/logout" data-logout-url="/logout" title="Đăng xuất" class="w-7 h-7 sm:w-8 sm:h-8 rounded-full border border-neutral-200 bg-white flex items-center justify-center text-neutral-500 hover:text-red-600 hover:border-red-300 hover:bg-red-50 transition-all duration-200 no-underline")
+              i.fa-solid.fa-arrow-right-from-bracket(class="text-[11px] sm:text-xs")
         else
-          .auth-buttons
-            a.btn-login(href="/login") Đăng nhập
-            a.btn-register(href="/register") Đăng ký
-// End Header
+          //- Trạng thái KHÁCH VÃNG LAI (GUEST)
+          //- Nút nổi bật nhất: '+ Đăng tin trọ' bo tròn rounded-full, nền màu cam thương hiệu, chữ trắng
+          a(href="/landlord/rooms/create" title="Đăng tin trọ" class="rounded-full bg-[#EA580C] hover:bg-[#C2410C] text-white px-3 sm:px-5 py-1.5 sm:py-2.5 text-xs sm:text-sm font-semibold shadow-md shadow-orange-500/25 hover:shadow-lg hover:shadow-orange-500/35 active:scale-95 transition-all duration-200 flex items-center gap-1.5 no-underline")
+            i.fa-solid.fa-plus(class="text-xs")
+            span(class="hidden xs:inline sm:inline") Đăng tin trọ
+
+          //- Hai nút 'Đăng nhập' và 'Đăng ký': Bo góc viên thuốc với viền nhẹ border border-neutral-200 để phân cấp thị giác rõ ràng so với nút Đăng tin trọ
+          a(href="/login" class="rounded-full border border-neutral-200 bg-white hover:border-[#EA580C]/50 hover:text-[#EA580C] hover:bg-orange-50/40 text-neutral-700 px-2.5 sm:px-4 py-1.5 sm:py-2.5 text-xs sm:text-sm font-semibold transition-all duration-200 no-underline")
+            | Đăng nhập
+          a(href="/register" class="rounded-full border border-neutral-200 bg-white hover:border-[#EA580C]/50 hover:text-[#EA580C] hover:bg-orange-50/40 text-neutral-700 px-2.5 sm:px-4 py-1.5 sm:py-2.5 text-xs sm:text-sm font-semibold transition-all duration-200 no-underline")
+            | Đăng ký
+
+  //- Mobile Navigation Drawer (Bổ trợ khi xem trên màn hình nhỏ)
+  .inner-menu(class="md:hidden pointer-events-auto")
+    .inner-overlay
+    .inner-menu-drawer
+      .inner-menu-header
+        .inner-logo-drawer(class="flex items-center gap-2")
+          span(class="w-7 h-7 rounded-full bg-orange-100 flex items-center justify-center text-[#EA580C]")
+            i.fa-solid.fa-house-chimney(class="text-xs")
+          span(class="font-bold text-lg text-[#EA580C]") TroNest
+        button.inner-menu-close(type="button" aria-label="Đóng menu")
+          i.fa-solid.fa-xmark
+      ul
+        li
+          a(href="/")
+            i.fa-solid.fa-house(class="client-clean-059 text-[#EA580C]")
+            span Trang chủ
+        li
+          a(href="/rooms")
+            i.fa-solid.fa-list-check(class="client-clean-059 text-[#EA580C]")
+            span Tất cả phòng
+        if !user
+          li(class="border-t border-neutral-100 mt-2 pt-2")
+            a(href="/login")
+              i.fa-solid.fa-right-to-bracket(class="client-clean-059")
+              span Đăng nhập
+          li
+            a(href="/register")
+              i.fa-solid.fa-user-plus(class="client-clean-059")
+              span Đăng ký
+        li(class="mt-2")
+          a(href="/landlord/rooms/create" class="text-[#EA580C] font-bold")
+            i.fa-solid.fa-plus
+            span Đăng tin trọ
+//- End Header

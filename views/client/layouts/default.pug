@@ -24,6 +24,24 @@ html(lang="vi")
       rel="stylesheet" 
       href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css"
     )
+    script(src="https://cdn.tailwindcss.com")
+    script.
+      tailwind.config = {
+        corePlugins: {
+          preflight: false
+        },
+        theme: {
+          extend: {
+            colors: {
+              brand: {
+                DEFAULT: '#EA580C',
+                dark: '#C2410C',
+                light: '#FFF7ED'
+              }
+            }
+          }
+        }
+      }
     link(
       href="/client/assets/css/style.css" 
       rel="stylesheet"

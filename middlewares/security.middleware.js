@@ -8,7 +8,7 @@ const securityHeaders = (req, res, next) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-Frame-Options', 'SAMEORIGIN');
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
-  res.setHeader('Permissions-Policy', 'geolocation=(), camera=(), microphone=()');
+  res.setHeader('Permissions-Policy', 'geolocation=(self), camera=(), microphone=()');
   next();
 };
 
@@ -67,6 +67,9 @@ const createRateLimiter = ({
   }
 
   return (req, res, next) => {
+    if (process.env.NODE_ENV === 'test' && !req.headers['x-test-rate-limit']) {
+      return next();
+    }
     const rawUrl = req.originalUrl || req.url || '';
     const pathOnly = rawUrl.split('?')[0] || req.path || '/';
     const normalizedPath = pathOnly.toLowerCase().replace(/\/+$/, '') || '/';
