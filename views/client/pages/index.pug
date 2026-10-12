@@ -214,13 +214,15 @@ block main
           return p.toLocaleString('vi-VN') + ' đ';
         }
 
-        // Render 1 room card (giống roomItem mixin nhưng bằng JS)
+        // Render 1 room card (đồng bộ với roomItem mixin Tông Cam Đất)
         function renderRoom(room) {
           const thumb = room.thumbnail || '/client/assets/images/product-1.jpg';
-          const catTitle = room.categoryId ? room.categoryId.title : '';
-          const landlord = room.landlordId ? room.landlordId.fullName : 'Chủ trọ';
-          const address  = room.district || room.ward || room.province || '';
-          const price    = formatPrice(room.price || 0);
+          const catTitle = room.categoryId ? (room.categoryId.title || 'Phòng trọ') : 'Phòng trọ';
+          const landlord = room.landlordId ? (room.landlordId.fullName || '').replace(/\s*\([^)]*\)/g, '') : 'Chủ trọ';
+          const landlordAvatar = (room.landlordId && room.landlordId.avatar) || '';
+          const address  = room.address || [room.ward, room.district, room.province].filter(Boolean).join(', ') || 'Đang cập nhật';
+          const price    = (room.price || 0).toLocaleString('vi-VN') + ' đ';
+          const imgCount = (room.images && room.images.length > 0) ? room.images.length : 1;
 
           // Badge khoảng cách GPS nếu có
           let distanceBadge = '';
@@ -229,43 +231,78 @@ block main
               ? `${room.distanceM} m`
               : `${(room.distanceM / 1000).toFixed(1)} km`;
             distanceBadge = `
-              <span class="nearby-dist-badge">
-                <i class="fa-solid fa-location-crosshairs"></i> ${dist}
+              <span class="backdrop-blur-md bg-orange-600/90 text-white text-[10px] sm:text-[11px] font-semibold px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
+                <i class="fa-solid fa-location-crosshairs text-[10px]"></i> ${dist}
               </span>`;
           }
 
+          // Tiện ích 1 & 2
+          let amenity1 = 'WC khép kín';
+          let amenity2 = (room.capacity ? room.capacity + ' người' : 'Tự do giờ');
+          if (room.amenities && room.amenities.length > 0) {
+            amenity1 = room.amenities[0];
+            if (room.amenities.length > 1) {
+              amenity2 = room.amenities[1];
+            }
+          }
+
+          const avatarHtml = (landlordAvatar && !landlordAvatar.includes('avatar.jpg'))
+            ? `<img src="${landlordAvatar}" alt="${landlord}" class="h-7 w-7 rounded-full object-cover border border-slate-200" />`
+            : `<div class="flex h-7 w-7 items-center justify-center rounded-full bg-slate-100 text-xs font-semibold text-slate-600 border border-slate-200">${(landlord.charAt(0) || 'C').toUpperCase()}</div>`;
+
           return `
-            <div class="product-item">
-              <div class="inner-image">
-                <a href="/rooms/detail/${room._id}">
-                  <img src="${thumb}" alt="${room.title}" loading="lazy" />
-                </a>
-                ${catTitle ? `<span class="nearby-cat-badge">${catTitle}</span>` : ''}
-                ${distanceBadge}
-              </div>
-              <div class="inner-content">
-                <div>
-                  <h3 class="inner-title">
-                    <a href="/rooms/detail/${room._id}">${room.title}</a>
-                  </h3>
-                  <div class="inner-prices">
-                    <span class="price-main">${price}</span>
-                    <span class="price-unit">đ/tháng</span>
-                  </div>
-                  <div class="inner-desc">
-                    <div><i class="fa-solid fa-vector-square"></i> <span>${room.area} m²</span></div>
-                    <div><i class="fa-solid fa-user-group"></i> <span>${room.capacity || 2} người</span></div>
-                    <div><i class="fa-solid fa-location-dot"></i> <span>${address}</span></div>
-                  </div>
+            <div class="product-item room-card-modern group relative flex flex-col overflow-hidden rounded-2xl border border-slate-200/90 bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-slate-300 cursor-pointer" onclick="if(!event.target.closest('.btn-fav')) window.location.href='/rooms/detail/${room._id}'">
+              <a href="/rooms/detail/${room._id}" class="room-card-overlay absolute inset-0 z-[2]" aria-label="${room.title}"></a>
+              <div class="inner-image relative aspect-[4/3] w-full overflow-hidden bg-slate-100 flex-shrink-0">
+                <img src="${thumb}" alt="${room.title}" loading="lazy" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                <div class="absolute left-3 top-3 z-10 flex items-center gap-1.5 pointer-events-none">
+                  <span class="rounded-full bg-black/60 px-2.5 py-1 text-[11px] font-medium text-white backdrop-blur-md">
+                    ${catTitle}
+                  </span>
+                  <span class="flex items-center gap-1 rounded-full bg-emerald-600/90 px-2 py-1 text-[11px] font-medium text-white backdrop-blur-md">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" /></svg>
+                    Xác thực
+                  </span>
+                  ${distanceBadge}
                 </div>
-                <div>
-                  <div class="landlord-info">
-                    <i class="fa-solid fa-user-tie"></i>
-                    <span>${landlord}</span>
+                <button type="button" class="btn-fav absolute right-3 top-3 z-20 flex h-8 w-8 items-center justify-center rounded-full bg-white/85 text-slate-600 shadow-sm backdrop-blur-md transition-all hover:bg-white hover:scale-110 active:scale-95 border-0 cursor-pointer pointer-events-auto" data-room-id="${room._id}" title="Lưu vào danh sách yêu thích" aria-label="Lưu phòng">
+                  <svg class="h-4 w-4 transition-colors fill-none stroke-current" viewBox="0 0 24 24" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                  </svg>
+                </button>
+                <span class="absolute bottom-2.5 right-3 z-10 flex items-center gap-1 rounded-md bg-black/50 px-2 py-0.5 text-[11px] font-normal text-white backdrop-blur-sm pointer-events-none">
+                  📷 ${imgCount}
+                </span>
+              </div>
+              <div class="inner-content flex flex-1 flex-col p-4 z-[3]">
+                <div class="mb-1.5 flex items-baseline gap-1">
+                  <span class="price-main text-xl font-bold tracking-tight text-[#E05638]">${price}</span>
+                  <span class="text-xs font-medium text-slate-400">đ/tháng</span>
+                </div>
+                <h3 class="inner-title line-clamp-2 text-[15px] font-semibold leading-snug text-slate-800 transition-colors group-hover:text-[#E05638] m-0">
+                  <a href="/rooms/detail/${room._id}" class="text-slate-800 group-hover:text-[#E05638] no-underline">${room.title}</a>
+                </h3>
+                <p class="inner-address mt-1.5 flex items-center gap-1 text-xs text-slate-500 mb-0">
+                  <svg class="h-3.5 w-3.5 shrink-0 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                  <span class="truncate" title="${address}">${address}</span>
+                </p>
+                <div class="my-3 flex items-center gap-2.5 border-y border-slate-100 py-2.5 text-xs text-slate-600">
+                  <span class="font-medium text-slate-700">${room.area} m²</span>
+                  <span class="text-slate-300">•</span>
+                  <span>${amenity1}</span>
+                  <span class="text-slate-300">•</span>
+                  <span class="truncate">${amenity2}</span>
+                </div>
+                <div class="inner-footer mt-auto flex items-center justify-between pt-1">
+                  <div class="flex items-center gap-2">
+                    ${avatarHtml}
+                    <span class="text-xs font-medium text-slate-600 truncate max-w-[110px]">${landlord}</span>
+                    <svg class="w-3.5 h-3.5 text-blue-500 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>
                   </div>
-                  <a href="/rooms/detail/${room._id}" class="btn-detail">
-                    Chi tiết <i class="fa-solid fa-arrow-right"></i>
-                  </a>
+                  <button type="button" class="flex items-center gap-1 rounded-lg bg-[#FFF3EE] px-3 py-1.5 text-xs font-semibold text-[#E05638] transition-colors group-hover:bg-[#E05638] group-hover:text-white border-0 cursor-pointer">
+                    <span>Xem phòng</span>
+                    <svg class="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                  </button>
                 </div>
               </div>
             </div>`;

@@ -13,7 +13,6 @@ module.exports.index = async (req, res) => {
 
   const recentRooms = await Room.find({ landlordId })
     .sort({ updatedAt: -1 })
-    .limit(5)
     .populate('categoryId', 'title')
     .lean();
 

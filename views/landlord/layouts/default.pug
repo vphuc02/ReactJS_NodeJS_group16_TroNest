@@ -7,6 +7,29 @@ html(lang="vi")
     link(rel="icon" href="/favicon.png")
     link(rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css")
     link(rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css")
+    script(src="https://cdn.tailwindcss.com")
+    script.
+      tailwind.config = {
+        corePlugins: {
+          preflight: false
+        },
+        theme: {
+          extend: {
+            colors: {
+              brand: {
+                50: '#FDF4F0',
+                100: '#FCE7DF',
+                500: '#E05638',
+                600: '#C84327',
+                700: '#A7331B',
+                DEFAULT: '#E05638',
+                dark: '#C84327',
+                light: '#FFF3EE'
+              }
+            }
+          }
+        }
+      }
     link(rel="stylesheet" href="/landlord/assets/css/style.css")
     link(rel="stylesheet" href="/shared/assets/css/pagination.css")
   body

@@ -14,3 +14,20 @@ if (buttonMenuMobile) {
     siderOverlay.classList.remove("active");
   });
 }
+
+// Notification Bell dropdown
+const btnNotify = document.getElementById("btn-landlord-notify");
+const notifyMenu = document.getElementById("landlord-notify-menu");
+
+if (btnNotify && notifyMenu) {
+  btnNotify.addEventListener("click", (e) => {
+    e.stopPropagation();
+    notifyMenu.classList.toggle("hidden");
+  });
+
+  document.addEventListener("click", (e) => {
+    if (!notifyMenu.contains(e.target) && e.target !== btnNotify) {
+      notifyMenu.classList.add("hidden");
+    }
+  });
+}

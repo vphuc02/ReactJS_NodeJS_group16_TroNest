@@ -97,6 +97,10 @@ document.addEventListener("click", (event) => {
           button.setAttribute("aria-pressed", String(added));
           const icon = button.querySelector("i");
           if (icon) icon.className = added ? "fa-solid fa-heart" : "fa-regular fa-heart";
+          const svg = button.querySelector("svg");
+          if (svg) {
+            svg.setAttribute("class", added ? "h-4 w-4 transition-colors fill-[#E05638] stroke-[#E05638]" : "h-4 w-4 transition-colors fill-none stroke-current");
+          }
         });
         window.notyf?.success(data.message);
         if (!added && window.location.pathname.replace(/\/$/, "") === "/favorites") {

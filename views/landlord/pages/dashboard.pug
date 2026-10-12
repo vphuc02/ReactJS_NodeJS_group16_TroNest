@@ -4,117 +4,453 @@ block title
   title Tổng quan Chủ trọ - TroNest
 
 block main
-  h1.box-title(class="admin-clean-001")
-    | Tổng quan Chủ trọ
+  div(class="space-y-6 max-w-7xl mx-auto")
+    //- Cảnh báo trạng thái tài khoản (nếu đang chờ duyệt hoặc bị từ chối)
+    if landlordStatus === USER_STATUS.PENDING
+      div(class="rounded-2xl border border-amber-200 bg-amber-50/80 p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs")
+        div(class="flex items-center gap-3")
+          div(class="w-9 h-9 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center shrink-0")
+            i.fa-solid.fa-clock(class="text-base")
+          div
+            p(class="text-xs font-bold text-amber-900 m-0") Tài khoản của bạn đang trong trạng thái Chờ phê duyệt (PENDING)
+            p(class="text-[11px] text-amber-700 m-0 mt-0.5") Vui lòng chờ Quản trị viên duyệt thông tin hồ sơ trước khi có thể đăng bài phòng trọ mới.
+        span(class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white text-amber-700 border border-amber-300 shadow-2xs shrink-0")
+          span(class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse")
+          | Chờ duyệt
+    else if landlordStatus === USER_STATUS.REJECTED
+      div(class="rounded-2xl border border-rose-200 bg-rose-50/80 p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs")
+        div(class="flex items-center gap-3")
+          div(class="w-9 h-9 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center shrink-0")
+            i.fa-solid.fa-triangle-exclamation(class="text-base")
+          div
+            p(class="text-xs font-bold text-rose-900 m-0") Tài khoản của bạn đã bị từ chối phê duyệt!
+            p(class="text-[11px] text-rose-700 m-0 mt-0.5") Lý do: #{rejectReason || 'Thông tin chưa hợp lệ. Vui lòng cập nhật hồ sơ hoặc liên hệ Admin.'}
+        span(class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white text-rose-700 border border-rose-300 shadow-2xs shrink-0")
+          span(class="w-1.5 h-1.5 rounded-full bg-rose-500")
+          | Bị từ chối
 
-  // Cảnh báo trạng thái tài khoản
-  if landlordStatus === USER_STATUS.PENDING
-    .alert-banner(class="admin-clean-128")
-      div(class="admin-clean-129")
-        i.fa-solid.fa-clock(class="admin-clean-130")
-        div
-          b(class="admin-clean-131") Tài khoản của bạn đang trong trạng thái Chờ phê duyệt (PENDING)
-          span(class="admin-clean-132") Vui lòng chờ Admin kiểm duyệt thông tin trước khi có thể đăng bài phòng trọ.
-      span.badge.badge-yellow Chờ duyệt
-  else if landlordStatus === USER_STATUS.REJECTED
-    .alert-banner(class="admin-clean-133")
-      div(class="admin-clean-129")
-        i.fa-solid.fa-triangle-exclamation(class="admin-clean-134")
-        div
-          b(class="admin-clean-135") Tài khoản của bạn đã bị từ chối phê duyệt!
-          span(class="admin-clean-136") Lý do: #{rejectReason || 'Thông tin chưa hợp lệ'}
-      span.badge.badge-red Bị từ chối
-
-  // 4 Thẻ thống kê bài đăng
-  .stats-grid(class="admin-clean-002")
-    .stat-card(class="admin-clean-011")
-      div(class="admin-clean-012")
-        i.fa-solid.fa-house
+    //- 1. Header section & Button Đăng phòng
+    div(class="flex flex-col sm:flex-row sm:items-center justify-between gap-4")
       div
-        span(class="admin-clean-013") Tổng số bài đăng
-        h3(class="admin-clean-014")= totalRooms
-
-    .stat-card(class="admin-clean-011")
-      div(class="admin-clean-015")
-        i.fa-solid.fa-circle-check
+        h1(class="text-2xl font-bold tracking-tight text-slate-900 m-0") Tổng quan Quản lý
+        p(class="text-xs text-slate-500 m-0 mt-1") Theo dõi hiệu suất và trạng thái các tin đăng phòng của bạn trên hệ thống TroNest.
+      
       div
-        span(class="admin-clean-013") Đã duyệt (APPROVED)
-        h3(class="admin-clean-016")= approvedRooms
-
-    .stat-card(class="admin-clean-011")
-      div(class="admin-clean-137")
-        i.fa-solid.fa-clock
-      div
-        span(class="admin-clean-013") Chờ Admin duyệt (PENDING)
-        h3(class="admin-clean-138")= pendingRooms
-
-    .stat-card(class="admin-clean-011")
-      div(class="admin-clean-017")
-        i.fa-solid.fa-file-lines
-      div
-        span(class="admin-clean-013") Bản nháp (DRAFT)
-        h3(class="admin-clean-139")= draftRooms
-
-    .stat-card(class="admin-clean-011")
-      div(class="admin-clean-140")
-        i.fa-solid.fa-circle-xmark
-      div
-        span(class="admin-clean-013") Bị từ chối (REJECTED)
-        h3(class="admin-clean-141")= rejectedRooms
-
-  // Action Bar
-  div(class="admin-clean-142")
-    h2(class="admin-clean-021") Bài đăng gần đây
-    if landlordStatus === USER_STATUS.APPROVED
-      a.btn.btn-primary(href="/landlord/rooms/create")
-        i.fa-solid.fa-plus
-        | Đăng phòng mới
-    else
-      button.btn.btn-secondary(disabled title="Cần được Admin phê duyệt tài khoản trước khi đăng phòng")
-        i.fa-solid.fa-lock
-        | Đăng phòng mới (Đang khóa)
-
-  // Danh sách gần đây
-  .table-2(class="admin-clean-143")
-    table
-      thead
-        tr
-          th Ảnh
-          th Tiêu đề phòng
-          th Loại phòng
-          th Giá thuê
-          th Diện tích
-          th Trạng thái
-          th Thao tác
-      tbody
-        if recentRooms && recentRooms.length > 0
-          each room in recentRooms
-            tr
-              td(class="admin-clean-032")
-                img(src=room.thumbnail || "/client/assets/images/product-1.jpg" class="admin-clean-144")
-              td
-                b(class="admin-clean-025")= room.title
-                div(class="admin-clean-035")= room.address
-              td= room.categoryId ? room.categoryId.title : '-'
-              td(class="admin-clean-037") #{room.price.toLocaleString('vi-VN')} đ
-              td #{room.area} m²
-              td
-                if room.status === ROOM_STATUS.APPROVED
-                  span.badge.badge-green Đã duyệt (APPROVED)
-                else if room.status === ROOM_STATUS.PENDING
-                  span.badge.badge-yellow Chờ duyệt (PENDING)
-                else if room.status === ROOM_STATUS.DRAFT
-                  span.badge.badge-gray Bản nháp (DRAFT)
-                else if room.status === ROOM_STATUS.REJECTED
-                  span.badge.badge-red Bị từ chối (REJECTED)
-              td
-                div(class="admin-clean-027")
-                  a.btn.btn-secondary(href=`/landlord/rooms/edit/${room._id}` class="admin-clean-038" title="Chỉnh sửa")
-                    i.fa-solid.fa-pen-to-square
-                  if room.status === ROOM_STATUS.APPROVED
-                    a.btn.btn-success(href=`/rooms/detail/${room._id}` target="_blank" class="admin-clean-038" title="Xem trên web")
-                      i.fa-solid.fa-eye
+        if landlordStatus === USER_STATUS.APPROVED
+          a(
+            href="/landlord/rooms/create"
+            class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#E05638] text-white text-xs font-semibold shadow-sm hover:bg-[#C84327] transition-all hover:shadow no-underline"
+          )
+            i.fa-solid.fa-plus(class="text-xs")
+            span Đăng phòng mới
         else
-          tr
-            td(colspan="7" class="admin-clean-088")
-              | Bạn chưa có bài đăng nào. Hãy bấm "Đăng phòng mới" để tạo bài đầu tiên!
+          button(
+            type="button"
+            disabled
+            title="Cần được Admin phê duyệt tài khoản trước khi đăng phòng"
+            class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-200 text-slate-400 text-xs font-semibold cursor-not-allowed border-0"
+          )
+            i.fa-solid.fa-lock(class="text-xs")
+            span Đăng phòng mới (Đang khóa)
+
+    //- 2. METRIC / STAT CARDS (5 thẻ có thể click để lọc ngay danh sách bên dưới)
+    div(class="grid grid-cols-2 lg:grid-cols-5 gap-3.5 sm:gap-4")
+      //- Tổng bài đăng
+      div(
+        data-metric-filter="ALL"
+        class="stat-card-clickable bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-md hover:border-[#E05638]/50 transition-all cursor-pointer flex items-center gap-3.5 sm:gap-4 select-none ring-2 ring-transparent hover:ring-[#E05638]/20"
+        title="Bấm để lọc Tất cả bài đăng"
+      )
+        div(class="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center text-lg sm:text-xl shrink-0")
+          i.fa-solid.fa-building(class="text-slate-600")
+        div(class="min-w-0")
+          p(class="text-xs font-medium text-slate-500 m-0 truncate") Tổng bài đăng
+          p(class="text-xl sm:text-2xl font-bold text-slate-900 m-0 mt-0.5")= totalRooms
+
+      //- Đang hiển thị (Approved)
+      div(
+        data-metric-filter="APPROVED"
+        class="stat-card-clickable bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-md hover:border-emerald-500/50 transition-all cursor-pointer flex items-center gap-3.5 sm:gap-4 select-none ring-2 ring-transparent hover:ring-emerald-500/20"
+        title="Bấm để lọc bài Đang hiển thị"
+      )
+        div(class="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg sm:text-xl shrink-0")
+          i.fa-solid.fa-circle-check(class="text-emerald-500")
+        div(class="min-w-0")
+          p(class="text-xs font-medium text-slate-500 m-0 truncate") Đang hiển thị
+          p(class="text-xl sm:text-2xl font-bold text-emerald-600 m-0 mt-0.5")= approvedRooms
+
+      //- Chờ duyệt (Pending)
+      div(
+        data-metric-filter="PENDING"
+        class="stat-card-clickable bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-md hover:border-amber-500/50 transition-all cursor-pointer flex items-center gap-3.5 sm:gap-4 select-none ring-2 ring-transparent hover:ring-amber-500/20"
+        title="Bấm để lọc bài Chờ duyệt"
+      )
+        div(class="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-lg sm:text-xl shrink-0")
+          i.fa-solid.fa-clock(class="text-amber-500")
+        div(class="min-w-0")
+          p(class="text-xs font-medium text-slate-500 m-0 truncate") Chờ duyệt
+          p(class="text-xl sm:text-2xl font-bold text-amber-600 m-0 mt-0.5")= pendingRooms
+
+      //- Bản nháp (Draft)
+      div(
+        data-metric-filter="DRAFT"
+        class="stat-card-clickable bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-md hover:border-slate-400/50 transition-all cursor-pointer flex items-center gap-3.5 sm:gap-4 select-none ring-2 ring-transparent hover:ring-slate-400/20"
+        title="Bấm để lọc Bản nháp"
+      )
+        div(class="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center text-lg sm:text-xl shrink-0")
+          i.fa-solid.fa-file-lines(class="text-slate-500")
+        div(class="min-w-0")
+          p(class="text-xs font-medium text-slate-500 m-0 truncate") Bản nháp
+          p(class="text-xl sm:text-2xl font-bold text-slate-700 m-0 mt-0.5")= draftRooms
+
+      //- Bị từ chối (Rejected)
+      div(
+        data-metric-filter="REJECTED"
+        class="stat-card-clickable bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-md hover:border-rose-500/50 transition-all cursor-pointer flex items-center gap-3.5 sm:gap-4 select-none ring-2 ring-transparent hover:ring-rose-500/20 col-span-2 lg:col-span-1"
+        title="Bấm để lọc bài Bị từ chối"
+      )
+        div(class="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center text-lg sm:text-xl shrink-0")
+          i.fa-solid.fa-circle-xmark(class="text-rose-500")
+        div(class="min-w-0")
+          p(class="text-xs font-medium text-slate-500 m-0 truncate") Bị từ chối
+          p(class="text-xl sm:text-2xl font-bold text-rose-600 m-0 mt-0.5")= rejectedRooms
+
+    //- 3. LISTING TABLE SECTION (Thanh công cụ lọc tabs + Ô tìm kiếm realtime)
+    div(class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden")
+      //- Toolbar: Tabs lọc trạng thái & Search
+      div(class="p-4 sm:p-5 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-3.5")
+        //- Tabs trạng thái
+        div(class="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-1 md:pb-0 scrollbar-none")
+          button(
+            type="button"
+            data-filter-tab="ALL"
+            class="tab-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 text-white transition-colors cursor-pointer border-0 whitespace-nowrap"
+          )
+            | Tất cả (#{totalRooms})
+          button(
+            type="button"
+            data-filter-tab="APPROVED"
+            class="tab-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer border-0 bg-transparent whitespace-nowrap"
+          )
+            | Đang hiển thị (#{approvedRooms})
+          button(
+            type="button"
+            data-filter-tab="PENDING"
+            class="tab-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer border-0 bg-transparent whitespace-nowrap"
+          )
+            | Chờ duyệt (#{pendingRooms})
+          button(
+            type="button"
+            data-filter-tab="DRAFT"
+            class="tab-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer border-0 bg-transparent whitespace-nowrap"
+          )
+            | Bản nháp (#{draftRooms})
+          button(
+            type="button"
+            data-filter-tab="REJECTED"
+            class="tab-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer border-0 bg-transparent whitespace-nowrap"
+          )
+            | Bị từ chối (#{rejectedRooms})
+
+        //- Tìm kiếm nhanh
+        div(class="relative w-full md:w-72 shrink-0")
+          input#table-search-input(
+            type="text"
+            placeholder="Tìm theo tiêu đề, địa chỉ..."
+            class="w-full pl-8 pr-3 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:border-[#E05638] focus:ring-1 focus:ring-[#E05638] bg-slate-50/50"
+          )
+          span(class="absolute left-2.5 top-2.5 text-slate-400 text-xs pointer-events-none")
+            i.fa-solid.fa-magnifying-glass
+
+      //- Bảng danh sách bài đăng
+      div(class="overflow-x-auto")
+        table(class="w-full text-left border-collapse min-w-[760px]")
+          thead
+            tr(class="bg-slate-50/80 text-[11px] font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-100")
+              th(class="py-3 px-5") Phòng trọ
+              th(class="py-3 px-4") Loại phòng
+              th(class="py-3 px-4") Giá thuê
+              th(class="py-3 px-4") Diện tích
+              th(class="py-3 px-4") Trạng thái
+              th(class="py-3 px-5 text-right") Thao tác
+          tbody#table-body-rooms(class="divide-y divide-slate-100 text-xs")
+            if recentRooms && recentRooms.length > 0
+              each room in recentRooms
+                tr(
+                  class="room-table-row hover:bg-slate-50/70 transition-colors"
+                  data-status=room.status
+                  data-search=`${room.title} ${room.address}`.toLowerCase()
+                )
+                  //- Cột hình ảnh (tỉ lệ 4:3 bo góc) + Tiêu đề & Địa chỉ rút gọn có icon ghim
+                  td(class="py-3.5 px-5")
+                    div(class="flex items-center gap-3")
+                      img(
+                        src=room.thumbnail || "/client/assets/images/product-1.jpg"
+                        alt=room.title
+                        class="w-14 h-11 rounded-lg object-cover border border-slate-200/90 shrink-0 bg-slate-100"
+                      )
+                      div(class="max-w-xs sm:max-w-sm")
+                        p(class="font-semibold text-slate-900 line-clamp-1 hover:text-[#E05638] transition-colors m-0 text-xs")
+                          = room.title
+                        p(class="text-[11px] text-slate-400 truncate m-0 mt-1 flex items-center gap-1")
+                          span 📍
+                          span= room.address
+
+                  //- Loại phòng
+                  td(class="py-3.5 px-4 font-medium text-slate-600")
+                    = room.categoryId ? room.categoryId.title : '-'
+
+                  //- Giá thuê cam đất
+                  td(class="py-3.5 px-4 font-bold text-[#E05638]")
+                    | #{room.price.toLocaleString('vi-VN')} đ
+
+                  //- Diện tích
+                  td(class="py-3.5 px-4 text-slate-600")
+                    | #{room.area} m²
+
+                  //- Badge trạng thái thuần Việt & thân thiện
+                  td(class="py-3.5 px-4")
+                    if room.status === ROOM_STATUS.APPROVED
+                      span(class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/60")
+                        span(class="w-1.5 h-1.5 rounded-full bg-emerald-500")
+                        | Đang hiển thị
+                    else if room.status === ROOM_STATUS.PENDING
+                      span(class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200/60")
+                        span(class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse")
+                        | Chờ duyệt
+                    else if room.status === ROOM_STATUS.DRAFT
+                      span(class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-600 border border-slate-200/60")
+                        | Bản nháp
+                    else if room.status === ROOM_STATUS.REJECTED
+                      div(class="flex items-center gap-1.5")
+                        span(class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200/60")
+                          span(class="w-1.5 h-1.5 rounded-full bg-rose-500")
+                          | Bị từ chối
+                        button(
+                          type="button"
+                          class="btn-reject-reason text-xs text-rose-600 hover:text-rose-800 underline bg-transparent border-0 cursor-pointer p-0 font-medium"
+                          data-title=room.title
+                          data-reason=room.rejectReason || "Chưa có nội dung lý do chi tiết từ Admin."
+                          title="Bấm để xem lý do từ chối"
+                        )
+                          | Lý do
+
+                  //- Nút hành động (Sửa tin dạng pill bo tròn và menu thao tác)
+                  td(class="py-3.5 px-5 text-right")
+                    div(class="inline-flex items-center gap-1.5 justify-end")
+                      //- Nút Sửa tin dạng pill bo tròn
+                      a(
+                        href=`/landlord/rooms/edit/${room._id}`
+                        class="px-3 py-1.5 rounded-full bg-slate-100 hover:bg-[#FFF3EE] hover:text-[#E05638] text-slate-700 font-semibold text-xs transition-colors no-underline inline-flex items-center gap-1"
+                        title="Chỉnh sửa bài đăng"
+                      )
+                        i.fa-solid.fa-pen-to-square(class="text-[11px]")
+                        span Sửa tin
+
+                      //- Nút Gửi duyệt (nếu là Bản nháp)
+                      if room.status === ROOM_STATUS.DRAFT
+                        button(
+                          type="button"
+                          data-landlord-room-action="submit"
+                          data-id=room._id
+                          class="p-1.5 rounded-lg text-blue-600 hover:text-blue-800 hover:bg-blue-50 transition-colors bg-transparent border-0 cursor-pointer"
+                          title="Gửi Admin phê duyệt"
+                        )
+                          i.fa-solid.fa-paper-plane(class="text-xs")
+
+                      //- Nút Xem thực tế trên web (nếu Đã duyệt)
+                      if room.status === ROOM_STATUS.APPROVED
+                        a(
+                          href=`/rooms/detail/${room._id}`
+                          target="_blank"
+                          class="p-1.5 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-slate-100 transition-colors"
+                          title="Xem thực tế trên web"
+                        )
+                          i.fa-solid.fa-eye(class="text-xs")
+
+                      //- Nút Xóa tin
+                      button(
+                        type="button"
+                        data-landlord-room-action="delete"
+                        data-id=room._id
+                        class="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors bg-transparent border-0 cursor-pointer"
+                        title="Xóa tin đăng vĩnh viễn"
+                      )
+                        i.fa-solid.fa-trash-can(class="text-xs")
+            else
+              tr#row-empty-initial
+                td(colspan="6" class="py-12 text-center text-slate-400")
+                  div(class="flex flex-col items-center justify-center gap-2")
+                    i.fa-solid.fa-folder-open(class="text-3xl text-slate-300")
+                    p(class="text-sm font-medium text-slate-500 m-0") Bạn chưa có bài đăng nào.
+                    p(class="text-xs text-slate-400 m-0") Bấm nút "Đăng phòng mới" ở trên để tạo bài đầu tiên!
+
+            //- Dòng hiển thị khi filter không khớp kết quả
+            tr#row-no-filter-match(class="hidden")
+              td(colspan="6" class="py-12 text-center text-slate-400")
+                div(class="flex flex-col items-center justify-center gap-2")
+                  i.fa-solid.fa-magnifying-glass(class="text-2xl text-slate-300")
+                  p(class="text-sm font-medium text-slate-600 m-0") Không tìm thấy bài đăng nào phù hợp bộ lọc.
+                  p(class="text-xs text-slate-400 m-0") Vui lòng thử đổi từ khóa tìm kiếm hoặc chọn tab trạng thái khác.
+
+      //- Thanh chân bảng: Thống kê số lượng bài đăng
+      div(class="p-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-2")
+        span#table-counter-text Hiển thị #{recentRooms ? recentRooms.length : 0} bài đăng
+        div(class="flex items-center gap-2")
+          a(
+            href="/landlord/rooms"
+            class="text-[#E05638] font-semibold hover:underline no-underline"
+          )
+            | Quản lý nâng cao tại trang Danh sách phòng →
+
+  //- Modal Popover: Xem lý do từ chối
+  div#modal-reject-reason(class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs")
+    div(class="bg-white rounded-2xl max-w-md w-full shadow-2xl border border-slate-200 overflow-hidden transform transition-all")
+      div(class="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between bg-rose-50/60")
+        div(class="flex items-center gap-2 text-rose-700")
+          i.fa-solid.fa-circle-xmark(class="text-base")
+          span(class="font-bold text-sm") Lý do bài đăng bị từ chối
+        button#btn-close-modal-reason(type="button" class="text-slate-400 hover:text-slate-700 p-1 rounded-lg border-0 bg-transparent cursor-pointer")
+          i.fa-solid.fa-xmark(class="text-base")
+      div(class="p-5 space-y-3")
+        div
+          p(class="text-xs font-semibold text-slate-500 m-0") Bài đăng:
+          p#modal-reason-room-title(class="text-sm font-bold text-slate-800 m-0 mt-0.5") -
+        div
+          p(class="text-xs font-semibold text-slate-500 m-0") Phản hồi từ Ban quản trị:
+          div(class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-700 leading-relaxed mt-1 whitespace-pre-line" id="modal-reason-content")
+            | -
+        p(class="text-[11px] text-slate-400 m-0 italic") Bạn có thể bấm "Sửa tin" để cập nhật lại thông tin theo góp ý và gửi duyệt lại.
+      div(class="p-4 border-t border-slate-100 flex justify-end gap-2 bg-slate-50/50")
+        button#btn-modal-reason-ok(type="button" class="px-4 py-2 rounded-xl bg-slate-800 text-white text-xs font-semibold hover:bg-slate-900 border-0 cursor-pointer")
+          | Đã hiểu
+
+block scripts
+  script.
+    document.addEventListener('DOMContentLoaded', () => {
+      let currentFilterStatus = 'ALL';
+      const searchInput = document.getElementById('table-search-input');
+      const tableRows = Array.from(document.querySelectorAll('.room-table-row'));
+      const tabButtons = Array.from(document.querySelectorAll('.tab-filter-btn'));
+      const metricCards = Array.from(document.querySelectorAll('.stat-card-clickable'));
+      const noMatchRow = document.getElementById('row-no-filter-match');
+      const counterText = document.getElementById('table-counter-text');
+
+      function removeTones(str) {
+        return (str || '')
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .replace(/[đĐ]/g, 'd')
+          .toLowerCase();
+      }
+
+      function filterTable() {
+        const rawQuery = (searchInput?.value || '').trim();
+        const normQuery = removeTones(rawQuery);
+        let visibleCount = 0;
+
+        tableRows.forEach(row => {
+          const rowStatus = row.getAttribute('data-status');
+          const rowSearch = row.getAttribute('data-search') || '';
+          const normRowSearch = removeTones(rowSearch);
+
+          const matchStatus = currentFilterStatus === 'ALL' || rowStatus === currentFilterStatus;
+          const matchQuery = !rawQuery || rowSearch.includes(rawQuery.toLowerCase()) || normRowSearch.includes(normQuery);
+
+          if (matchStatus && matchQuery) {
+            row.classList.remove('hidden');
+            visibleCount++;
+          } else {
+            row.classList.add('hidden');
+          }
+        });
+
+        if (noMatchRow) {
+          if (visibleCount === 0 && tableRows.length > 0) {
+            noMatchRow.classList.remove('hidden');
+          } else {
+            noMatchRow.classList.add('hidden');
+          }
+        }
+
+        if (counterText) {
+          counterText.textContent = `Hiển thị ${visibleCount} bài đăng`;
+        }
+      }
+
+      function setActiveFilterTab(status) {
+        currentFilterStatus = status;
+
+        tabButtons.forEach(btn => {
+          const tabKey = btn.getAttribute('data-filter-tab');
+          if (tabKey === status) {
+            btn.className = 'tab-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 text-white transition-colors cursor-pointer border-0 whitespace-nowrap';
+          } else {
+            btn.className = 'tab-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer border-0 bg-transparent whitespace-nowrap';
+          }
+        });
+
+        // Highlight active metric card
+        metricCards.forEach(card => {
+          const cardKey = card.getAttribute('data-metric-filter');
+          if (cardKey === status) {
+            card.classList.add('ring-2', 'ring-[#E05638]', 'bg-orange-50/20');
+          } else {
+            card.classList.remove('ring-2', 'ring-[#E05638]', 'bg-orange-50/20');
+          }
+        });
+
+        filterTable();
+      }
+
+      // Tab clicks
+      tabButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const status = btn.getAttribute('data-filter-tab');
+          setActiveFilterTab(status);
+        });
+      });
+
+      // Metric card clicks (Click to filter table!)
+      metricCards.forEach(card => {
+        card.addEventListener('click', () => {
+          const status = card.getAttribute('data-metric-filter');
+          setActiveFilterTab(status);
+          // Scroll smoothly to table on mobile
+          const tableElem = document.querySelector('table');
+          if (tableElem && window.innerWidth < 768) {
+            tableElem.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        });
+      });
+
+      // Realtime search
+      searchInput?.addEventListener('input', () => {
+        filterTable();
+      });
+
+      // Modal Reason
+      const modalReason = document.getElementById('modal-reject-reason');
+      const modalRoomTitle = document.getElementById('modal-reason-room-title');
+      const modalReasonContent = document.getElementById('modal-reason-content');
+      const btnCloseModalReason = document.getElementById('btn-close-modal-reason');
+      const btnModalReasonOk = document.getElementById('btn-modal-reason-ok');
+
+      document.querySelectorAll('.btn-reject-reason').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const title = btn.getAttribute('data-title');
+          const reason = btn.getAttribute('data-reason');
+          if (modalRoomTitle) modalRoomTitle.textContent = title;
+          if (modalReasonContent) modalReasonContent.textContent = reason;
+          modalReason?.classList.remove('hidden');
+        });
+      });
+
+      const closeModal = () => modalReason?.classList.add('hidden');
+      btnCloseModalReason?.addEventListener('click', closeModal);
+      btnModalReasonOk?.addEventListener('click', closeModal);
+      modalReason?.addEventListener('click', (e) => {
+        if (e.target === modalReason) closeModal();
+      });
+    });

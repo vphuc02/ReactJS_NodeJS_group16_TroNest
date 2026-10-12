@@ -1,51 +1,125 @@
 mixin roomItem(room, favoriteRoomIds)
   - const isFav = favoriteRoomIds && favoriteRoomIds.includes(room._id.toString());
-  .product-item(class="client-clean-147")
-    // Favorite Button
-    button.btn-fav(class=isFav ? 'active' : '' data-room-id=room._id.toString() title="Lưu vào danh sách yêu thích")
-      if isFav
-        i.fa-solid.fa-heart
-      else
-        i.fa-regular.fa-heart
+  - const imgCount = (room.images && room.images.length > 0) ? room.images.length : (room.thumbnail ? 1 : 1);
+  - const landlordName = room.landlordId ? (room.landlordId.fullName || '').replace(/\s*\([^)]*\)/g, '') : 'Chủ trọ';
+  - const landlordAvatar = (room.landlordId && room.landlordId.avatar) || '';
+  - const isVerified = room.status === 'APPROVED' || (room.landlordId && room.landlordId.status === 'APPROVED');
+  - const catTitle = (room.categoryId && room.categoryId.title) ? room.categoryId.title : 'Phòng trọ';
+  - 
+    // Trích xuất địa chỉ hiển thị gọn
+    let displayAddress = room.address || '';
+    if (!displayAddress) {
+      displayAddress = [room.ward, room.district, room.province].filter(Boolean).join(', ');
+    }
+  -
+    // Tiện ích 1 & 2
+    let amenity1 = 'WC khép kín';
+    let amenity2 = (room.capacity ? room.capacity + ' người' : 'Tự do giờ');
+    if (room.amenities && room.amenities.length > 0) {
+      amenity1 = room.amenities[0];
+      if (room.amenities.length > 1) {
+        amenity2 = room.amenities[1];
+      }
+    }
 
-    .inner-image(class="client-clean-148")
-      a(href=`/rooms/detail/${room._id}`)
-        img(
-          alt=room.title
-          src=room.thumbnail || "/client/assets/images/product-1.jpg"
-          class="client-clean-149"
+  //- Component Card phòng trọ (Tông Cam Đất)
+  div.product-item.room-card-modern(
+    class="group relative flex flex-col overflow-hidden rounded-2xl border border-slate-200/90 bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-slate-300 cursor-pointer"
+    onclick=`if(!event.target.closest('.btn-fav')) window.location.href='/rooms/detail/${room._id}'`
+  )
+    //- Link phủ toàn thẻ để click mở phòng
+    a.room-card-overlay(href=`/rooms/detail/${room._id}` class="absolute inset-0 z-[2]" aria-label=room.title)
+
+    //- 1. Phần ảnh & Badge (Tỉ lệ 4:3 chuẩn)
+    .inner-image(class="relative aspect-[4/3] w-full overflow-hidden bg-slate-100 flex-shrink-0")
+      img(
+        src=room.thumbnail || "/client/assets/images/product-1.jpg"
+        alt=room.title
+        loading="lazy"
+        class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+      )
+
+      //- Badge loại hình & Trạng thái
+      div(class="absolute left-3 top-3 z-10 flex items-center gap-1.5 pointer-events-none")
+        span(class="rounded-full bg-black/60 px-2.5 py-1 text-[11px] font-medium text-white backdrop-blur-md")
+          = catTitle
+        if isVerified
+          span(class="flex items-center gap-1 rounded-full bg-emerald-600/90 px-2 py-1 text-[11px] font-medium text-white backdrop-blur-md")
+            svg(class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24")
+              path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7")
+            span Xác thực
+
+      //- Nút lưu yêu thích (Heart)
+      button.btn-fav(
+        type="button"
+        class=(isFav ? 'active ' : '') + "absolute right-3 top-3 z-20 flex h-8 w-8 items-center justify-center rounded-full bg-white/85 text-slate-600 shadow-sm backdrop-blur-md transition-all hover:bg-white hover:scale-110 active:scale-95 border-0 cursor-pointer pointer-events-auto"
+        data-room-id=room._id.toString()
+        title="Lưu vào danh sách yêu thích"
+        aria-label="Lưu phòng"
+      )
+        svg(
+          class=`h-4 w-4 transition-colors ${isFav ? 'fill-[#E05638] stroke-[#E05638]' : 'fill-none stroke-current'}`
+          viewBox="0 0 24 24"
+          stroke-width="2"
         )
-      if room.categoryId && room.categoryId.title
-        span(class="client-clean-150")
-          = room.categoryId.title
+          path(stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z")
 
-    .inner-content(class="client-clean-151")
-      div
-        h3.inner-title(class="client-clean-152")
-          a(href=`/rooms/detail/${room._id}` class="client-clean-153")
-            = room.title
+      //- Số lượng ảnh
+      span(class="absolute bottom-2.5 right-3 z-10 flex items-center gap-1 rounded-md bg-black/50 px-2 py-0.5 text-[11px] font-normal text-white backdrop-blur-sm pointer-events-none")
+        | 📷 #{imgCount}
 
-        .inner-prices(class="client-clean-154")
-          span(class="client-clean-155")
-            = room.price.toLocaleString('vi-VN')
-          span(class="client-clean-156") đ/tháng
+    //- 2. Phần nội dung chi tiết
+    .inner-content(class="flex flex-1 flex-col p-4 z-[3]")
+      //- Giá tiền nổi bật với màu cam đất
+      div(class="mb-1.5 flex items-baseline gap-1")
+        span.price-main(class="text-xl font-bold tracking-tight text-[#E05638]")
+          = (room.price || 0).toLocaleString('vi-VN') + ' đ'
+        span(class="text-xs font-medium text-slate-400") đ/tháng
+        if room.isFeatured
+          span(class="ml-auto text-[10px] uppercase font-bold text-[#E05638] bg-[#FFF3EE] px-2 py-0.5 rounded-full") Nổi bật
 
-        .inner-desc(class="client-clean-157")
-          div(class="client-clean-158")
-            i.fa-solid.fa-vector-square(class="client-clean-059")
-            span #{room.area} m²
-          div(class="client-clean-158")
-            i.fa-solid.fa-user-group(class="client-clean-059")
-            span #{room.capacity || 2} người
-          div(class="client-clean-158")
-            i.fa-solid.fa-location-dot(class="client-clean-059")
-            span= room.district
+      //- Tiêu đề phòng
+      h3.inner-title(class="line-clamp-2 text-[15px] font-semibold leading-snug text-slate-800 transition-colors group-hover:text-[#E05638] m-0")
+        a(href=`/rooms/detail/${room._id}` class="text-slate-800 group-hover:text-[#E05638] no-underline")
+          = room.title
 
-      div(class="client-clean-159")
-        div(class="client-clean-160")
-          i.fa-solid.fa-user-tie(class="client-clean-161")
-          span(class="client-clean-162")
-            = room.landlordId ? room.landlordId.fullName : 'Chủ trọ'
-        a(href=`/rooms/detail/${room._id}` class="client-clean-163")
-          | Chi tiết
-          i.fa-solid.fa-arrow-right(class="client-clean-164")
+      //- Địa chỉ rút gọn
+      p.inner-address(class="mt-1.5 flex items-center gap-1 text-xs text-slate-500 mb-0")
+        svg(class="h-3.5 w-3.5 shrink-0 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24")
+          path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z")
+          path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z")
+        span.truncate(title=displayAddress)= displayAddress
+
+      //- Thông số kỹ thuật & tiện ích
+      div(class="my-3 flex items-center gap-2.5 border-y border-slate-100 py-2.5 text-xs text-slate-600")
+        span(class="font-medium text-slate-700") #{room.area} m²
+        span(class="text-slate-300") •
+        span= amenity1
+        span(class="text-slate-300") •
+        span.truncate= amenity2
+
+      //- 3. Footer card: Người đăng + Nút hành động
+      .inner-footer(class="mt-auto flex items-center justify-between pt-1")
+        div(class="flex items-center gap-2")
+          if landlordAvatar && !landlordAvatar.includes('avatar.jpg')
+            img(
+              src=landlordAvatar
+              alt=landlordName
+              class="h-7 w-7 rounded-full object-cover border border-slate-200"
+            )
+          else
+            div(class="flex h-7 w-7 items-center justify-center rounded-full bg-slate-100 text-xs font-semibold text-slate-600 border border-slate-200")
+              = (landlordName.charAt(0) || 'C').toUpperCase()
+          span(class="text-xs font-medium text-slate-600 truncate max-w-[110px]")
+            = landlordName
+          if isVerified
+            svg(class="w-3.5 h-3.5 text-blue-500 shrink-0" fill="currentColor" viewBox="0 0 20 20")
+              path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd")
+
+        button(
+          type="button"
+          class="flex items-center gap-1 rounded-lg bg-[#FFF3EE] px-3 py-1.5 text-xs font-semibold text-[#E05638] transition-colors group-hover:bg-[#E05638] group-hover:text-white border-0 cursor-pointer"
+        )
+          span Xem phòng
+          svg(class="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24")
+            path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7")
