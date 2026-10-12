@@ -6,57 +6,132 @@ block title
 
 block main
   main
-    // Hero Banner Section
-    .section-1(class="client-clean-056")
-      .container
-        .inner-wrap(class="client-clean-057")
-          h1.inner-title(data-aos="fade-up" data-aos-duration="800" class="client-clean-058")
-            | Tìm Phòng Trọ Nhanh Chóng, An Toàn & Đã Kiểm Duyệt
-            br
-            span(class="client-clean-059") Ngôi Nhà Thứ Hai Dành Cho Bạn
-          
-          p.inner-desc(data-aos="fade-up" data-aos-delay="100" data-aos-duration="800" class="client-clean-060")
-            | Hơn 10.000+ phòng trọ khép kín, chung cư mini, studio và sleepbox trên toàn quốc được Admin kiểm duyệt chất lượng 100%.
+    // Hero Banner & Search Section (Hình ảnh kết hợp cùng thanh tìm kiếm phòng trọ)
+    h1.visually-hidden TroNest - Nền tảng tìm kiếm và đăng tin phòng trọ tiện lợi, an tâm
+    section.hero-banner-section
+      .swiper.hero-banner-swiper
+        .swiper-wrapper
+          .swiper-slide
+            .hero-slide-item
+              img(src="/client/assets/images/hero-banners/banner-1.png" alt="Phòng trọ gác lửng thông minh TroNest")
+          .swiper-slide
+            .hero-slide-item
+              img(src="/client/assets/images/hero-banners/banner-2.png" alt="Căn hộ studio tone xanh tiện nghi")
+          .swiper-slide
+            .hero-slide-item
+              img(src="/client/assets/images/hero-banners/banner-3.png" alt="Phòng trọ gác lửng phong cách hiện đại")
+          .swiper-slide
+            .hero-slide-item
+              img(src="/client/assets/images/hero-banners/banner-4.png" alt="Căn hộ mini duplex trần cao sang trọng")
+        
+        // Swiper Controls (Nút chuyển ảnh & Chấm phân trang)
+        .swiper-button-prev.hero-swiper-btn.hero-swiper-prev
+        .swiper-button-next.hero-swiper-btn.hero-swiper-next
+        .swiper-pagination.hero-swiper-pagination
 
+      // Thanh Tìm Kiếm Phòng Trọ kết hợp trực tiếp với Banner
+      .hero-search-wrapper
+        .container
           // Search Box Form
-          form.inner-form(action="/rooms" method="GET" data-aos="fade-up" data-aos-delay="200" data-aos-duration="800" class="client-clean-061")
-            // Input từ khóa
-            div(class="client-clean-062")
-              label(class="client-clean-063") Từ khóa / Khu vực
-              div(class="client-clean-064")
-                i.fa-solid.fa-magnifying-glass(class="client-clean-059")
-                input(type="text" name="keyword" placeholder="Nhập tên đường, địa chỉ..." class="client-clean-065")
+          form.home-search-form(action="/rooms" method="GET" data-aos="fade-up" data-aos-delay="100")
+            .search-fields-grid
+              // Input từ khóa
+              .search-field-col.col-keyword
+                label.search-field-label(for="home-keyword")
+                  i.fa-solid.fa-location-dot
+                  | Khu vực / Địa chỉ
+                .search-input-wrapper
+                  input#home-keyword.search-input-control(type="text" name="keyword" placeholder="Nhập tên đường, địa chỉ, trường học...")
 
-            // Tỉnh / Thành phố
-            div(class="client-clean-066")
-              label(class="client-clean-063" for="home-province") Tỉnh / Thành phố
-              select#home-province(name="province" class="client-clean-067" data-location-province data-ward-target="#home-ward")
-                option(value="") Toàn quốc
-                each p in VN_PROVINCES
-                  option(value=p.shortName data-code=p.code)= p.name
+              // Tỉnh / Thành phố
+              .search-field-col.col-province
+                label.search-field-label(for="home-province")
+                  i.fa-solid.fa-city
+                  | Tỉnh / Thành phố
+                .search-input-wrapper
+                  select#home-province.search-select-control(name="province" data-location-province data-ward-target="#home-ward")
+                    option(value="") Toàn quốc
+                    each p in VN_PROVINCES
+                      option(value=p.shortName data-code=p.code)= p.name
 
-            // Phường / Xã
-            div(class="client-clean-066")
-              label(class="client-clean-063" for="home-ward") Phường / Xã
-              select#home-ward(name="ward" class="client-clean-067" disabled)
-                option(value="") Chọn tỉnh trước
+              // Phường / Xã
+              .search-field-col.col-ward
+                label.search-field-label(for="home-ward")
+                  i.fa-solid.fa-map-pin
+                  | Phường / Xã
+                .search-input-wrapper
+                  select#home-ward.search-select-control(name="ward" disabled)
+                    option(value="") Chọn tỉnh trước
 
-            // Khoảng giá
-            div(class="client-clean-066")
-              label(class="client-clean-063") Khoảng giá thuê
-              select(name="priceRange" class="client-clean-067")
-                option(value="") Mọi mức giá
-                option(value="<2m") Dưới 2 triệu
-                option(value="2-4m") 2 - 4 triệu
-                option(value="4-7m") 4 - 7 triệu
-                option(value=">7m") Trên 7 triệu
+              // Khoảng giá
+              .search-field-col.col-price
+                label.search-field-label(for="home-price")
+                  i.fa-solid.fa-wallet
+                  | Khoảng giá thuê
+                .search-input-wrapper
+                  select#home-price.search-select-control(name="priceRange")
+                    option(value="") Mọi mức giá
+                    option(value="<2m") Dưới 2 triệu
+                    option(value="2-4m") 2 - 4 triệu
+                    option(value="4-7m") 4 - 7 triệu
+                    option(value=">7m") Trên 7 triệu
 
-            // Nút Tìm Kiếm
-            div(class="client-clean-068")
-              button(type="submit" class="client-clean-069")
-                i.fa-solid.fa-magnifying-glass
-                | Tìm kiếm
-    // End Hero Banner
+              // Nút Tìm Kiếm
+              .search-field-col.col-submit
+                button.btn-search-submit(type="submit")
+                  i.fa-solid.fa-magnifying-glass
+                  span Tìm phòng ngay
+
+              // Nút Vị trí của tôi
+              .search-field-col.col-nearby
+                button.btn-nearby-trigger(type="button" id="btn-find-nearby" title="Tìm phòng trọ gần vị trí của bạn")
+                  i.fa-solid.fa-location-crosshairs
+                  span Trọ gần tôi
+
+          // Quick Tag Suggestions (Gợi ý tìm nhanh gọn gàng)
+          .search-quick-tags(data-aos="fade-up" data-aos-delay="150")
+            span.quick-tags-title
+              i.fa-solid.fa-fire-flame-curved
+              | Gợi ý phổ biến:
+            a.quick-tag-item(href="/rooms?priceRange=<2m") Dưới 2 triệu
+            a.quick-tag-item(href="/rooms?priceRange=2-4m") Từ 2 - 4 triệu
+            a.quick-tag-item(href="/rooms?category=can-ho-mini-studio") Studio tiện nghi
+            a.quick-tag-item(href="/rooms?category=chung-cu-mini") Chung cư mini
+            a.quick-tag-item(href="/rooms?province=Hà Nội") Hà Nội
+            a.quick-tag-item(href="/rooms?province=Hồ Chí Minh") TP. Hồ Chí Minh
+    // End Hero Banner & Search Section
+
+    // Nearby Rooms Section (Ẩn mặc định, hiện khi user cho phép vị trí)
+    section#nearby-rooms-section.nearby-rooms-section(style="display:none")
+      .container
+        .nearby-rooms-header
+          .nearby-rooms-title-group
+            span.nearby-badge
+              i.fa-solid.fa-location-crosshairs
+              | Gần bạn
+            h2.nearby-title
+              | Phòng trọ gần vị trí của bạn
+            p.nearby-subtitle#nearby-location-label &nbsp;
+          a.btn-view-all-nearby(href="#" id="btn-view-all-nearby")
+            | Xem tất cả
+            i.fa-solid.fa-arrow-right
+        
+        // Loading skeleton
+        .nearby-loading#nearby-loading
+          .nearby-skeleton
+          .nearby-skeleton
+          .nearby-skeleton
+          .nearby-skeleton
+          .nearby-skeleton
+          .nearby-skeleton
+        
+        // Error state
+        .nearby-error#nearby-error(style="display:none")
+          i.fa-solid.fa-triangle-exclamation
+          span#nearby-error-msg Không thể xác định vị trí của bạn.
+
+        // Rooms grid
+        .rooms-grid.nearby-rooms-grid#nearby-rooms-grid(style="display:none")
 
     // Categories Section
     section(class="client-clean-070")
@@ -106,26 +181,190 @@ block main
         else
           p(class="client-clean-084") Hiện chưa có bài đăng nào được phê duyệt.
 
-    // Trust & Benefits Section
-    section(class="client-clean-085")
-      .container
-        h2(class="client-clean-086")
-          | Vì Sao Nên Tìm Phòng & Đăng Tin Tại TroNest?
-        .benefits-grid(class="client-clean-087")
-          .benefit-box(class="client-clean-088")
-            div(class="client-clean-089")
-              i.fa-solid.fa-shield-halved
-            h3(class="client-clean-090") 100% Đã Kiểm Duyệt
-            p(class="client-clean-091") Mọi bài đăng và thông tin chủ trọ đều được Admin xác minh tính xác thực trước khi hiển thị.
-          
-          .benefit-box(class="client-clean-088")
-            div(class="client-clean-092")
-              i.fa-solid.fa-handshake
-            h3(class="client-clean-090") Trực Tiếp Chính Chủ
-            p(class="client-clean-091") Khách thuê liên hệ thẳng với Chủ trọ qua Số điện thoại, Email mà không qua trung gian môi giới.
-          
-          .benefit-box(class="client-clean-088")
-            div(class="client-clean-093")
-              i.fa-solid.fa-heart-circle-check
-            h3(class="client-clean-090") Lưu Phòng Yêu Thích
-            p(class="client-clean-091") Dễ dàng đánh dấu và so sánh các căn phòng ưng ý với tính năng danh sách yêu thích tiện lợi.
+    script.
+      document.addEventListener('DOMContentLoaded', function() {
+        // --- Swiper Hero Banner ---
+        if (typeof Swiper !== 'undefined') {
+          new Swiper('.hero-banner-swiper', {
+            loop: true,
+            speed: 800,
+            effect: 'fade',
+            fadeEffect: { crossFade: true },
+            autoplay: { delay: 4000, disableOnInteraction: false, pauseOnMouseEnter: true },
+            pagination: { el: '.hero-swiper-pagination', clickable: true },
+            navigation: { nextEl: '.hero-swiper-next', prevEl: '.hero-swiper-prev' }
+          });
+        }
+
+        // --- Geolocation: Trọ gần tôi ---
+        const btnNearby   = document.getElementById('btn-find-nearby');
+        const section     = document.getElementById('nearby-rooms-section');
+        const loading     = document.getElementById('nearby-loading');
+        const errorBox    = document.getElementById('nearby-error');
+        const errorMsg    = document.getElementById('nearby-error-msg');
+        const grid        = document.getElementById('nearby-rooms-grid');
+        const labelEl     = document.getElementById('nearby-location-label');
+        const viewAllBtn  = document.getElementById('btn-view-all-nearby');
+
+        if (!btnNearby) return;
+
+        // Hiển thị giá tiền kiểu VN
+        function formatPrice(p) {
+          if (p >= 1000000) return (p / 1000000).toFixed(p % 1000000 === 0 ? 0 : 1) + ' triệu';
+          return p.toLocaleString('vi-VN') + ' đ';
+        }
+
+        // Render 1 room card (giống roomItem mixin nhưng bằng JS)
+        function renderRoom(room) {
+          const thumb = room.thumbnail || '/client/assets/images/product-1.jpg';
+          const catTitle = room.categoryId ? room.categoryId.title : '';
+          const landlord = room.landlordId ? room.landlordId.fullName : 'Chủ trọ';
+          const address  = room.district || room.ward || room.province || '';
+          const price    = formatPrice(room.price || 0);
+
+          // Badge khoảng cách GPS nếu có
+          let distanceBadge = '';
+          if (room.distanceM != null) {
+            const dist = room.distanceM < 1000
+              ? `${room.distanceM} m`
+              : `${(room.distanceM / 1000).toFixed(1)} km`;
+            distanceBadge = `
+              <span class="nearby-dist-badge">
+                <i class="fa-solid fa-location-crosshairs"></i> ${dist}
+              </span>`;
+          }
+
+          return `
+            <div class="product-item">
+              <div class="inner-image">
+                <a href="/rooms/detail/${room._id}">
+                  <img src="${thumb}" alt="${room.title}" loading="lazy" />
+                </a>
+                ${catTitle ? `<span class="nearby-cat-badge">${catTitle}</span>` : ''}
+                ${distanceBadge}
+              </div>
+              <div class="inner-content">
+                <div>
+                  <h3 class="inner-title">
+                    <a href="/rooms/detail/${room._id}">${room.title}</a>
+                  </h3>
+                  <div class="inner-prices">
+                    <span class="price-main">${price}</span>
+                    <span class="price-unit">đ/tháng</span>
+                  </div>
+                  <div class="inner-desc">
+                    <div><i class="fa-solid fa-vector-square"></i> <span>${room.area} m²</span></div>
+                    <div><i class="fa-solid fa-user-group"></i> <span>${room.capacity || 2} người</span></div>
+                    <div><i class="fa-solid fa-location-dot"></i> <span>${address}</span></div>
+                  </div>
+                </div>
+                <div>
+                  <div class="landlord-info">
+                    <i class="fa-solid fa-user-tie"></i>
+                    <span>${landlord}</span>
+                  </div>
+                  <a href="/rooms/detail/${room._id}" class="btn-detail">
+                    Chi tiết <i class="fa-solid fa-arrow-right"></i>
+                  </a>
+                </div>
+              </div>
+            </div>`;
+        }
+
+        function showNearbyLoading() {
+          section.style.display = '';
+          loading.style.display = '';
+          errorBox.style.display = 'none';
+          grid.style.display = 'none';
+          section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function showNearbyError(msg) {
+          loading.style.display = 'none';
+          errorMsg.textContent = msg;
+          errorBox.style.display = '';
+          grid.style.display = 'none';
+        }
+
+        function showNearbyRooms(rooms, province, geo, radiusM, source) {
+          loading.style.display = 'none';
+          errorBox.style.display = 'none';
+          if (rooms.length === 0) {
+            showNearbyError('Chưa có phòng trọ nào được đăng tại khu vực của bạn.');
+            return;
+          }
+          grid.innerHTML = rooms.map(renderRoom).join('');
+          grid.style.display = '';
+
+          // Cập nhật label vị trí
+          const locationHint = geo.city_district || geo.suburb || geo.road || province;
+          const radiusKm = (radiusM / 1000).toFixed(0);
+          const sourceLabel = source === 'gps' || source === 'mixed'
+            ? `trong vòng ${radiusKm}km` : `thuộc ${province}`;
+          labelEl.textContent = `📍 ${locationHint}, ${province} — ${sourceLabel}`;
+
+          // Cập nhật link "Xem tất cả"
+          viewAllBtn.href = '/rooms?province=' + encodeURIComponent(province);
+        }
+
+        async function fetchNearbyRooms(lat, lng) {
+          showNearbyLoading();
+          try {
+            const resp = await fetch(`/api/geo/nearby?lat=${lat}&lng=${lng}&limit=6&radius=5000`);
+            const data = await resp.json();
+            if (!resp.ok || data.code !== 200) {
+              showNearbyError(data.message || 'Không thể tải phòng trọ gần bạn.');
+              return;
+            }
+            showNearbyRooms(data.rooms, data.province, data.geo, data.radiusM, data.source);
+          } catch {
+            showNearbyError('Lỗi kết nối. Vui lòng thử lại sau.');
+          }
+        }
+
+        btnNearby.addEventListener('click', function () {
+          if (!navigator.geolocation) {
+            window.notyf?.error('Trình duyệt của bạn không hỗ trợ định vị vị trí.');
+            return;
+          }
+
+          // Trạng thái loading trên nút
+          btnNearby.disabled = true;
+          btnNearby.classList.add('loading');
+          const origHTML = btnNearby.innerHTML;
+          btnNearby.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Đang xác định...</span>';
+
+          navigator.geolocation.getCurrentPosition(
+            function (pos) {
+              btnNearby.disabled = false;
+              btnNearby.classList.remove('loading');
+              btnNearby.innerHTML = '<i class="fa-solid fa-location-crosshairs"></i> <span>Trọ gần tôi</span>';
+              fetchNearbyRooms(pos.coords.latitude, pos.coords.longitude);
+            },
+            function (err) {
+              btnNearby.disabled = false;
+              btnNearby.classList.remove('loading');
+              btnNearby.innerHTML = origHTML;
+              const msgs = {
+                1: 'Bạn đã từ chối quyền truy cập vị trí.',
+                2: 'Không thể xác định vị trí của bạn.',
+                3: 'Hết thời gian chờ xác định vị trí.'
+              };
+              window.notyf?.error(msgs[err.code] || 'Không thể lấy vị trí của bạn.');
+            },
+            { timeout: 10000, maximumAge: 300000, enableHighAccuracy: false }
+          );
+        });
+
+        // Nếu có param ?lat=...&lng=... trên URL thì tự động hiển thị phòng gần vị trí đó
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlLat = parseFloat(urlParams.get('lat'));
+        const urlLng = parseFloat(urlParams.get('lng'));
+        if (!isNaN(urlLat) && !isNaN(urlLng)) {
+          fetchNearbyRooms(urlLat, urlLng);
+        }
+      });
+
+
+
+
