@@ -5,10 +5,12 @@ const homeRoutes = require('./home.route');
 const roomRoutes = require('./room.route');
 const authRoutes = require('./auth.route');
 const favoriteRoutes = require('./favorite.route');
+const accountRoutes = require('./account.route');
 
 router.use('/', authRoutes);
 router.use('/', homeRoutes);
 router.use('/rooms', roomRoutes);
 router.use('/favorites', favoriteRoutes);
+router.use('/account', accountRoutes);
 
 module.exports = router;
