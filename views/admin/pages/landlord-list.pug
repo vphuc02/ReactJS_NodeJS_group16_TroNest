@@ -14,15 +14,15 @@ block main
 
   // Filter Tabs
   .filter-tabs(class="admin-clean-070")
-    a.btn(href="/admin/landlords" class=!statusFilter ? 'btn-primary' : 'btn-secondary')
+    a.btn(href="/admin/landlords" + (keyword ? '?keyword=' + encodeURIComponent(keyword) : '') class=!statusFilter ? 'btn-primary' : 'btn-secondary')
       | Tất cả (#{counts.all})
-    a.btn(href="/admin/landlords?status=" + USER_STATUS.PENDING class=statusFilter === USER_STATUS.PENDING ? 'btn-primary' : 'btn-secondary')
+    a.btn(href="/admin/landlords?status=" + USER_STATUS.PENDING + (keyword ? '&keyword=' + encodeURIComponent(keyword) : '') class=statusFilter === USER_STATUS.PENDING ? 'btn-primary' : 'btn-secondary')
       i.fa-solid.fa-clock(class="admin-clean-071")
       | Chờ duyệt (#{counts.pending})
-    a.btn(href="/admin/landlords?status=" + USER_STATUS.APPROVED class=statusFilter === USER_STATUS.APPROVED ? 'btn-primary' : 'btn-secondary')
+    a.btn(href="/admin/landlords?status=" + USER_STATUS.APPROVED + (keyword ? '&keyword=' + encodeURIComponent(keyword) : '') class=statusFilter === USER_STATUS.APPROVED ? 'btn-primary' : 'btn-secondary')
       i.fa-solid.fa-circle-check(class="admin-clean-072")
       | Đã duyệt (#{counts.approved})
-    a.btn(href="/admin/landlords?status=" + USER_STATUS.REJECTED class=statusFilter === USER_STATUS.REJECTED ? 'btn-primary' : 'btn-secondary')
+    a.btn(href="/admin/landlords?status=" + USER_STATUS.REJECTED + (keyword ? '&keyword=' + encodeURIComponent(keyword) : '') class=statusFilter === USER_STATUS.REJECTED ? 'btn-primary' : 'btn-secondary')
       i.fa-solid.fa-circle-xmark(class="admin-clean-073")
       | Bị từ chối (#{counts.rejected})
 
@@ -60,9 +60,15 @@ block main
                 div(class="admin-clean-101")= l.email
                 div(class="admin-clean-102")= l.phone || '-'
               td= l.address || '-'
-              td(class="admin-clean-103")= l.roomCount || 0
+              td(class="admin-clean-103")
+                if l.roomCount > 0
+                  a.badge.badge-blue(href=`/admin/rooms?keyword=${encodeURIComponent(l.email)}` title="Xem các phòng của chủ trọ này")= `${l.roomCount} phòng`
+                else
+                  span.badge.badge-gray 0 phòng
               td
-                if l.status === USER_STATUS.APPROVED
+                if l.isBlocked || l.status === USER_STATUS.INACTIVE
+                  span.badge.badge-red Đã bị khóa
+                else if l.status === USER_STATUS.APPROVED
                   span.badge.badge-green Đã duyệt (APPROVED)
                 else if l.status === USER_STATUS.PENDING
                   span.badge.badge-yellow Chờ duyệt (PENDING)
@@ -81,6 +87,9 @@ block main
                     button.btn.btn-danger(data-admin-action="reject-landlord" data-id=l._id class="admin-clean-028" title="Từ chối tài khoản")
                       i.fa-solid.fa-xmark
                       | Từ chối
+                  button.btn(data-admin-action="toggle-user-status" data-id=l._id class=l.isBlocked ? 'btn-success' : 'btn-secondary' title=l.isBlocked ? 'Mở khóa tài khoản' : 'Khóa tài khoản')
+                    i.fa-solid(class=l.isBlocked ? 'fa-lock-open' : 'fa-lock')
+
         else
           tr
             td(colspan="6" class="admin-clean-088")

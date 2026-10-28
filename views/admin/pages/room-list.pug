@@ -14,18 +14,18 @@ block main
 
   // Filter Tabs
   .filter-tabs(class="admin-clean-070")
-    a.btn(href="/admin/rooms" class=!statusFilter ? 'btn-primary' : 'btn-secondary')
+    a.btn(href="/admin/rooms" + (keyword ? '?keyword=' + encodeURIComponent(keyword) : '') class=!statusFilter ? 'btn-primary' : 'btn-secondary')
       | Tất cả (#{counts.all})
-    a.btn(href="/admin/rooms?status=" + ROOM_STATUS.PENDING class=statusFilter === ROOM_STATUS.PENDING ? 'btn-primary' : 'btn-secondary')
+    a.btn(href="/admin/rooms?status=" + ROOM_STATUS.PENDING + (keyword ? '&keyword=' + encodeURIComponent(keyword) : '') class=statusFilter === ROOM_STATUS.PENDING ? 'btn-primary' : 'btn-secondary')
       i.fa-solid.fa-clock(class="admin-clean-071")
       | Chờ duyệt (#{counts.pending})
-    a.btn(href="/admin/rooms?status=" + ROOM_STATUS.APPROVED class=statusFilter === ROOM_STATUS.APPROVED ? 'btn-primary' : 'btn-secondary')
+    a.btn(href="/admin/rooms?status=" + ROOM_STATUS.APPROVED + (keyword ? '&keyword=' + encodeURIComponent(keyword) : '') class=statusFilter === ROOM_STATUS.APPROVED ? 'btn-primary' : 'btn-secondary')
       i.fa-solid.fa-circle-check(class="admin-clean-072")
       | Đã duyệt (#{counts.approved})
-    a.btn(href="/admin/rooms?status=" + ROOM_STATUS.REJECTED class=statusFilter === ROOM_STATUS.REJECTED ? 'btn-primary' : 'btn-secondary')
+    a.btn(href="/admin/rooms?status=" + ROOM_STATUS.REJECTED + (keyword ? '&keyword=' + encodeURIComponent(keyword) : '') class=statusFilter === ROOM_STATUS.REJECTED ? 'btn-primary' : 'btn-secondary')
       i.fa-solid.fa-circle-xmark(class="admin-clean-073")
       | Bị từ chối (#{counts.rejected})
-    a.btn(href="/admin/rooms?status=" + ROOM_STATUS.DRAFT class=statusFilter === ROOM_STATUS.DRAFT ? 'btn-primary' : 'btn-secondary')
+    a.btn(href="/admin/rooms?status=" + ROOM_STATUS.DRAFT + (keyword ? '&keyword=' + encodeURIComponent(keyword) : '') class=statusFilter === ROOM_STATUS.DRAFT ? 'btn-primary' : 'btn-secondary')
       i.fa-solid.fa-file-lines(class="admin-clean-074")
       | Bản nháp (#{counts.draft})
 
@@ -35,7 +35,7 @@ block main
       input(type="hidden" name="status" value=statusFilter)
     div(class="admin-clean-076")
       i.fa-solid.fa-magnifying-glass(class="admin-clean-077")
-      input(type="text" name="keyword" value=keyword placeholder="Tìm tiêu đề bài đăng..." class="admin-clean-078")
+      input(type="text" name="keyword" value=keyword placeholder="Tìm tiêu đề, địa chỉ, chủ trọ..." class="admin-clean-078")
     button.btn.btn-primary(type="submit") Tìm kiếm
 
   // Table
@@ -87,15 +87,20 @@ block main
                     i.fa-solid.fa-magnifying-glass
                     span Thẩm định
                   
-                  if room.status === ROOM_STATUS.PENDING
-                    button.btn.btn-success(data-admin-action="approve-room" data-id=room._id class="admin-clean-038" title="Duyệt bài đăng")
+                  if room.status !== ROOM_STATUS.APPROVED
+                    button.btn.btn-success(data-admin-action="approve-room" data-id=room._id class="admin-clean-038" title="Phê duyệt bài đăng")
                       i.fa-solid.fa-check
                       span Duyệt
                   
-                  if room.status === ROOM_STATUS.PENDING
-                    button.btn.btn-danger(data-admin-action="reject-room" data-id=room._id class="admin-clean-038" title="Từ chối bài đăng")
+                  if room.status !== ROOM_STATUS.REJECTED
+                    button.btn.btn-danger(data-admin-action="reject-room" data-id=room._id class="admin-clean-038" title="Từ chối / Gỡ bài đăng")
                       i.fa-solid.fa-xmark
                       span Từ chối
+
+                  if room.status === ROOM_STATUS.APPROVED
+                    a.btn.btn-secondary(href=`/rooms/detail/${room._id}` target="_blank" class="admin-clean-038" title="Xem trên website")
+                      i.fa-solid.fa-arrow-up-right-from-square
+                      span Xem web
 
                   button.btn.btn-secondary(data-admin-action="delete-room" data-id=room._id class="admin-clean-087" title="Xóa vĩnh viễn")
                     i.fa-solid.fa-trash-can

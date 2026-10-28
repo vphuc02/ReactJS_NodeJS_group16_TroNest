@@ -40,7 +40,19 @@
     },
     "delete-room": async (id) => {
       if (!window.confirm("Bạn có chắc chắn muốn xóa bài đăng này khỏi hệ thống?")) return;
-      notifyResult(await postJson(`/admin/rooms/delete/${id}`));
+      const res = await postJson(`/admin/rooms/delete/${id}`);
+      if (res.code === 200) {
+        window.notyf.success(res.message);
+        if (window.location.pathname.includes("/detail/")) {
+          setTimeout(() => {
+            window.location.href = "/admin/rooms";
+          }, 1000);
+        } else {
+          reloadSoon();
+        }
+      } else {
+        window.notyf.error(res.message);
+      }
     },
     "delete-category": async (id) => {
       if (!window.confirm("Bạn có chắc muốn xóa loại phòng này?")) return;

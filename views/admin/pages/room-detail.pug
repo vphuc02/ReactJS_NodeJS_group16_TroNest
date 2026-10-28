@@ -12,14 +12,25 @@ block main
         | Kiểm tra nội dung bài đăng trước khi ra quyết định phê duyệt hoặc từ chối
     
     div(class="admin-clean-043")
-      if room.status === ROOM_STATUS.PENDING
+      if room.status !== ROOM_STATUS.APPROVED
         button.btn.btn-success(data-admin-action="approve-room" data-id=room._id class="admin-clean-044")
           i.fa-solid.fa-check
           | Phê duyệt xuất bản
-      if room.status === ROOM_STATUS.PENDING
+
+      if room.status !== ROOM_STATUS.REJECTED
         button.btn.btn-danger(data-admin-action="reject-room" data-id=room._id class="admin-clean-044")
           i.fa-solid.fa-xmark
-          | Từ chối bài đăng
+          | Từ chối / Gỡ bài
+
+      if room.status === ROOM_STATUS.APPROVED
+        a.btn.btn-secondary(href=`/rooms/detail/${room._id}` target="_blank" class="admin-clean-044")
+          i.fa-solid.fa-arrow-up-right-from-square
+          | Xem trên website
+
+      button.btn.btn-danger(data-admin-action="delete-room" data-id=room._id class="admin-clean-044")
+        i.fa-solid.fa-trash-can
+        | Xóa bài đăng
+
       a.btn.btn-secondary(href="/admin/rooms")
         i.fa-solid.fa-arrow-left
         | Quay lại danh sách
@@ -45,7 +56,15 @@ block main
       h2(class="admin-clean-050")= room.title
       
       div(class="admin-clean-051")
-        img(src=room.thumbnail || "/client/assets/images/product-1.jpg" class="admin-clean-052")
+        img(src=room.thumbnail || "/client/assets/images/product-1.jpg" class="admin-clean-052" alt=room.title)
+
+      if room.images && room.images.length > 0
+        div(style="margin-top: 14px")
+          b(class="admin-clean-059") Tất cả hình ảnh bài đăng (#{room.images.length} ảnh):
+          div(style="display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; margin-top: 8px")
+            each imgUrl in room.images
+              a(href=imgUrl target="_blank" title="Xem ảnh kích thước lớn")
+                img(src=imgUrl style="width: 100%; height: 80px; object-fit: cover; border-radius: 6px; border: 1px solid #e2e8f0" alt="Ảnh chi tiết")
 
       div(class="admin-clean-053")
         div
@@ -62,9 +81,17 @@ block main
         div
           b Địa chỉ: 
           span #{room.address}, #{room.district}, #{room.province}
+        if room.location && room.location.coordinates && room.location.coordinates.length >= 2
+          div
+            b Tọa độ GPS: 
+            span #{room.location.coordinates[1].toFixed(5)}, #{room.location.coordinates[0].toFixed(5)} 
+            a(href=`https://maps.google.com/?q=${room.location.coordinates[1]},${room.location.coordinates[0]}` target="_blank" style="color: #2563eb; text-decoration: underline; margin-left: 6px") (Xem trên Google Maps)
         div
           b Loại phòng: 
           span= room.categoryId ? room.categoryId.title : '-'
+        div
+          b Tiền cọc: 
+          span #{room.deposit ? room.deposit.toLocaleString('vi-VN') + ' đ' : '0 đ'}
         div
           b Giá điện: 
           span= room.electricityPrice
@@ -74,6 +101,9 @@ block main
         div
           b Dịch vụ: 
           span= room.servicePrice
+        div
+          b Lượt xem: 
+          span #{room.views || 0} lượt
 
       if room.amenities && room.amenities.length > 0
         div(class="admin-clean-058")
@@ -84,7 +114,7 @@ block main
 
       div
         b(class="admin-clean-059") Mô tả bài đăng:
-        p(class="admin-clean-062")= room.description
+        p(class="admin-clean-062")= room.description || '(Không có mô tả)'
 
     // Cột thông tin Chủ trọ
     .landlord-info-card(class="admin-clean-049")
@@ -93,7 +123,7 @@ block main
         div(class="admin-clean-064")
           img(src=room.landlordId.avatar || "/admin/assets/images/avatar.jpg" class="admin-clean-065")
           h4(class="admin-clean-066")= room.landlordId.fullName
-          span.badge.badge-green(class="admin-clean-067") Chủ trọ xác thực
+          span.badge.badge-green(class="admin-clean-067") Chủ trọ hệ thống
 
         div(class="admin-clean-068")
           div
@@ -107,6 +137,12 @@ block main
             span= room.landlordId.address || '-'
           div
             b Ngày tham gia: 
-            span= new Date(room.landlordId.createdAt).toLocaleDateString('vi-VN')
+            span= room.landlordId.createdAt ? new Date(room.landlordId.createdAt).toLocaleDateString('vi-VN') : '-'
+
+        div(style="margin-top: 16px")
+          a.btn.btn-secondary(href=`/admin/rooms?keyword=${encodeURIComponent(room.landlordId.email)}` style="width: 100%; text-align: center; justify-content: center")
+            i.fa-solid.fa-list(style="margin-right: 6px")
+            | Xem tất cả bài đăng của chủ này
       else
         p(class="admin-clean-069") Không có thông tin chủ trọ
+
