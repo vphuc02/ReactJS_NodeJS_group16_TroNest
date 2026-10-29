@@ -91,3 +91,47 @@ module.exports.uploadRoomImages = async (req, res, next) => {
     activeUploads.delete(userId);
   }
 };
+
+const avatarUploadDir = path.join(__dirname, '../public/uploads/avatars');
+const uploadAvatarSingle = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024, files: 1 },
+  fileFilter: (req, file, cb) => {
+    if (getImageExtension(file)) return cb(null, true);
+    cb(new AppError(400, 'Chỉ chấp nhận ảnh jpg, jpeg, png, webp, gif!'));
+  }
+}).single('avatar');
+
+const receiveAvatar = (req, res) => new Promise((resolve, reject) => {
+  uploadAvatarSingle(req, res, (error) => error ? reject(error) : resolve());
+});
+
+module.exports.uploadAvatar = async (req, res, next) => {
+  try {
+    await fs.mkdir(avatarUploadDir, { recursive: true });
+    await receiveAvatar(req, res);
+    if (!req.file) {
+      return next();
+    }
+    const image = sharp(req.file.buffer, { limitInputPixels: 25000000, failOn: 'warning' });
+    const buffer = await image
+      .rotate()
+      .resize(300, 300, { fit: 'cover' })
+      .webp({ quality: 85 })
+      .toBuffer();
+
+    const filename = `avatar-${req.user._id}-${randomUUID()}.webp`;
+    const fullPath = path.join(avatarUploadDir, filename);
+    await fs.writeFile(fullPath, buffer, { flag: 'wx' });
+    req.file.storedPath = `/uploads/avatars/${filename}`;
+    next();
+  } catch (error) {
+    if (error instanceof multer.MulterError) {
+      return next(new AppError(400, error.code === 'LIMIT_FILE_SIZE'
+        ? 'Dung lượng ảnh đại diện không được vượt quá 5 MB!'
+        : 'Chỉ được tải lên 1 tệp ảnh đại diện!'));
+    }
+    next(error);
+  }
+};
+

@@ -5,103 +5,167 @@ block title
   title Quản lý và Phê duyệt bài đăng phòng trọ - TroNest
 
 block main
-  div(class="admin-clean-040")
-    div
-      h1.box-title(class="admin-clean-041")
-        | Quản lý & Phê duyệt Bài đăng phòng trọ
-      p(class="admin-clean-042")
-        | Kiểm duyệt nội dung bài đăng phòng trước khi cho phép hiển thị công khai trên website
+  div(class="space-y-6 max-w-7xl mx-auto")
+    //- 1. Header
+    div(class="flex flex-col sm:flex-row sm:items-center justify-between gap-4")
+      div
+        h1.box-title(class="text-2xl font-bold tracking-tight text-slate-900 m-0")
+          | Quản lý & Phê duyệt Bài đăng phòng trọ
+        p(class="text-xs text-slate-500 m-0 mt-1")
+          | Kiểm duyệt nội dung bài đăng phòng trước khi cho phép hiển thị công khai trên website
 
-  // Filter Tabs
-  .filter-tabs(class="admin-clean-070")
-    a.btn(href="/admin/rooms" class=!statusFilter ? 'btn-primary' : 'btn-secondary')
-      | Tất cả (#{counts.all})
-    a.btn(href="/admin/rooms?status=" + ROOM_STATUS.PENDING class=statusFilter === ROOM_STATUS.PENDING ? 'btn-primary' : 'btn-secondary')
-      i.fa-solid.fa-clock(class="admin-clean-071")
-      | Chờ duyệt (#{counts.pending})
-    a.btn(href="/admin/rooms?status=" + ROOM_STATUS.APPROVED class=statusFilter === ROOM_STATUS.APPROVED ? 'btn-primary' : 'btn-secondary')
-      i.fa-solid.fa-circle-check(class="admin-clean-072")
-      | Đã duyệt (#{counts.approved})
-    a.btn(href="/admin/rooms?status=" + ROOM_STATUS.REJECTED class=statusFilter === ROOM_STATUS.REJECTED ? 'btn-primary' : 'btn-secondary')
-      i.fa-solid.fa-circle-xmark(class="admin-clean-073")
-      | Bị từ chối (#{counts.rejected})
-    a.btn(href="/admin/rooms?status=" + ROOM_STATUS.DRAFT class=statusFilter === ROOM_STATUS.DRAFT ? 'btn-primary' : 'btn-secondary')
-      i.fa-solid.fa-file-lines(class="admin-clean-074")
-      | Bản nháp (#{counts.draft})
+    //- 2. Card Container
+    div(class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden")
+      //- Toolbar: Filter Tabs & Search Box
+      div(class="p-4 sm:p-5 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-3.5")
+        .filter-tabs(class="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-1 md:pb-0 scrollbar-none m-0")
+          a(
+            href="/admin/rooms" + (keyword ? `?keyword=${encodeURIComponent(keyword)}` : '')
+            class="px-3 py-1.5 rounded-lg text-xs transition-colors no-underline whitespace-nowrap " + (!statusFilter ? 'font-semibold bg-slate-900 text-white' : 'font-medium text-slate-600 hover:bg-slate-100')
+          )
+            | Tất cả (#{counts.all})
+          a(
+            href="/admin/rooms?status=" + ROOM_STATUS.PENDING + (keyword ? `&keyword=${encodeURIComponent(keyword)}` : '')
+            class="px-3 py-1.5 rounded-lg text-xs transition-colors no-underline whitespace-nowrap inline-flex items-center gap-1.5 " + (statusFilter === ROOM_STATUS.PENDING ? 'font-semibold bg-slate-900 text-white' : 'font-medium text-slate-600 hover:bg-slate-100')
+          )
+            i.fa-solid.fa-clock(class=statusFilter === ROOM_STATUS.PENDING ? 'text-amber-400' : 'text-amber-500')
+            span Chờ duyệt (#{counts.pending})
+          a(
+            href="/admin/rooms?status=" + ROOM_STATUS.APPROVED + (keyword ? `&keyword=${encodeURIComponent(keyword)}` : '')
+            class="px-3 py-1.5 rounded-lg text-xs transition-colors no-underline whitespace-nowrap inline-flex items-center gap-1.5 " + (statusFilter === ROOM_STATUS.APPROVED ? 'font-semibold bg-slate-900 text-white' : 'font-medium text-slate-600 hover:bg-slate-100')
+          )
+            i.fa-solid.fa-circle-check(class=statusFilter === ROOM_STATUS.APPROVED ? 'text-emerald-400' : 'text-[#16A34A]')
+            span Đã duyệt (#{counts.approved})
+          a(
+            href="/admin/rooms?status=" + ROOM_STATUS.REJECTED + (keyword ? `&keyword=${encodeURIComponent(keyword)}` : '')
+            class="px-3 py-1.5 rounded-lg text-xs transition-colors no-underline whitespace-nowrap inline-flex items-center gap-1.5 " + (statusFilter === ROOM_STATUS.REJECTED ? 'font-semibold bg-slate-900 text-white' : 'font-medium text-slate-600 hover:bg-slate-100')
+          )
+            i.fa-solid.fa-circle-xmark(class=statusFilter === ROOM_STATUS.REJECTED ? 'text-rose-400' : 'text-rose-500')
+            span Bị từ chối (#{counts.rejected})
+          a(
+            href="/admin/rooms?status=" + ROOM_STATUS.DRAFT + (keyword ? `&keyword=${encodeURIComponent(keyword)}` : '')
+            class="px-3 py-1.5 rounded-lg text-xs transition-colors no-underline whitespace-nowrap inline-flex items-center gap-1.5 " + (statusFilter === ROOM_STATUS.DRAFT ? 'font-semibold bg-slate-900 text-white' : 'font-medium text-slate-600 hover:bg-slate-100')
+          )
+            i.fa-solid.fa-file-lines(class="text-slate-400")
+            span Bản nháp (#{counts.draft})
 
-  // Search Box
-  form(action="/admin/rooms" method="GET" class="admin-clean-075")
-    if statusFilter
-      input(type="hidden" name="status" value=statusFilter)
-    div(class="admin-clean-076")
-      i.fa-solid.fa-magnifying-glass(class="admin-clean-077")
-      input(type="text" name="keyword" value=keyword placeholder="Tìm tiêu đề bài đăng..." class="admin-clean-078")
-    button.btn.btn-primary(type="submit") Tìm kiếm
+        form(action="/admin/rooms" method="GET" class="flex items-center gap-2 w-full md:w-80 shrink-0 m-0")
+          if statusFilter
+            input(type="hidden" name="status" value=statusFilter)
+          div(class="relative flex-1")
+            input(
+              type="text"
+              name="keyword"
+              value=keyword
+              placeholder="Tìm tiêu đề bài đăng..."
+              class="w-full pl-8 pr-3 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:border-[#16A34A] focus:ring-1 focus:ring-[#16A34A] bg-slate-50/50"
+            )
+            span(class="absolute left-2.5 top-2.5 text-slate-400 text-xs pointer-events-none")
+              i.fa-solid.fa-magnifying-glass
+          button(
+            type="submit"
+            class="px-4 py-2 rounded-xl bg-[#16A34A] hover:bg-[#15803D] text-white text-xs font-semibold transition-all cursor-pointer border-0 shrink-0"
+          ) Tìm kiếm
 
-  // Table
-  .table-2(class="admin-clean-024")
-    table
-      thead
-        tr
-          th Ảnh
-          th Thông tin bài đăng
-          th Chủ trọ
-          th Giá & Diện tích
-          th Trạng thái
-          th Thao tác
-      tbody
-        if rooms && rooms.length > 0
-          each room in rooms
-            tr
-              td(class="admin-clean-079")
-                img(src=room.thumbnail || "/client/assets/images/product-1.jpg" class="admin-clean-080")
-              td
-                b(class="admin-clean-081")= room.title
-                div(class="admin-clean-035")= room.address
-                if room.categoryId
-                  span(class="admin-clean-082")
-                    = room.categoryId.title
-                if room.status === ROOM_STATUS.REJECTED && room.rejectReason
-                  div(class="admin-clean-083")
-                    b Lý do: 
-                    = room.rejectReason
-              td
-                b(class="admin-clean-034")= room.landlordId ? room.landlordId.fullName : '-'
-                span(class="admin-clean-084")= room.landlordId ? room.landlordId.phone : ''
-              td
-                div(class="admin-clean-085")
-                  = room.price.toLocaleString('vi-VN') + ' đ'
-                div(class="admin-clean-035") #{room.area} m² - #{room.capacity || 2} người
-              td
-                if room.status === ROOM_STATUS.APPROVED
-                  span.badge.badge-green Đã duyệt (APPROVED)
-                else if room.status === ROOM_STATUS.PENDING
-                  span.badge.badge-yellow Chờ duyệt (PENDING)
-                else if room.status === ROOM_STATUS.DRAFT
-                  span.badge.badge-gray Bản nháp (DRAFT)
-                else if room.status === ROOM_STATUS.REJECTED
-                  span.badge.badge-red Bị từ chối (REJECTED)
-              td
-                div(class="admin-clean-086")
-                  a.btn.btn-secondary(href=`/admin/rooms/detail/${room._id}` class="admin-clean-038" title="Thẩm định nội dung")
-                    i.fa-solid.fa-magnifying-glass
-                    span Thẩm định
-                  
-                  if room.status === ROOM_STATUS.PENDING
-                    button.btn.btn-success(data-admin-action="approve-room" data-id=room._id class="admin-clean-038" title="Duyệt bài đăng")
-                      i.fa-solid.fa-check
-                      span Duyệt
-                  
-                  if room.status === ROOM_STATUS.PENDING
-                    button.btn.btn-danger(data-admin-action="reject-room" data-id=room._id class="admin-clean-038" title="Từ chối bài đăng")
-                      i.fa-solid.fa-xmark
-                      span Từ chối
+      //- Table
+      div(class="overflow-x-auto")
+        table(class="w-full text-left border-collapse min-w-[800px]")
+          thead
+            tr(class="bg-slate-50/80 text-[11px] font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-100")
+              th(class="py-3 px-5") Thông tin bài đăng
+              th(class="py-3 px-4") Chủ trọ
+              th(class="py-3 px-4") Giá & Diện tích
+              th(class="py-3 px-4") Trạng thái
+              th(class="py-3 px-5 text-right") Thao tác
+          tbody(class="divide-y divide-slate-100 text-xs")
+            if rooms && rooms.length > 0
+              each room in rooms
+                tr(class="hover:bg-slate-50/70 transition-colors")
+                  td(class="py-3.5 px-5")
+                    div(class="flex items-start gap-3")
+                      img(
+                        src=room.thumbnail || "/client/assets/images/product-1.jpg"
+                        alt=room.title
+                        class="w-16 h-12 rounded-lg object-cover border border-slate-200/90 shrink-0 bg-slate-100 mt-0.5"
+                      )
+                      div(class="max-w-xs sm:max-w-md")
+                        a(href=`/admin/rooms/detail/${room._id}` class="font-semibold text-slate-900 hover:text-[#16A34A] transition-colors line-clamp-1 no-underline")= room.title
+                        div(class="text-[11px] text-slate-400 mt-0.5 truncate") 📍 #{room.address}
+                        if room.categoryId
+                          span(class="inline-block mt-1 px-2 py-0.5 rounded-md bg-slate-100 text-[10px] font-semibold text-slate-600")
+                            = room.categoryId.title
+                        if room.status === ROOM_STATUS.REJECTED && room.rejectReason
+                          div(class="mt-1.5 px-2.5 py-1 rounded-lg bg-rose-50 border border-rose-200 text-[11px] text-rose-700")
+                            b Lý do: 
+                            = room.rejectReason
+                  td(class="py-3.5 px-4")
+                    b(class="font-semibold text-slate-800 block")= room.landlordId ? room.landlordId.fullName : '-'
+                    span(class="text-[11px] font-semibold text-[#16A34A]")= room.landlordId ? room.landlordId.phone : ''
+                  td(class="py-3.5 px-4")
+                    div(class="font-bold text-[#16A34A] text-sm")= room.price.toLocaleString('vi-VN') + ' đ'
+                    div(class="text-[11px] text-slate-500 mt-0.5") #{room.area} m² • #{room.capacity || 2} người
+                  td(class="py-3.5 px-4")
+                    if room.status === ROOM_STATUS.APPROVED
+                      span(class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/60")
+                        span(class="w-1.5 h-1.5 rounded-full bg-emerald-500")
+                        | Đã duyệt
+                    else if room.status === ROOM_STATUS.PENDING
+                      span(class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200/60")
+                        span(class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse")
+                        | Chờ duyệt
+                    else if room.status === ROOM_STATUS.DRAFT
+                      span(class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-600 border border-slate-200/60")
+                        | Bản nháp
+                    else if room.status === ROOM_STATUS.REJECTED
+                      span(class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200/60")
+                        span(class="w-1.5 h-1.5 rounded-full bg-rose-500")
+                        | Bị từ chối
+                  td(class="py-3.5 px-5 text-right")
+                    div(class="inline-flex items-center gap-1.5 justify-end flex-wrap")
+                      a(
+                        href=`/admin/rooms/detail/${room._id}`
+                        class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-colors no-underline"
+                        title="Thẩm định nội dung"
+                      )
+                        i.fa-solid.fa-magnifying-glass(class="text-[11px]")
+                        span Thẩm định
 
-                  button.btn.btn-secondary(data-admin-action="delete-room" data-id=room._id class="admin-clean-087" title="Xóa vĩnh viễn")
-                    i.fa-solid.fa-trash-can
-        else
-          tr
-            td(colspan="6" class="admin-clean-088")
-              | Không có bài đăng nào trong danh mục này.
+                      if room.status === ROOM_STATUS.PENDING
+                        button(
+                          type="button"
+                          data-admin-action="approve-room"
+                          data-id=room._id
+                          class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#16A34A] hover:bg-[#15803D] text-white text-xs font-semibold transition-colors cursor-pointer border-0"
+                          title="Duyệt bài đăng"
+                        )
+                          i.fa-solid.fa-check(class="text-[11px]")
+                          span Duyệt
 
-  +pagination(paging, query, '/admin/rooms')
+                      if room.status === ROOM_STATUS.PENDING
+                        button(
+                          type="button"
+                          data-admin-action="reject-room"
+                          data-id=room._id
+                          class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white border border-rose-200 hover:border-rose-600 text-xs font-semibold transition-colors cursor-pointer"
+                          title="Từ chối bài đăng"
+                        )
+                          i.fa-solid.fa-xmark(class="text-[11px]")
+                          span Từ chối
+
+                      button(
+                        type="button"
+                        data-admin-action="delete-room"
+                        data-id=room._id
+                        class="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors bg-transparent border-0 cursor-pointer"
+                        title="Xóa vĩnh viễn"
+                      )
+                        i.fa-solid.fa-trash-can(class="text-xs")
+            else
+              tr
+                td(colspan="5" class="py-12 text-center text-slate-400 text-xs")
+                  | Không có bài đăng nào trong danh mục này.
+
+      if paging && paging.totalPages > 1
+        div(class="p-4 border-t border-slate-100 flex items-center justify-center sm:justify-between text-xs text-slate-500")
+          span(class="hidden sm:inline") Trang #{paging.currentPage} / #{paging.totalPages} (Tổng #{paging.total} bài đăng)
+          +pagination(paging, query, '/admin/rooms')

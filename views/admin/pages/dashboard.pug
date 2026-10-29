@@ -4,143 +4,219 @@ block title
   title Tổng quan Quản trị - TroNest
 
 block main
-  h1.box-title(class="admin-clean-001")
-    | Bảng điều khiển Quản trị viên (Admin)
-
-  // Metrics Grid
-  .stats-grid(class="admin-clean-002")
-    // Chủ trọ chờ duyệt
-    .stat-card(class="admin-clean-003")
-      div(class="admin-clean-004")
-        i.fa-solid.fa-user-clock
+  div(class="space-y-6 max-w-7xl mx-auto")
+    //- 1. Header Section
+    div(class="flex flex-col sm:flex-row sm:items-center justify-between gap-4")
       div
-        span(class="admin-clean-005") Chủ trọ chờ duyệt
-        h3(class="admin-clean-006")= pendingLandlordsCount
+        h1.box-title(class="text-2xl font-bold tracking-tight text-slate-900 m-0")
+          | Bảng điều khiển Quản trị viên (Admin)
+        p(class="text-xs text-slate-500 m-0 mt-1")
+          | Giám sát hoạt động toàn hệ thống, thẩm định đối tác Chủ trọ và phê duyệt tin đăng phòng trọ.
+      div(class="flex items-center gap-2")
+        a(
+          href="/admin/landlords?status=PENDING"
+          class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-semibold transition-all no-underline"
+        )
+          i.fa-solid.fa-user-check(class="text-amber-600")
+          span Duyệt Chủ trọ (#{pendingLandlordsCount})
+        a(
+          href="/admin/rooms?status=PENDING"
+          class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#16A34A] hover:bg-[#15803D] text-white text-xs font-semibold shadow-sm transition-all no-underline"
+        )
+          i.fa-solid.fa-house-circle-check
+          span Duyệt Phòng (#{pendingRoomsCount})
 
-    // Bài đăng chờ duyệt
-    .stat-card(class="admin-clean-007")
-      div(class="admin-clean-008")
-        i.fa-solid.fa-hourglass-half
-      div
-        span(class="admin-clean-009") Bài đăng chờ duyệt
-        h3(class="admin-clean-010")= pendingRoomsCount
+    //- 2. Metrics Grid (5 thẻ thống kê đồng bộ với Dashboard Chủ trọ)
+    .stats-grid(class="grid grid-cols-2 lg:grid-cols-5 gap-3.5 sm:gap-4")
+      //- Chủ trọ chờ duyệt
+      a.stat-card(
+        href="/admin/landlords?status=PENDING"
+        class="bg-white p-4 sm:p-5 rounded-2xl border border-amber-200/90 shadow-xs hover:shadow-md hover:border-amber-400 transition-all flex items-center gap-3.5 sm:gap-4 no-underline"
+      )
+        div(class="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-lg sm:text-xl shrink-0")
+          i.fa-solid.fa-user-clock
+        div(class="min-w-0")
+          span(class="block text-xs font-medium text-slate-500 truncate") Chủ trọ chờ duyệt
+          h3(class="text-xl sm:text-2xl font-bold text-amber-600 m-0 mt-0.5")= pendingLandlordsCount
 
-    // Tổng số chủ trọ
-    .stat-card(class="admin-clean-011")
-      div(class="admin-clean-012")
-        i.fa-solid.fa-user-tie
-      div
-        span(class="admin-clean-013") Tổng số Chủ trọ
-        h3(class="admin-clean-014")= totalLandlords
+      //- Bài đăng chờ duyệt
+      a.stat-card(
+        href="/admin/rooms?status=PENDING"
+        class="bg-white p-4 sm:p-5 rounded-2xl border border-amber-200/90 shadow-xs hover:shadow-md hover:border-amber-400 transition-all flex items-center gap-3.5 sm:gap-4 no-underline"
+      )
+        div(class="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center text-lg sm:text-xl shrink-0")
+          i.fa-solid.fa-hourglass-half
+        div(class="min-w-0")
+          span(class="block text-xs font-medium text-slate-500 truncate") Bài đăng chờ duyệt
+          h3(class="text-xl sm:text-2xl font-bold text-orange-600 m-0 mt-0.5")= pendingRoomsCount
 
-    // Phòng đã duyệt công khai
-    .stat-card(class="admin-clean-011")
-      div(class="admin-clean-015")
-        i.fa-solid.fa-circle-check
-      div
-        span(class="admin-clean-013") Phòng đang hiển thị
-        h3(class="admin-clean-016")= approvedRoomsCount
+      //- Phòng đang hiển thị
+      a.stat-card(
+        href="/admin/rooms?status=APPROVED"
+        class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-md hover:border-[#16A34A]/50 transition-all flex items-center gap-3.5 sm:gap-4 no-underline"
+      )
+        div(class="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-emerald-50 text-[#16A34A] flex items-center justify-center text-lg sm:text-xl shrink-0")
+          i.fa-solid.fa-circle-check
+        div(class="min-w-0")
+          span(class="block text-xs font-medium text-slate-500 truncate") Phòng đang hiển thị
+          h3(class="text-xl sm:text-2xl font-bold text-[#16A34A] m-0 mt-0.5")= approvedRoomsCount
 
-    // Tổng khách hàng
-    .stat-card(class="admin-clean-011")
-      div(class="admin-clean-017")
-        i.fa-solid.fa-users
-      div
-        span(class="admin-clean-013") Tổng Khách hàng
-        h3(class="admin-clean-014")= totalCustomers
+      //- Tổng số chủ trọ
+      a.stat-card(
+        href="/admin/landlords"
+        class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-md hover:border-slate-300 transition-all flex items-center gap-3.5 sm:gap-4 no-underline"
+      )
+        div(class="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center text-lg sm:text-xl shrink-0")
+          i.fa-solid.fa-user-tie
+        div(class="min-w-0")
+          span(class="block text-xs font-medium text-slate-500 truncate") Tổng số Chủ trọ
+          h3(class="text-xl sm:text-2xl font-bold text-slate-900 m-0 mt-0.5")= totalLandlords
 
-  // 1. BẢNG DUYỆT NHANH CHỦ TRỌ
-  .section-pending-landlords(class="admin-clean-018")
-    div(class="admin-clean-019")
-      div(class="admin-clean-020")
-        h2(class="admin-clean-021")
-          i.fa-solid.fa-user-clock(class="admin-clean-022")
-          | Chủ trọ mới đăng ký đang chờ phê duyệt
-        if pendingLandlordsCount > 0
-          span.badge.badge-yellow= `${pendingLandlordsCount} chờ duyệt`
-      a(href="/admin/landlords" class="admin-clean-023") Xem tất cả
+      //- Tổng khách hàng
+      a.stat-card(
+        href="/admin/users?role=CUSTOMER"
+        class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-md hover:border-slate-300 transition-all flex items-center gap-3.5 sm:gap-4 no-underline col-span-2 lg:col-span-1"
+      )
+        div(class="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center text-lg sm:text-xl shrink-0")
+          i.fa-solid.fa-users
+        div(class="min-w-0")
+          span(class="block text-xs font-medium text-slate-500 truncate") Tổng Khách hàng
+          h3(class="text-xl sm:text-2xl font-bold text-slate-900 m-0 mt-0.5")= totalCustomers
 
-    .table-2(class="admin-clean-024")
-      table
-        thead
-          tr
-            th Họ tên
-            th Email
-            th Số điện thoại
-            th Địa chỉ
-            th Ngày đăng ký
-            th Hành động
-        tbody
-          if pendingLandlords && pendingLandlords.length > 0
-            each l in pendingLandlords
+    //- 3. BẢNG DUYỆT NHANH CHỦ TRỌ
+    .section-pending-landlords(class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden")
+      div(class="p-4 sm:p-5 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3")
+        div(class="flex items-center gap-2.5")
+          span(class="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-sm")
+            i.fa-solid.fa-user-clock
+          h2(class="text-sm sm:text-base font-bold text-slate-900 m-0")
+            | Chủ trọ mới đăng ký đang chờ phê duyệt
+          if pendingLandlordsCount > 0
+            span(class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200")
+              span(class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse")
+              | #{pendingLandlordsCount} chờ duyệt
+        a(href="/admin/landlords" class="text-xs font-semibold text-[#16A34A] hover:underline no-underline")
+          | Xem tất cả →
+
+      div(class="overflow-x-auto")
+        table(class="w-full text-left border-collapse min-w-[720px]")
+          thead
+            tr(class="bg-slate-50/80 text-[11px] font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-100")
+              th(class="py-3 px-5") Họ tên
+              th(class="py-3 px-4") Email
+              th(class="py-3 px-4") Số điện thoại
+              th(class="py-3 px-4") Địa chỉ
+              th(class="py-3 px-4") Ngày đăng ký
+              th(class="py-3 px-5 text-right") Hành động
+          tbody(class="divide-y divide-slate-100 text-xs")
+            if pendingLandlords && pendingLandlords.length > 0
+              each l in pendingLandlords
+                tr(class="hover:bg-slate-50/70 transition-colors")
+                  td(class="py-3.5 px-5 font-semibold text-slate-900")= l.fullName
+                  td(class="py-3.5 px-4 text-slate-600")= l.email
+                  td(class="py-3.5 px-4 font-semibold text-[#16A34A]")= l.phone || '-'
+                  td(class="py-3.5 px-4 text-slate-600")= l.address || '-'
+                  td(class="py-3.5 px-4 text-slate-500")= new Date(l.createdAt).toLocaleDateString('vi-VN')
+                  td(class="py-3.5 px-5 text-right")
+                    div(class="inline-flex items-center gap-2 justify-end")
+                      button(
+                        type="button"
+                        data-admin-action="approve-landlord"
+                        data-id=l._id
+                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#16A34A] hover:bg-[#15803D] text-white text-xs font-semibold transition-all cursor-pointer border-0 shadow-2xs"
+                        title="Phê duyệt cho phép đăng phòng"
+                      )
+                        i.fa-solid.fa-check(class="text-[11px]")
+                        span Duyệt ngay
+                      button(
+                        type="button"
+                        data-admin-action="reject-landlord"
+                        data-id=l._id
+                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white border border-rose-200 hover:border-rose-600 text-xs font-semibold transition-all cursor-pointer"
+                        title="Từ chối"
+                      )
+                        i.fa-solid.fa-xmark(class="text-[11px]")
+                        span Từ chối
+            else
               tr
-                td
-                  b(class="admin-clean-025")= l.fullName
-                td= l.email
-                td(class="admin-clean-026")= l.phone || '-'
-                td= l.address || '-'
-                td= new Date(l.createdAt).toLocaleDateString('vi-VN')
-                td
-                  div(class="admin-clean-027")
-                    button.btn.btn-success(data-admin-action="approve-landlord" data-id=l._id class="admin-clean-028" title="Phê duyệt cho phép đăng phòng")
-                      i.fa-solid.fa-check
-                      | Duyệt ngay
-                    button.btn.btn-danger(data-admin-action="reject-landlord" data-id=l._id class="admin-clean-028" title="Từ chối")
-                      i.fa-solid.fa-xmark
-                      | Từ chối
-          else
-            tr
-              td(colspan="6" class="admin-clean-029")
-                i.fa-solid.fa-circle-check(class="admin-clean-030")
-                | Không có tài khoản Chủ trọ nào đang chờ duyệt!
+                td(colspan="6" class="py-10 text-center text-slate-400")
+                  div(class="flex items-center justify-center gap-2 text-xs font-medium text-slate-500")
+                    i.fa-solid.fa-circle-check(class="text-[#16A34A] text-base")
+                    span Không có tài khoản Chủ trọ nào đang chờ duyệt!
 
-  // 2. BẢNG DUYỆT NHANH BÀI ĐĂNG PHÒNG TRỌ
-  .section-pending-rooms
-    div(class="admin-clean-019")
-      div(class="admin-clean-020")
-        h2(class="admin-clean-021")
-          i.fa-solid.fa-house-circle-check(class="admin-clean-031")
-          | Bài đăng phòng trọ mới đang chờ phê duyệt
-        if pendingRoomsCount > 0
-          span.badge.badge-yellow= `${pendingRoomsCount} chờ duyệt`
-      a(href="/admin/rooms" class="admin-clean-023") Xem tất cả bài
+    //- 4. BẢNG DUYỆT NHANH BÀI ĐĂNG PHÒNG TRỌ
+    .section-pending-rooms(class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden")
+      div(class="p-4 sm:p-5 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3")
+        div(class="flex items-center gap-2.5")
+          span(class="w-8 h-8 rounded-xl bg-emerald-50 text-[#16A34A] flex items-center justify-center text-sm")
+            i.fa-solid.fa-house-circle-check
+          h2(class="text-sm sm:text-base font-bold text-slate-900 m-0")
+            | Bài đăng phòng trọ mới đang chờ phê duyệt
+          if pendingRoomsCount > 0
+            span(class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200")
+              span(class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse")
+              | #{pendingRoomsCount} chờ duyệt
+        a(href="/admin/rooms" class="text-xs font-semibold text-[#16A34A] hover:underline no-underline")
+          | Xem tất cả bài →
 
-    .table-2(class="admin-clean-024")
-      table
-        thead
-          tr
-            th Ảnh
-            th Tiêu đề phòng
-            th Chủ trọ
-            th Giá thuê
-            th Diện tích
-            th Hành động
-        tbody
-          if pendingRooms && pendingRooms.length > 0
-            each r in pendingRooms
+      div(class="overflow-x-auto")
+        table(class="w-full text-left border-collapse min-w-[760px]")
+          thead
+            tr(class="bg-slate-50/80 text-[11px] font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-100")
+              th(class="py-3 px-5") Phòng trọ
+              th(class="py-3 px-4") Chủ trọ
+              th(class="py-3 px-4") Giá thuê
+              th(class="py-3 px-4") Diện tích
+              th(class="py-3 px-5 text-right") Hành động
+          tbody(class="divide-y divide-slate-100 text-xs")
+            if pendingRooms && pendingRooms.length > 0
+              each r in pendingRooms
+                tr(class="hover:bg-slate-50/70 transition-colors")
+                  td(class="py-3.5 px-5")
+                    div(class="flex items-center gap-3")
+                      img(
+                        src=r.thumbnail || "/client/assets/images/product-1.jpg"
+                        alt=r.title
+                        class="w-14 h-11 rounded-lg object-cover border border-slate-200/90 shrink-0 bg-slate-100"
+                      )
+                      div(class="max-w-xs sm:max-w-sm")
+                        p(class="font-semibold text-slate-900 line-clamp-1 m-0 text-xs")= r.title
+                        p(class="text-[11px] text-slate-400 truncate m-0 mt-1") 📍 #{r.address}
+                  td(class="py-3.5 px-4")
+                    div(class="font-semibold text-slate-800")= r.landlordId ? r.landlordId.fullName : '-'
+                    div(class="text-[11px] text-slate-400 mt-0.5")= r.landlordId ? r.landlordId.phone : ''
+                  td(class="py-3.5 px-4 font-bold text-[#16A34A]") #{r.price.toLocaleString('vi-VN')} đ
+                  td(class="py-3.5 px-4 text-slate-600") #{r.area} m²
+                  td(class="py-3.5 px-5 text-right")
+                    div(class="inline-flex items-center gap-1.5 justify-end")
+                      a(
+                        href=`/admin/rooms/detail/${r._id}`
+                        class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-colors no-underline"
+                        title="Xem chi tiết thẩm định"
+                      )
+                        i.fa-solid.fa-magnifying-glass(class="text-[11px]")
+                        span Thẩm định
+                      button(
+                        type="button"
+                        data-admin-action="approve-room"
+                        data-id=r._id
+                        class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#16A34A] hover:bg-[#15803D] text-white text-xs font-semibold transition-colors cursor-pointer border-0"
+                        title="Duyệt xuất bản"
+                      )
+                        i.fa-solid.fa-check(class="text-[11px]")
+                        span Duyệt
+                      button(
+                        type="button"
+                        data-admin-action="reject-room"
+                        data-id=r._id
+                        class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white border border-rose-200 hover:border-rose-600 text-xs font-semibold transition-colors cursor-pointer"
+                        title="Từ chối"
+                      )
+                        i.fa-solid.fa-xmark(class="text-[11px]")
+                        span Từ chối
+            else
               tr
-                td(class="admin-clean-032")
-                  img(src=r.thumbnail || "/client/assets/images/product-1.jpg" class="admin-clean-033")
-                td
-                  b(class="admin-clean-034")= r.title
-                  div(class="admin-clean-035")= r.address
-                td
-                  div(class="admin-clean-036")= r.landlordId ? r.landlordId.fullName : '-'
-                  div(class="admin-clean-035")= r.landlordId ? r.landlordId.phone : ''
-                td(class="admin-clean-037") #{r.price.toLocaleString('vi-VN')} đ
-                td #{r.area} m²
-                td
-                  div(class="admin-clean-027")
-                    a.btn.btn-secondary(href=`/admin/rooms/detail/${r._id}` class="admin-clean-038" title="Xem chi tiết thẩm định")
-                      i.fa-solid.fa-magnifying-glass
-                      | Thẩm định
-                    button.btn.btn-success(data-admin-action="approve-room" data-id=r._id class="admin-clean-039" title="Duyệt xuất bản")
-                      i.fa-solid.fa-check
-                      | Duyệt
-                    button.btn.btn-danger(data-admin-action="reject-room" data-id=r._id class="admin-clean-039" title="Từ chối")
-                      i.fa-solid.fa-xmark
-          else
-            tr
-              td(colspan="6" class="admin-clean-029")
-                i.fa-solid.fa-circle-check(class="admin-clean-030")
-                | Không có bài đăng nào đang chờ duyệt! Tất cả đã được xử lý.
+                td(colspan="5" class="py-10 text-center text-slate-400")
+                  div(class="flex items-center justify-center gap-2 text-xs font-medium text-slate-500")
+                    i.fa-solid.fa-circle-check(class="text-[#16A34A] text-base")
+                    span Không có bài đăng nào đang chờ duyệt! Tất cả đã được xử lý.

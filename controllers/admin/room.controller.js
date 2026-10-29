@@ -1,5 +1,7 @@
+const mongoose = require('mongoose');
 const Room = require('../../models/room.model');
-const { ROOM_STATUS } = require('../../configs/system.config');
+const User = require('../../models/user.model');
+const { ROOM_STATUS, ROLES } = require('../../configs/system.config');
 const { escapeRegex } = require('../../helpers/security.helper');
 const { AppError } = require('../../helpers/error.helper');
 const { removeUnreferencedImages } = require('../../helpers/room.helper');
@@ -17,23 +19,47 @@ module.exports.index = async (req, res) => {
     filter.status = status;
   }
   if (keyword && keyword.trim() !== '') {
-    filter.title = { $regex: escapeRegex(keyword.trim()), $options: 'i' };
+    const safeKeyword = escapeRegex(keyword.trim());
+    const matchedLandlords = await User.find({
+      role: ROLES.LANDLORD,
+      $or: [
+        { fullName: { $regex: safeKeyword, $options: 'i' } },
+        { phone: { $regex: safeKeyword, $options: 'i' } },
+        { email: { $regex: safeKeyword, $options: 'i' } }
+      ]
+    }).select('_id').lean();
+    const landlordIds = matchedLandlords.map((l) => l._id);
+
+    filter.$or = [
+      { title: { $regex: safeKeyword, $options: 'i' } },
+      { address: { $regex: safeKeyword, $options: 'i' } },
+      { district: { $regex: safeKeyword, $options: 'i' } },
+      { ward: { $regex: safeKeyword, $options: 'i' } }
+    ];
+    if (landlordIds.length > 0) {
+      filter.$or.push({ landlordId: { $in: landlordIds } });
+    }
   }
 
-  const paging = pagination(await Room.countDocuments(filter), page);
+  const [totalFiltered, counts] = await Promise.all([
+    Room.countDocuments(filter),
+    Promise.all([
+      Room.countDocuments(),
+      Room.countDocuments({ status: ROOM_STATUS.PENDING }),
+      Room.countDocuments({ status: ROOM_STATUS.APPROVED }),
+      Room.countDocuments({ status: ROOM_STATUS.REJECTED }),
+      Room.countDocuments({ status: ROOM_STATUS.DRAFT })
+    ]).then(([all, pending, approved, rejected, draft]) => ({ all, pending, approved, rejected, draft }))
+  ]);
+
+  const paging = pagination(totalFiltered, page);
   const rooms = await Room.find(filter)
-    .sort({ updatedAt: -1, _id: -1 }).skip(paging.skip).limit(paging.limit)
+    .sort({ updatedAt: -1, _id: -1 })
+    .skip(paging.skip)
+    .limit(paging.limit)
     .populate('landlordId', 'fullName phone email')
     .populate('categoryId', 'title')
     .lean();
-
-  const counts = {
-    all: await Room.countDocuments(),
-    pending: await Room.countDocuments({ status: ROOM_STATUS.PENDING }),
-    approved: await Room.countDocuments({ status: ROOM_STATUS.APPROVED }),
-    rejected: await Room.countDocuments({ status: ROOM_STATUS.REJECTED }),
-    draft: await Room.countDocuments({ status: ROOM_STATUS.DRAFT })
-  };
 
   res.render('admin/pages/room-list', {
     title: 'Quản lý & Duyệt bài đăng phòng trọ - TroNest',
@@ -49,9 +75,13 @@ module.exports.index = async (req, res) => {
 // [GET] /admin/rooms/detail/:id
 module.exports.detail = async (req, res) => {
   const { id } = req.params;
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    throw new AppError(404, 'Bài đăng phòng trọ này không tồn tại!');
+  }
+
   const room = await Room.findById(id)
     .populate('categoryId', 'title')
-    .populate('landlordId', 'fullName phone email address')
+    .populate('landlordId', 'fullName phone email address createdAt')
     .lean();
 
   if (!room) {
@@ -67,18 +97,18 @@ module.exports.detail = async (req, res) => {
 // [POST] /admin/rooms/approve/:id
 module.exports.approve = async (req, res) => {
   const { id } = req.params;
-  const room = await Room.findOneAndUpdate(
-    { _id: id, status: ROOM_STATUS.PENDING },
-    { status: ROOM_STATUS.APPROVED, rejectReason: '' },
-    { new: true }
-  );
-
-  if (!room) {
-    if (await Room.exists({ _id: id })) {
-      throw new AppError(409, 'Chỉ được duyệt bài đang chờ. Vui lòng tải lại danh sách!');
-    }
+  if (!mongoose.Types.ObjectId.isValid(id)) {
     throw new AppError(404, 'Bài đăng không tồn tại!');
   }
+
+  const room = await Room.findById(id);
+  if (!room) {
+    throw new AppError(404, 'Bài đăng không tồn tại!');
+  }
+
+  room.status = ROOM_STATUS.APPROVED;
+  room.rejectReason = '';
+  await room.save();
 
   return res.json({
     code: 200,
@@ -91,24 +121,22 @@ module.exports.reject = async (req, res) => {
   const { id } = req.params;
   const { reason } = req.body;
 
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    throw new AppError(404, 'Bài đăng không tồn tại!');
+  }
+
   if (reason !== undefined && (typeof reason !== 'string' || reason.length > 1000)) {
     throw new AppError(400, 'Lý do từ chối không hợp lệ (tối đa 1000 ký tự)!');
   }
-  const room = await Room.findOneAndUpdate(
-    { _id: id, status: ROOM_STATUS.PENDING },
-    {
-      status: ROOM_STATUS.REJECTED,
-      rejectReason: reason || 'Nội dung bài đăng không đáp ứng tiêu chuẩn của TroNest.'
-    },
-    { new: true }
-  );
 
+  const room = await Room.findById(id);
   if (!room) {
-    if (await Room.exists({ _id: id })) {
-      throw new AppError(409, 'Chỉ được từ chối bài đang chờ. Vui lòng tải lại danh sách!');
-    }
     throw new AppError(404, 'Bài đăng không tồn tại!');
   }
+
+  room.status = ROOM_STATUS.REJECTED;
+  room.rejectReason = reason || 'Nội dung bài đăng không đáp ứng tiêu chuẩn của TroNest.';
+  await room.save();
 
   return res.json({
     code: 200,
@@ -119,8 +147,11 @@ module.exports.reject = async (req, res) => {
 // [POST] /admin/rooms/delete/:id
 module.exports.delete = async (req, res) => {
   const { id } = req.params;
-  const room = await Room.findByIdAndDelete(id);
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    throw new AppError(404, 'Bài đăng không tồn tại!');
+  }
 
+  const room = await Room.findByIdAndDelete(id);
   if (!room) {
     throw new AppError(404, 'Bài đăng không tồn tại!');
   }
@@ -133,3 +164,4 @@ module.exports.delete = async (req, res) => {
     message: 'Đã xóa bài đăng khỏi hệ thống thành công!'
   });
 };
+

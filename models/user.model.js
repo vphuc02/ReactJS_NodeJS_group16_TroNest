@@ -33,6 +33,11 @@ const userSchema = new Schema(
       type: String,
       default: ''
     },
+    facebook: {
+      type: String,
+      trim: true,
+      default: ''
+    },
     role: {
       type: String,
       enum: Object.values(ROLES),

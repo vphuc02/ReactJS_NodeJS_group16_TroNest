@@ -76,7 +76,9 @@ const isSafeStoredImagePath = (value) => {
   if (typeof value !== 'string') return false;
   return (
     /^\/uploads\/rooms\/room-[a-zA-Z0-9-]+\.(jpe?g|png|webp|gif)$/i.test(value) ||
-    /^\/client\/assets\/images\/[a-zA-Z0-9._-]+\.(jpe?g|png|webp|gif)$/i.test(value)
+    /^\/uploads\/avatars\/avatar-[a-zA-Z0-9-]+\.(jpe?g|png|webp|gif)$/i.test(value) ||
+    /^\/client\/assets\/images\/[a-zA-Z0-9._-]+\.(jpe?g|png|webp|gif)$/i.test(value) ||
+    /^\/admin\/assets\/images\/[a-zA-Z0-9._-]+\.(jpe?g|png|webp|gif)$/i.test(value)
   );
 };
 

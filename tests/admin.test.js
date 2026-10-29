@@ -131,6 +131,21 @@ describe('Quản Lý Danh Mục Phòng Trọ (Admin Category Management)', () =>
     assert.equal(created.icon, 'fa-solid fa-building');
   });
 
+  test('Chặn tạo loại phòng trùng tên hoặc trùng slug (Mã 400)', async () => {
+    await Category.create({
+      title: '[ADMIN-TEST] Phòng Độc Nhất',
+      slug: 'admin-test-phong-doc-nhat'
+    });
+
+    const res = await adminClient.post('/admin/categories/create', {
+      title: '[ADMIN-TEST] Phòng Độc Nhất'
+    });
+
+    assert.equal(res.status, 400);
+    assert.match(res.body.message, /Loại phòng này đã tồn tại/);
+  });
+
+
   test('Báo lỗi 404 khi xóa loại phòng không tồn tại (POST /admin/categories/delete/:id)', async () => {
     const fakeId = '507f1f77bcf86cd799439011';
     const res = await adminClient.post(`/admin/categories/delete/${fakeId}`);
@@ -333,3 +348,50 @@ describe('Xóa Bài Đăng Vi Phạm Phía Quản Trị Viên (Admin Room Deleti
     assert.equal(remainingFav, null);
   });
 });
+
+describe('Quy Chế Điều Phối & Quản Trị Bài Đăng (Admin Room Features)', () => {
+  test('Tự động gỡ bài đăng đã xuất bản khi chủ trọ bị từ chối hoặc bị khóa tài khoản', async () => {
+    const category = await Category.create({
+      title: '[ADMIN-TEST] Loại Phòng Cascade',
+      slug: 'admin-test-loai-phong-cascade'
+    });
+
+    // Tạo chủ trọ đã được duyệt và có 2 phòng đã APPROVED
+    const activeLandlord = await User.create({
+      fullName: 'Chủ Trọ Vi Phạm Quy Định',
+      email: 'bad.landlord@admin-test.tronest.com',
+      password: 'hash',
+      phone: '0977000999',
+      role: ROLES.LANDLORD,
+      status: USER_STATUS.APPROVED
+    });
+
+    const room1 = await Room.create({
+      title: '[ADMIN-TEST] Phòng số 1 của chủ trọ',
+      categoryId: category._id,
+      landlordId: activeLandlord._id,
+      price: 3000000,
+      area: 20,
+      address: 'Số 10 Kim Mã',
+      status: ROOM_STATUS.APPROVED
+    });
+
+    // Admin từ chối phê duyệt chủ trọ này
+    const rejectRes = await adminClient.post(`/admin/landlords/reject/${activeLandlord._id}`, {
+      reason: 'Phát hiện có hành vi gian lận thông tin'
+    });
+    assert.equal(rejectRes.status, 200);
+
+    // Bài đăng của chủ trọ phải tự động chuyển sang REJECTED
+    const checkedRoom = await Room.findById(room1._id);
+    assert.equal(checkedRoom.status, ROOM_STATUS.REJECTED);
+  });
+
+  test('Đăng xuất Admin an toàn qua phương thức GET (/admin/logout)', async () => {
+    const res = await adminClient.get('/admin/logout', { wantsJson: false });
+    assert.equal(res.status, 302);
+    assert.match(res.headers.get('location'), /\/admin\/login/);
+    assert.equal(adminClient.cookies.has('token_admin'), false);
+  });
+});
+

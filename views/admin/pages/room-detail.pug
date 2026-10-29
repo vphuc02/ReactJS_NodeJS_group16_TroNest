@@ -4,109 +4,165 @@ block title
   title= `Thẩm định bài đăng: ${room.title} - TroNest`
 
 block main
-  div(class="admin-clean-040")
-    div
-      h1.box-title(class="admin-clean-041")
-        | Thẩm định bài đăng phòng trọ
-      p(class="admin-clean-042")
-        | Kiểm tra nội dung bài đăng trước khi ra quyết định phê duyệt hoặc từ chối
-    
-    div(class="admin-clean-043")
-      if room.status === ROOM_STATUS.PENDING
-        button.btn.btn-success(data-admin-action="approve-room" data-id=room._id class="admin-clean-044")
-          i.fa-solid.fa-check
-          | Phê duyệt xuất bản
-      if room.status === ROOM_STATUS.PENDING
-        button.btn.btn-danger(data-admin-action="reject-room" data-id=room._id class="admin-clean-044")
-          i.fa-solid.fa-xmark
-          | Từ chối bài đăng
-      a.btn.btn-secondary(href="/admin/rooms")
-        i.fa-solid.fa-arrow-left
-        | Quay lại danh sách
-
-  // Status Banner
-  div(class="admin-clean-045")
-    if room.status === ROOM_STATUS.APPROVED
-      span.badge.badge-green(class="admin-clean-046") Trạng thái: ĐÃ DUYỆT (Hiển thị công khai)
-    else if room.status === ROOM_STATUS.PENDING
-      span.badge.badge-yellow(class="admin-clean-046") Trạng thái: CHỜ DUYỆT (PENDING)
-    else if room.status === ROOM_STATUS.DRAFT
-      span.badge.badge-gray(class="admin-clean-046") Trạng thái: BẢN NHÁP (DRAFT)
-    else if room.status === ROOM_STATUS.REJECTED
-      span.badge.badge-red(class="admin-clean-046") Trạng thái: BỊ TỪ CHỐI (REJECTED)
-      if room.rejectReason
-        div(class="admin-clean-047")
-          b Lý do từ chối: 
-          = room.rejectReason
-
-  .room-detail-grid(class="admin-clean-048")
-    // Cột nội dung phòng
-    .detail-card(class="admin-clean-049")
-      h2(class="admin-clean-050")= room.title
-      
-      div(class="admin-clean-051")
-        img(src=room.thumbnail || "/client/assets/images/product-1.jpg" class="admin-clean-052")
-
-      div(class="admin-clean-053")
-        div
-          span(class="admin-clean-054") Giá thuê
-          b(class="admin-clean-055") #{room.price.toLocaleString('vi-VN')} đ/tháng
-        div
-          span(class="admin-clean-054") Diện tích
-          b(class="admin-clean-056") #{room.area} m²
-        div
-          span(class="admin-clean-054") Sức chứa
-          b(class="admin-clean-056") #{room.capacity || 2} người
-
-      div(class="admin-clean-057")
-        div
-          b Địa chỉ: 
-          span #{room.address}, #{room.district}, #{room.province}
-        div
-          b Loại phòng: 
-          span= room.categoryId ? room.categoryId.title : '-'
-        div
-          b Giá điện: 
-          span= room.electricityPrice
-        div
-          b Giá nước: 
-          span= room.waterPrice
-        div
-          b Dịch vụ: 
-          span= room.servicePrice
-
-      if room.amenities && room.amenities.length > 0
-        div(class="admin-clean-058")
-          b(class="admin-clean-059") Tiện ích đi kèm:
-          div(class="admin-clean-060")
-            each am in room.amenities
-              span(class="admin-clean-061")= am
-
+  div(class="space-y-6 max-w-6xl mx-auto")
+    //- 1. Header & Actions
+    div(class="flex flex-col sm:flex-row sm:items-center justify-between gap-4")
       div
-        b(class="admin-clean-059") Mô tả bài đăng:
-        p(class="admin-clean-062")= room.description
+        h1.box-title(class="text-2xl font-bold tracking-tight text-slate-900 m-0")
+          | Thẩm định bài đăng phòng trọ
+        p(class="text-xs text-slate-500 m-0 mt-1")
+          | Kiểm tra nội dung bài đăng trước khi ra quyết định phê duyệt hoặc từ chối
 
-    // Cột thông tin Chủ trọ
-    .landlord-info-card(class="admin-clean-049")
-      h3(class="admin-clean-063") Thông tin Chủ trọ
-      if room.landlordId
-        div(class="admin-clean-064")
-          img(src=room.landlordId.avatar || "/admin/assets/images/avatar.jpg" class="admin-clean-065")
-          h4(class="admin-clean-066")= room.landlordId.fullName
-          span.badge.badge-green(class="admin-clean-067") Chủ trọ xác thực
+      div(class="flex flex-wrap items-center gap-2.5")
+        if room.status === ROOM_STATUS.PENDING
+          button(
+            type="button"
+            data-admin-action="approve-room"
+            data-id=room._id
+            class="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#16A34A] hover:bg-[#15803D] text-white text-xs font-bold shadow-sm transition-all cursor-pointer border-0"
+          )
+            i.fa-solid.fa-check
+            span Phê duyệt xuất bản
+          button(
+            type="button"
+            data-admin-action="reject-room"
+            data-id=room._id
+            class="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white border border-rose-200 hover:border-rose-600 text-xs font-bold transition-all cursor-pointer"
+          )
+            i.fa-solid.fa-xmark
+            span Từ chối bài đăng
+        a(
+          href="/admin/rooms"
+          class="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 text-xs font-semibold transition-all no-underline shadow-2xs"
+        )
+          i.fa-solid.fa-arrow-left
+          span Quay lại danh sách
 
-        div(class="admin-clean-068")
+    //- 2. Status Banner
+    div(class="bg-white rounded-2xl border border-slate-200/80 p-4 flex flex-wrap items-center justify-between gap-3 shadow-2xs")
+      div(class="flex items-center gap-2.5")
+        span(class="text-xs font-semibold text-slate-500") Trạng thái hiện tại:
+        if room.status === ROOM_STATUS.APPROVED
+          span(class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200")
+            span(class="w-2 h-2 rounded-full bg-emerald-500")
+            | ĐÃ DUYỆT (Hiển thị công khai)
+        else if room.status === ROOM_STATUS.PENDING
+          span(class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200")
+            span(class="w-2 h-2 rounded-full bg-amber-500 animate-pulse")
+            | CHỜ DUYỆT (PENDING)
+        else if room.status === ROOM_STATUS.DRAFT
+          span(class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-600 border border-slate-200")
+            | BẢN NHÁP (DRAFT)
+        else if room.status === ROOM_STATUS.REJECTED
+          span(class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200")
+            span(class="w-2 h-2 rounded-full bg-rose-500")
+            | BỊ TỪ CHỐI (REJECTED)
+
+      if room.status === ROOM_STATUS.APPROVED
+        a(
+          href=`/rooms/detail/${room._id}`
+          target="_blank"
+          class="text-xs font-semibold text-[#16A34A] hover:underline no-underline flex items-center gap-1"
+        )
+          i.fa-solid.fa-up-right-from-square(class="text-[11px]")
+          span Xem bài đăng trên web chính
+
+    if room.status === ROOM_STATUS.REJECTED && room.rejectReason
+      div(class="rounded-2xl bg-rose-50 border border-rose-200 p-4 text-xs text-rose-800")
+        b(class="text-rose-900") Lý do từ chối: 
+        = room.rejectReason
+
+    //- 3. Main Detail Grid
+    div(class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start")
+      //- Cột nội dung phòng (2/3)
+      .detail-card(class="lg:col-span-2 bg-white p-5 sm:p-6 rounded-2xl border border-slate-200/80 shadow-xs space-y-5")
+        h2(class="text-lg sm:text-xl font-bold text-slate-900 m-0 leading-snug")= room.title
+
+        div(class="rounded-2xl overflow-hidden border border-slate-200 bg-slate-100 h-72 sm:h-80")
+          img(
+            src=room.thumbnail || "/client/assets/images/product-1.jpg"
+            alt=room.title
+            class="w-full h-full object-cover"
+          )
+
+        if room.images && room.images.length > 1
+          div(class="flex gap-2.5 overflow-x-auto pb-1")
+            each img in room.images
+              img(src=img alt=room.title class="w-20 h-16 rounded-lg object-cover border border-slate-200 shrink-0")
+
+        //- Thông số chính
+        div(class="grid grid-cols-3 gap-4 bg-slate-50/80 p-4 rounded-2xl border border-slate-100 text-center")
           div
-            b Email: 
-            span= room.landlordId.email
+            span(class="block text-xs text-slate-500 mb-1") Giá thuê
+            b(class="text-base sm:text-lg font-extrabold text-[#16A34A]") #{room.price.toLocaleString('vi-VN')} đ/tháng
           div
-            b SĐT: 
-            span= room.landlordId.phone || '-'
+            span(class="block text-xs text-slate-500 mb-1") Diện tích
+            b(class="text-base sm:text-lg font-bold text-slate-800") #{room.area} m²
           div
-            b Địa chỉ: 
-            span= room.landlordId.address || '-'
+            span(class="block text-xs text-slate-500 mb-1") Sức chứa
+            b(class="text-base sm:text-lg font-bold text-slate-800") #{room.capacity || 2} người
+
+        //- Chi tiết địa chỉ & dịch vụ
+        div(class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm text-slate-600 bg-white p-4 rounded-xl border border-slate-100")
+          div(class="sm:col-span-2")
+            b(class="text-slate-800") Địa chỉ: 
+            span #{room.address}, #{room.district}, #{room.province}
           div
-            b Ngày tham gia: 
-            span= new Date(room.landlordId.createdAt).toLocaleDateString('vi-VN')
-      else
-        p(class="admin-clean-069") Không có thông tin chủ trọ
+            b(class="text-slate-800") Loại phòng: 
+            span= room.categoryId ? room.categoryId.title : '-'
+          div
+            b(class="text-slate-800") Giá điện: 
+            span= room.electricityPrice
+          div
+            b(class="text-slate-800") Giá nước: 
+            span= room.waterPrice
+          div
+            b(class="text-slate-800") Dịch vụ: 
+            span= room.servicePrice
+
+        if room.amenities && room.amenities.length > 0
+          div(class="space-y-2")
+            b(class="block text-xs sm:text-sm font-bold text-slate-800") Tiện ích đi kèm:
+            div(class="flex flex-wrap gap-2")
+              each am in room.amenities
+                span(class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200/70 text-xs font-medium")
+                  i.fa-solid.fa-circle-check(class="text-[#16A34A] text-[10px]")
+                  span= am
+
+        div(class="space-y-2 pt-2 border-t border-slate-100")
+          b(class="block text-xs sm:text-sm font-bold text-slate-800") Mô tả bài đăng:
+          p(class="whitespace-pre-line text-slate-600 text-xs sm:text-sm leading-relaxed m-0")= room.description
+
+      //- Cột thông tin Chủ trọ (1/3)
+      .landlord-info-card(class="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200/80 shadow-xs space-y-4")
+        h3(class="text-sm font-bold text-slate-800 m-0 pb-3 border-b border-slate-100 flex items-center gap-2")
+          i.fa-solid.fa-user-tie(class="text-[#16A34A]")
+          span Thông tin Chủ trọ
+
+        if room.landlordId
+          div(class="text-center py-2")
+            img(
+              src=room.landlordId.avatar || "/admin/assets/images/avatar.jpg"
+              alt=room.landlordId.fullName
+              class="w-16 h-16 rounded-full object-cover border-2 border-emerald-100 mx-auto mb-2.5"
+            )
+            h4(class="m-0 text-base font-bold text-slate-900")= room.landlordId.fullName
+            span(class="inline-flex items-center gap-1 mt-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200")
+              i.fa-solid.fa-circle-check(class="text-[10px] text-[#16A34A]")
+              span Chủ trọ xác thực
+
+          div(class="space-y-2.5 text-xs text-slate-600 pt-3 border-t border-slate-100")
+            div(class="flex items-center justify-between gap-2")
+              b(class="text-slate-500") Email:
+              span(class="font-medium text-slate-800 truncate")= room.landlordId.email
+            div(class="flex items-center justify-between gap-2")
+              b(class="text-slate-500") SĐT:
+              span(class="font-bold text-[#16A34A]")= room.landlordId.phone || '-'
+            div(class="flex items-center justify-between gap-2")
+              b(class="text-slate-500") Địa chỉ:
+              span(class="font-medium text-slate-800 text-right")= room.landlordId.address || '-'
+            div(class="flex items-center justify-between gap-2")
+              b(class="text-slate-500") Ngày tham gia:
+              span(class="font-medium text-slate-800")= new Date(room.landlordId.createdAt).toLocaleDateString('vi-VN')
+        else
+          p(class="text-xs text-slate-400 m-0") Không có thông tin chủ trọ

@@ -1,14 +1,40 @@
-html
+doctype html
+html(lang="vi")
   head
     meta(charset="UTF-8")
     meta(name="viewport", content="width=device-width, initial-scale=1.0")
     block title
     link(rel="icon" href="/favicon.png")
     link(rel="stylesheet", href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css")
-    link(rel="stylesheet", href="/admin/assets/css/style.css")
     link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css")
-  body
-    .page-account
+    script(src="https://cdn.tailwindcss.com")
+    script.
+      tailwind.config = {
+        corePlugins: {
+          preflight: false
+        },
+        theme: {
+          extend: {
+            colors: {
+              brand: {
+                50: '#F0FDF4',
+                100: '#DCFCE7',
+                200: '#BBF7D0',
+                500: '#16A34A',
+                600: '#15803D',
+                700: '#166534',
+                DEFAULT: '#16A34A',
+                dark: '#14532D',
+                forest: '#1C3322',
+                light: '#F0FDF4'
+              }
+            }
+          }
+        }
+      }
+    link(rel="stylesheet", href="/admin/assets/css/style.css")
+  body(class="bg-[#FAFAF9] min-h-screen flex items-center justify-center p-4")
+    .page-account(class="w-full flex items-center justify-center")
       block main
 
     script(src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js")

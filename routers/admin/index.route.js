@@ -25,6 +25,7 @@ router.get('/', (req, res) => {
 // Trang đăng nhập / đăng xuất riêng biệt cho Admin
 router.get('/login', accountController.loginGet);
 router.post('/login', adminLoginRateLimit, accountValidation.loginPost, accountController.loginPost);
+router.get('/logout', accountController.logoutGet);
 router.post('/logout', accountController.logoutPost);
 
 // Yêu cầu quyền ADMIN riêng biệt cho toàn bộ các tính năng quản trị bên dưới

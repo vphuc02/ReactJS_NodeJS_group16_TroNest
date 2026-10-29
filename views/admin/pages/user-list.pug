@@ -5,85 +5,123 @@ block title
   title Quản lý người dùng - TroNest
 
 block main
-  div(class="admin-clean-040")
-    div
-      h1.box-title(class="admin-clean-041")
-        | Quản lý người dùng hệ thống
-      p(class="admin-clean-042")
-        | Danh sách tất cả tài khoản Khách hàng, Chủ trọ và Quản trị viên trong hệ thống
+  div(class="space-y-6 max-w-7xl mx-auto")
+    //- 1. Header
+    div(class="flex flex-col sm:flex-row sm:items-center justify-between gap-4")
+      div
+        h1.box-title(class="text-2xl font-bold tracking-tight text-slate-900 m-0")
+          | Quản lý người dùng hệ thống
+        p(class="text-xs text-slate-500 m-0 mt-1")
+          | Danh sách tất cả tài khoản Khách hàng, Chủ trọ và Quản trị viên trong hệ thống
 
-  // Filter Form
-  form(action="/admin/users" method="GET" class="admin-clean-105")
-    select(name="role" class="admin-clean-106")
-      option(value="") -- Tất cả vai trò --
-      option(value=ROLES.CUSTOMER selected=roleFilter === ROLES.CUSTOMER) Khách hàng
-      option(value=ROLES.LANDLORD selected=roleFilter === ROLES.LANDLORD) Chủ trọ
-      option(value=ROLES.ADMIN selected=roleFilter === ROLES.ADMIN) Quản trị viên (Admin)
+    //- 2. Card Container
+    div(class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden")
+      //- Filter Form
+      form(action="/admin/users" method="GET" class="p-4 sm:p-5 border-b border-slate-100 flex flex-wrap items-center gap-3 m-0")
+        select(
+          name="role"
+          class="px-3.5 py-2 text-xs rounded-xl border border-slate-200 bg-slate-50/50 text-slate-700 font-medium focus:outline-none focus:border-[#16A34A]"
+        )
+          option(value="") -- Tất cả vai trò --
+          option(value=ROLES.CUSTOMER selected=roleFilter === ROLES.CUSTOMER) Khách hàng
+          option(value=ROLES.LANDLORD selected=roleFilter === ROLES.LANDLORD) Chủ trọ
+          option(value=ROLES.ADMIN selected=roleFilter === ROLES.ADMIN) Quản trị viên (Admin)
 
-    select(name="status" class="admin-clean-106")
-      option(value="") -- Tất cả trạng thái --
-      option(value=USER_STATUS.ACTIVE selected=statusFilter === USER_STATUS.ACTIVE) Đang hoạt động (ACTIVE)
-      option(value=USER_STATUS.INACTIVE selected=statusFilter === USER_STATUS.INACTIVE) Đã khóa (INACTIVE)
-      option(value=USER_STATUS.PENDING selected=statusFilter === USER_STATUS.PENDING) Chờ duyệt (PENDING)
-      option(value=USER_STATUS.APPROVED selected=statusFilter === USER_STATUS.APPROVED) Đã duyệt (APPROVED)
+        select(
+          name="status"
+          class="px-3.5 py-2 text-xs rounded-xl border border-slate-200 bg-slate-50/50 text-slate-700 font-medium focus:outline-none focus:border-[#16A34A]"
+        )
+          option(value="") -- Tất cả trạng thái --
+          option(value=USER_STATUS.ACTIVE selected=statusFilter === USER_STATUS.ACTIVE) Đang hoạt động (ACTIVE)
+          option(value=USER_STATUS.INACTIVE selected=statusFilter === USER_STATUS.INACTIVE) Đã khóa (INACTIVE)
+          option(value=USER_STATUS.PENDING selected=statusFilter === USER_STATUS.PENDING) Chờ duyệt (PENDING)
+          option(value=USER_STATUS.APPROVED selected=statusFilter === USER_STATUS.APPROVED) Đã duyệt (APPROVED)
 
-    div(class="admin-clean-107")
-      i.fa-solid.fa-magnifying-glass(class="admin-clean-077")
-      input(type="text" name="keyword" value=keyword placeholder="Tìm theo tên, email, sđt..." class="admin-clean-078")
+        div(class="relative flex-1 min-w-[220px]")
+          input(
+            type="text"
+            name="keyword"
+            value=keyword
+            placeholder="Tìm theo tên, email, sđt..."
+            class="w-full pl-8 pr-3 py-2 text-xs rounded-xl border border-slate-200 bg-slate-50/50 focus:outline-none focus:border-[#16A34A] focus:ring-1 focus:ring-[#16A34A]"
+          )
+          span(class="absolute left-2.5 top-2.5 text-slate-400 text-xs pointer-events-none")
+            i.fa-solid.fa-magnifying-glass
 
-    button.btn.btn-primary(type="submit") Lọc danh sách
+        button(
+          type="submit"
+          class="px-4 py-2 rounded-xl bg-[#16A34A] hover:bg-[#15803D] text-white text-xs font-semibold transition-all cursor-pointer border-0"
+        ) Lọc danh sách
 
-  // Table
-  .table-2(class="admin-clean-024")
-    table
-      thead
-        tr
-          th Họ tên
-          th Email
-          th Số điện thoại
-          th Vai trò
-          th Trạng thái
-          th Thao tác
-      tbody
-        if users && users.length > 0
-          each u in users
-            tr
-              td
-                div(class="admin-clean-020")
-                  img(src=u.avatar || "/admin/assets/images/avatar.jpg" class="admin-clean-108")
-                  b(class="admin-clean-025")= u.fullName
-              td= u.email
-              td(class="admin-clean-026")= u.phone || '-'
-              td
-                if u.role === ROLES.ADMIN
-                  span.badge.badge-blue Admin
-                else if u.role === ROLES.LANDLORD
-                  span.badge.badge-yellow Chủ trọ
-                else
-                  span.badge.badge-gray Khách hàng
-              td
-                if u.isBlocked || u.status === USER_STATUS.INACTIVE
-                  span.badge.badge-red Đã khóa
-                else if u.status === USER_STATUS.ACTIVE || u.status === USER_STATUS.APPROVED
-                  span.badge.badge-green= u.status
-                else if u.status === USER_STATUS.PENDING
-                  span.badge.badge-yellow PENDING
-                else
-                  span.badge.badge-red= u.status
-              td
-                if u.role !== ROLES.ADMIN
-                  button.btn.admin-small-action(data-admin-action="toggle-user-status" data-id=u._id class=u.isBlocked || u.status === USER_STATUS.INACTIVE ? 'btn-success' : 'btn-danger')
-                    if u.isBlocked || u.status === USER_STATUS.INACTIVE
-                      i.fa-solid.fa-lock-open
-                      | Mở khóa
+      //- Table
+      div(class="overflow-x-auto")
+        table(class="w-full text-left border-collapse min-w-[740px]")
+          thead
+            tr(class="bg-slate-50/80 text-[11px] font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-100")
+              th(class="py-3 px-5") Họ tên
+              th(class="py-3 px-4") Email
+              th(class="py-3 px-4") Số điện thoại
+              th(class="py-3 px-4") Vai trò
+              th(class="py-3 px-4") Trạng thái
+              th(class="py-3 px-5 text-right") Thao tác
+          tbody(class="divide-y divide-slate-100 text-xs")
+            if users && users.length > 0
+              each u in users
+                tr(class="hover:bg-slate-50/70 transition-colors")
+                  td(class="py-3.5 px-5")
+                    div(class="flex items-center gap-3")
+                      img(
+                        src=u.avatar || "/admin/assets/images/avatar.jpg"
+                        alt=u.fullName
+                        class="w-9 h-9 rounded-full object-cover border border-slate-200 shrink-0"
+                      )
+                      b(class="font-semibold text-slate-900")= u.fullName
+                  td(class="py-3.5 px-4 text-slate-600")= u.email
+                  td(class="py-3.5 px-4 font-semibold text-[#16A34A]")= u.phone || '-'
+                  td(class="py-3.5 px-4")
+                    if u.role === ROLES.ADMIN
+                      span(class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-900 text-amber-300") Admin
+                    else if u.role === ROLES.LANDLORD
+                      span(class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800") Chủ trọ
                     else
-                      i.fa-solid.fa-lock
-                      | Khóa tài khoản
-                else
-                  span(class="admin-clean-109") Không thể khóa
-        else
-          tr
-            td(colspan="6" class="admin-clean-088")
-              | Không tìm thấy người dùng phù hợp.
+                      span(class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800") Khách hàng
+                  td(class="py-3.5 px-4")
+                    if u.isBlocked || u.status === USER_STATUS.INACTIVE
+                      span(class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200/60")
+                        span(class="w-1.5 h-1.5 rounded-full bg-rose-500")
+                        | Đã khóa
+                    else if u.status === USER_STATUS.ACTIVE || u.status === USER_STATUS.APPROVED
+                      span(class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/60")
+                        span(class="w-1.5 h-1.5 rounded-full bg-emerald-500")
+                        = u.status
+                    else if u.status === USER_STATUS.PENDING
+                      span(class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200/60")
+                        span(class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse")
+                        | PENDING
+                    else
+                      span(class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200/60")= u.status
+                  td(class="py-3.5 px-5 text-right")
+                    if u.role !== ROLES.ADMIN
+                      button(
+                        type="button"
+                        data-admin-action="toggle-user-status"
+                        data-id=u._id
+                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer " + (u.isBlocked || u.status === USER_STATUS.INACTIVE ? 'bg-[#16A34A] hover:bg-[#15803D] text-white border-0' : 'bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white border border-rose-200 hover:border-rose-600')
+                      )
+                        if u.isBlocked || u.status === USER_STATUS.INACTIVE
+                          i.fa-solid.fa-lock-open(class="text-[11px]")
+                          span Mở khóa
+                        else
+                          i.fa-solid.fa-lock(class="text-[11px]")
+                          span Khóa tài khoản
+                    else
+                      span(class="text-[11px] text-slate-400 italic") Không thể khóa
+            else
+              tr
+                td(colspan="6" class="py-12 text-center text-slate-400 text-xs")
+                  | Không tìm thấy người dùng phù hợp.
 
-  +pagination(paging, query, '/admin/users')
+      if paging && paging.totalPages > 1
+        div(class="p-4 border-t border-slate-100 flex items-center justify-center sm:justify-between text-xs text-slate-500")
+          span(class="hidden sm:inline") Trang #{paging.currentPage} / #{paging.totalPages} (Tổng #{paging.total} người dùng)
+          +pagination(paging, query, '/admin/users')

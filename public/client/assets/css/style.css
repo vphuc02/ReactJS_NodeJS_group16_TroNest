@@ -1,21 +1,26 @@
 @import url('https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@100..900&display=swap');
 
 :root {
-  /* Warm Homely & Clean White Identity Palette */
-  --color-primary: #E05638;          /* Warm Terracotta / Cozy Hearth */
-  --color-primary-dark: #C94529;     /* Deep Warm Terracotta */
-  --color-primary-light: #FF6B4A;    /* Warm Coral / Bright Hearth */
-  --color-primary-hover: #B83A20;    /* Hover Deep Warm */
-  --color-accent-gold: #F59E0B;      /* Warm Amber Gold */
-  --color-accent-caramel: #EA580C;   /* Warm Sunset Caramel */
-  --color-mint: #E5E7EB;             /* Soft Clean Neutral Border */
-  --color-mint-light: #F9FAFB;       /* Soft Clean Light Neutral */
-  --color-bg-warm: #FFFFFF;          /* Clean Pure White Canvas */
-  --color-bg-subtle: #FAFAF9;        /* Warm Cozy Off-White Contrast */
-  --color-text-dark: #1F2937;        /* Clean Warm Charcoal Text */
-  --color-text-muted: #6B7280;       /* Neutral Warm Slate Gray */
+  /* Homigo-inspired Fresh Multi-tone & Bento Pastel Palette */
+  --color-primary: #16A34A;          /* Clover Green tươi mướt mắt */
+  --color-primary-dark: #15803D;     /* Dark Clover */
+  --color-primary-light: #22C55E;    /* Vibrant Bright Green */
+  --color-primary-hover: #15803D;    /* Hover State */
+  --color-forest: #1C3322;           /* Deep Forest Green (Thẻ tương phản như Homigo) */
+  --color-accent-gold: #F59E0B;      /* Warm Amber Apricot */
+  --color-bg-warm: #FFFFFF;          /* Pure White Canvas */
+  --color-bg-subtle: #F9FBFA;        /* Subtle Off-White with faint green-mint tint */
+  --color-text-dark: #111827;        /* Crisp Charcoal Black */
+  --color-text-muted: #6B7280;       /* Neutral Gray */
   --color-border-subtle: #E5E7EB;    /* Delicate Clean Border */
   --color-card-bg: #FFFFFF;          /* Pure White Card */
+
+  /* Pastel Bento Cards Tokens (Tham khảo ảnh Homigo) */
+  --color-bento-mint: #E8F8F0;
+  --color-bento-peach: #FDF2F0;
+  --color-bento-blue: #EFF6FF;
+  --color-bento-purple: #F5F3FF;
+  --color-bento-amber: #FFFBEB;
 }
 
 * {
@@ -37,6 +42,11 @@ body {
   padding: 0;
   padding-top: 96px;
   background-color: var(--color-bg-warm);
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(220, 252, 231, 0.45) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(224, 242, 254, 0.4) 0px, transparent 50%),
+    radial-gradient(at 50% 30%, rgba(254, 243, 199, 0.25) 0px, transparent 60%);
+  background-repeat: no-repeat;
   color: var(--color-text-dark);
   overflow-x: hidden;
   width: 100%;
@@ -212,13 +222,13 @@ input, button, textarea {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: linear-gradient(135deg, #FF6B4A 0%, #E05638 100%);
+  background: linear-gradient(135deg, #22C55E 0%, #16A34A 100%);
   color: #ffffff !important;
   font-size: 13.5px;
   font-weight: 600;
   padding: 8px 18px;
   border-radius: 50px;
-  box-shadow: 0 3px 10px rgba(224, 86, 56, 0.25);
+  box-shadow: 0 3px 10px rgba(22, 163, 74, 0.25);
   transition: all 0.25s ease;
   border: 1px solid rgba(255, 255, 255, 0.2);
   cursor: pointer;
@@ -229,8 +239,8 @@ input, button, textarea {
 
 .btn-post-room:hover {
   transform: translateY(-2px);
-  box-shadow: 0 5px 14px rgba(224, 86, 56, 0.35);
-  background: linear-gradient(135deg, #E05638 0%, #C94529 100%);
+  box-shadow: 0 5px 14px rgba(22, 163, 74, 0.35);
+  background: linear-gradient(135deg, #16A34A 0%, #15803D 100%);
   color: #ffffff !important;
 }
 
@@ -2192,7 +2202,7 @@ input, button, textarea {
 .client-clean-008 { margin-bottom: 10px; }
 .client-clean-009 { font-size: 24px; font-weight: 800; color: #1F2937; line-height: 1.4; margin: 0 0 10px; }
 .client-clean-010 { display: flex; align-items: center; gap: 16px; font-size: 14px; color: #6B7280; flex-wrap: wrap; }
-.client-clean-011 { color: #E05638; margin-right: 6px; }
+.client-clean-011 { color: #16A34A; margin-right: 6px; }
 .client-clean-012 { margin-right: 6px; }
 .client-clean-013 { color: #F59E0B; }
 .client-clean-014 { margin-bottom: 30px; }
@@ -2202,7 +2212,7 @@ input, button, textarea {
 .client-clean-018 { width: 100px; height: 75px; object-fit: cover; border-radius: 8px; cursor: pointer; border: 2px solid transparent; }
 .client-clean-019 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; padding: 20px; background: #FAFAF9; border: 1px solid #E5E7EB; border-radius: 14px; margin-bottom: 30px; text-align: center; }
 .client-clean-020 { font-size: 13px; color: #6B7280; display: block; margin-bottom: 4px; }
-.client-clean-021 { font-size: 18px; color: #E05638; font-weight: 700; }
+.client-clean-021 { font-size: 18px; color: #16A34A; font-weight: 700; }
 .client-clean-022 { font-size: 18px; color: #1F2937; }
 .client-clean-023 { margin-bottom: 30px; padding: 20px; border: 1px dashed #cbd5e1; border-radius: 14px; }
 .client-clean-024 { font-size: 16px; font-weight: 700; color: #1e293b; margin: 0 0 14px; }
@@ -2220,19 +2230,19 @@ input, button, textarea {
 .client-clean-036 { background: #fff; padding: 24px; border-radius: 20px; border: 1px solid #E5E7EB; box-shadow: 0 4px 15px rgba(0,0,0,0.03); text-align: center; }
 .client-clean-037 { position: relative; width: 80px; height: 80px; margin: 0 auto 16px; }
 .client-clean-038 { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; border: 3px solid #E5E7EB; }
-.client-clean-039 { position: absolute; bottom: 0; right: 0; background: #E05638; color: #fff; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; }
+.client-clean-039 { position: absolute; bottom: 0; right: 0; background: #16A34A; color: #fff; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; }
 .client-clean-040 { font-size: 18px; font-weight: 700; color: #1F2937; margin: 0 0 4px; }
 .client-clean-041 { margin-bottom: 16px; }
 .client-clean-042 { margin-bottom: 12px; }
-.client-clean-043 { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 14px; background: linear-gradient(135deg, #FF6B4A 0%, #E05638 100%); color: #fff; border-radius: 12px; font-weight: 700; font-size: 16px; text-decoration: none; box-shadow: 0 4px 12px rgba(224, 86, 56, 0.25); }
+.client-clean-043 { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 14px; background: linear-gradient(135deg, #22C55E 0%, #16A34A 100%); color: #fff; border-radius: 12px; font-weight: 700; font-size: 16px; text-decoration: none; box-shadow: 0 4px 12px rgba(22, 163, 74, 0.25); }
 .client-clean-044 { margin-bottom: 20px; }
 .client-clean-045 { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 12px; background: #0068ff; color: #fff; border-radius: 12px; font-weight: 700; font-size: 15px; text-decoration: none; }
 .client-clean-046 { color: #6B7280; font-size: 14px; }
 .client-clean-047 { border: 0; border-top: 1px solid #F3F4F6; margin: 16px 0; }
 .client-clean-048 { text-align: left; font-size: 13px; color: #6B7280; line-height: 1.8; }
-.client-clean-049 { width: 20px; color: #E05638; }
-.client-clean-050 { background: #FFF5F2; padding: 20px; border-radius: 16px; border: 1px solid #FEE2D8; font-size: 13px; color: #7C2D12; line-height: 1.6; }
-.client-clean-051 { font-weight: 700; display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-size: 14px; color: #E05638; }
+.client-clean-049 { width: 20px; color: #16A34A; }
+.client-clean-050 { background: #F0FDF4; padding: 20px; border-radius: 16px; border: 1px solid #BBF7D0; font-size: 13px; color: #14532D; line-height: 1.6; }
+.client-clean-051 { font-weight: 700; display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-size: 14px; color: #16A34A; }
 .client-clean-052 { padding-left: 20px; margin: 0; color: #6B7280; }
 .client-clean-053 { margin-top: 60px; }
 .client-clean-054 { font-size: 22px; font-weight: 800; color: #1F2937; margin-bottom: 24px; }
@@ -2240,7 +2250,7 @@ input, button, textarea {
 .client-clean-056 { padding: 50px 0; background: #FFFFFF; border-bottom: 1px solid #F3F4F6; }
 .client-clean-057 { text-align: center; max-width: 900px; margin: 0 auto; }
 .client-clean-058 { font-size: 38px; font-weight: 800; color: #1F2937; line-height: 1.3; margin-bottom: 16px; }
-.client-clean-059 { color: #E05638; }
+.client-clean-059 { color: #16A34A; }
 .client-clean-060 { font-size: 16px; color: #6B7280; margin-bottom: 35px; }
 .client-clean-061 { background: #fff; padding: 20px; border-radius: 20px; border: 1px solid #E5E7EB; box-shadow: 0 10px 30px rgba(0,0,0,0.05); display: flex; flex-wrap: wrap; gap: 15px; align-items: center; }
 .client-clean-062 { flex: 2; min-width: 200px; text-align: left; }
@@ -2250,32 +2260,143 @@ input, button, textarea {
 .client-clean-066 { flex: 1.2; min-width: 150px; text-align: left; }
 .client-clean-067 { width: 100%; padding: 10px 14px; background: #FAFAFA; border: 1px solid #E5E7EB; border-radius: 10px; font-size: 14px; outline: none; color: #1F2937; }
 .client-clean-068 { flex: 0.8; min-width: 120px; align-self: flex-end; }
-.client-clean-069 { width: 100%; padding: 12px 20px; background: linear-gradient(135deg, #FF6B4A 0%, #E05638 100%); color: #fff; font-weight: 700; border: none; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 15px; box-shadow: 0 4px 12px rgba(224, 86, 56, 0.25); }
-.client-clean-070 { padding: 50px 0; background: #FAFAF9; }
-.client-clean-071 { font-size: 26px; font-weight: 800; color: #1F2937; text-align: center; margin-bottom: 30px; }
-.client-clean-072 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
-.client-clean-073 { background: #fff; padding: 24px 20px; border-radius: 16px; text-align: center; border: 1px solid #E5E7EB; box-shadow: 0 4px 15px rgba(0,0,0,0.03); transition: all 0.3s ease; text-decoration: none; display: flex; flex-direction: column; align-items: center; }
-.client-clean-073:hover { border-color: #E05638; transform: translateY(-3px); box-shadow: 0 8px 24px rgba(224, 86, 56, 0.1); }
-.client-clean-074 { width: 55px; height: 55px; border-radius: 14px; background: #FFF5F2; display: flex; align-items: center; justify-content: center; font-size: 24px; color: #E05638; margin-bottom: 14px; }
-.client-clean-075 { font-size: 16px; font-weight: 700; color: #1F2937; margin: 0 0 6px; }
-.client-clean-076 { font-size: 12px; color: #6B7280; margin: 0; }
-.client-clean-077 { padding: 40px 0 60px; background: #fff; }
-.client-clean-078 { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 30px; }
+.client-clean-069 { width: 100%; padding: 12px 20px; background: linear-gradient(135deg, #22C55E 0%, #16A34A 100%); color: #fff; font-weight: 700; border: none; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 15px; box-shadow: 0 4px 12px rgba(22, 163, 74, 0.25); }
+/* Categories Section - Bento Pastel Cards (Homigo Multi-accent Style) */
+.client-clean-070 { 
+  padding: 70px 0; 
+  background: transparent;
+  position: relative;
+}
+.client-clean-071 { 
+  font-size: 28px; 
+  font-weight: 800; 
+  color: #111827; 
+  text-align: center; 
+  margin-bottom: 36px; 
+  letter-spacing: -0.025em; 
+}
+
+.categories-grid { 
+  display: grid; 
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); 
+  gap: 20px; 
+}
+
+/* Base Bento Card với bo góc lớn mềm mại */
+.client-clean-073 { 
+  padding: 28px 22px; 
+  border-radius: 24px; 
+  text-align: left; 
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+  text-decoration: none; 
+  display: flex; 
+  flex-direction: column; 
+  align-items: flex-start;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.03);
+}
+
+.client-clean-073:hover { 
+  transform: translateY(-4px); 
+  box-shadow: 0 16px 30px rgba(0, 0, 0, 0.06); 
+}
+
+/* 1. Thẻ Xanh Mint / Lá (Giống thẻ AI Phân Tích Thông Minh) */
+.client-clean-073:nth-child(5n + 1) {
+  background: #E8F8F0;
+}
+.client-clean-073:nth-child(5n + 1) .client-clean-074 {
+  background: #FFFFFF;
+  color: #16A34A;
+  box-shadow: 0 2px 8px rgba(22, 163, 74, 0.12);
+}
+
+/* 2. Thẻ Hồng Đào Pastel (Giống thẻ Cảnh Báo Lừa Đảo) */
+.client-clean-073:nth-child(5n + 2) {
+  background: #FDF2F0;
+}
+.client-clean-073:nth-child(5n + 2) .client-clean-074 {
+  background: #FFFFFF;
+  color: #EF4444;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.12);
+}
+
+/* 3. Thẻ Xanh Băng Tuyết (Giống thẻ Nguồn Facebook) */
+.client-clean-073:nth-child(5n + 3) {
+  background: #EFF6FF;
+}
+.client-clean-073:nth-child(5n + 3) .client-clean-074 {
+  background: #FFFFFF;
+  color: #3B82F6;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.12);
+}
+
+/* 4. Thẻ Vàng Mơ Ấm Áp (Giống thẻ Liên Hệ Trực Tiếp) */
+.client-clean-073:nth-child(5n + 4) {
+  background: #FFFBEB;
+}
+.client-clean-073:nth-child(5n + 4) .client-clean-074 {
+  background: #FFFFFF;
+  color: #F59E0B;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.12);
+}
+
+/* 5. Thẻ Tím Lavender Pastel (Giống thẻ Lọc Thông Minh) */
+.client-clean-073:nth-child(5n + 5) {
+  background: #F5F3FF;
+}
+.client-clean-073:nth-child(5n + 5) .client-clean-074 {
+  background: #FFFFFF;
+  color: #8B5CF6;
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.12);
+}
+
+.client-clean-074 { 
+  width: 48px; 
+  height: 48px; 
+  border-radius: 14px; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  font-size: 20px; 
+  margin-bottom: 18px; 
+  transition: all 0.3s ease; 
+}
+
+.client-clean-075 { 
+  font-size: 17px; 
+  font-weight: 800; 
+  color: #111827; 
+  margin: 0 0 6px; 
+  letter-spacing: -0.01em;
+}
+
+.client-clean-076 { 
+  font-size: 13px; 
+  color: #6B7280; 
+  margin: 0; 
+  line-height: 1.5;
+}
+
+.client-clean-077 { padding: 50px 0 70px; background: transparent; }
+.client-clean-078 { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 28px; }
 .client-clean-079 { margin-bottom: 8px; }
-.client-clean-080 { font-size: 26px; font-weight: 800; color: #1F2937; margin: 0; }
-.client-clean-081 { color: #E05638; font-weight: 700; display: flex; align-items: center; gap: 6px; font-size: 15px; }
-.client-clean-082 { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 24px; }
-.client-clean-083 { padding: 60px 0; }
+.client-clean-080 { font-size: 26px; font-weight: 800; color: #111827; margin: 0; letter-spacing: -0.02em; }
+.client-clean-081 { color: #16A34A; font-weight: 700; display: flex; align-items: center; gap: 6px; font-size: 14px; text-decoration: none; padding: 6px 18px; border-radius: 9999px; border: 1px solid #BBF7D0; background: #FFFFFF; transition: all 0.25s ease; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
+.client-clean-081:hover { background: #16A34A; color: #FFFFFF; border-color: #16A34A; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(22, 163, 74, 0.2); }
+.client-clean-082 { display: grid; grid-template-columns: repeat(auto-fill, minmax(275px, 1fr)); gap: 24px; }
+.client-clean-083 { padding: 60px 0 80px; background: transparent; }
 .client-clean-084 { text-align: center; color: #6B7280; padding: 40px 0; }
 .client-clean-085 { padding: 60px 0; background: #fff; border-top: 1px solid #E5E7EB; }
 .client-clean-086 { font-size: 26px; font-weight: 800; color: #1F2937; text-align: center; margin-bottom: 40px; }
 .client-clean-087 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 30px; }
 .client-clean-088 { padding: 24px; border-radius: 16px; background: #FAFAF9; border: 1px solid #E5E7EB; text-align: center; }
-.client-clean-089 { width: 50px; height: 50px; border-radius: 50%; background: #FFF5F2; color: #E05638; display: flex; align-items: center; justify-content: center; font-size: 22px; margin: 0 auto 16px; }
+.client-clean-089 { width: 50px; height: 50px; border-radius: 50%; background: #F0FDF4; color: #16A34A; display: flex; align-items: center; justify-content: center; font-size: 22px; margin: 0 auto 16px; }
 .client-clean-090 { font-size: 17px; font-weight: 700; margin: 0 0 10px; color: #1F2937; }
 .client-clean-091 { font-size: 14px; color: #6B7280; margin: 0; line-height: 1.5; }
 .client-clean-092 { width: 50px; height: 50px; border-radius: 50%; background: #FDF4E3; color: #B45309; display: flex; align-items: center; justify-content: center; font-size: 22px; margin: 0 auto 16px; }
-.client-clean-093 { width: 50px; height: 50px; border-radius: 50%; background: #FFF5F2; color: #E05638; display: flex; align-items: center; justify-content: center; font-size: 22px; margin: 0 auto 16px; }
+.client-clean-093 { width: 50px; height: 50px; border-radius: 50%; background: #F0FDF4; color: #16A34A; display: flex; align-items: center; justify-content: center; font-size: 22px; margin: 0 auto 16px; }
 .client-clean-094 { margin-bottom: 24px; }
 .client-clean-095 { font-size: 28px; font-weight: 800; color: #1F2937; margin: 0 0 8px; }
 .client-clean-096 { color: #64748b; font-size: 14px; margin: 0; }
@@ -2283,11 +2404,11 @@ input, button, textarea {
 .client-clean-098 { background: #fff; padding: 24px; border-radius: 16px; border: 1px solid #E5E7EB; box-shadow: 0 4px 15px rgba(0,0,0,0.03); position: sticky; top: 20px; }
 .client-clean-099 { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #F3F4F6; padding-bottom: 12px; }
 .client-clean-100 { font-size: 18px; font-weight: 700; color: #1F2937; margin: 0; display: flex; align-items: center; gap: 8px; }
-.client-clean-101 { font-size: 13px; color: #E05638; font-weight: 600; }
+.client-clean-101 { font-size: 13px; color: #16A34A; font-weight: 600; }
 .client-clean-102 { margin-bottom: 18px; }
 .client-clean-103 { display: block; font-size: 13px; font-weight: 700; color: #374151; margin-bottom: 6px; }
 .client-clean-104 { width: 100%; padding: 10px 12px; border: 1px solid #E5E7EB; border-radius: 8px; font-size: 14px; background: #FAFAFA; color: #1F2937; }
-.client-clean-105 { width: 100%; padding: 12px; background: linear-gradient(135deg, #FF6B4A 0%, #E05638 100%); color: #fff; font-weight: 700; border: none; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 3px 10px rgba(224, 86, 56, 0.2); }
+.client-clean-105 { width: 100%; padding: 12px; background: linear-gradient(135deg, #22C55E 0%, #16A34A 100%); color: #fff; font-weight: 700; border: none; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 3px 10px rgba(22, 163, 74, 0.2); }
 .client-clean-106 { background: #fff; padding: 14px 20px; border-radius: 12px; border: 1px solid #E5E7EB; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: gap; }
 .client-clean-107 { font-size: 14px; font-weight: 600; color: #1F2937; }
 .client-clean-108 { display: flex; gap: 8px; flex-wrap: wrap; }
@@ -2297,39 +2418,39 @@ input, button, textarea {
 .client-clean-112 { font-size: 48px; color: #E5E7EB; margin-bottom: 16px; }
 .client-clean-113 { font-size: 18px; color: #1F2937; margin: 0 0 8px; }
 .client-clean-114 { color: #6B7280; font-size: 14px; margin: 0 0 20px; }
-.client-clean-115 { padding: 10px 20px; background: linear-gradient(135deg, #FF6B4A 0%, #E05638 100%); color: #fff; border-radius: 8px; font-weight: 600; font-size: 14px; }
+.client-clean-115 { padding: 10px 20px; background: linear-gradient(135deg, #22C55E 0%, #16A34A 100%); color: #fff; border-radius: 8px; font-weight: 600; font-size: 14px; }
 .client-clean-116 { font-size: 28px; font-weight: 800; color: #1F2937; margin: 0 0 8px; display: flex; align-items: center; gap: 12px; }
 .client-clean-117 { color: #6B7280; font-size: 14px; margin: 0; }
 .client-clean-118 { text-align: center; padding: 80px 20px; background: #fff; border-radius: 20px; border: 1px solid #E5E7EB; }
 .client-clean-119 { font-size: 56px; color: #E5E7EB; margin-bottom: 16px; }
 .client-clean-120 { font-size: 20px; color: #1F2937; margin: 0 0 10px; }
 .client-clean-121 { color: #6B7280; font-size: 14px; margin: 0 0 24px; max-width: 450px; margin-left: auto; margin-right: auto; }
-.client-clean-122 { display: inline-block; padding: 12px 24px; background: linear-gradient(135deg, #FF6B4A 0%, #E05638 100%); color: #fff; font-weight: 700; border-radius: 10px; text-decoration: none; box-shadow: 0 4px 12px rgba(224, 86, 56, 0.25); }
+.client-clean-122 { display: inline-block; padding: 12px 24px; background: linear-gradient(135deg, #22C55E 0%, #16A34A 100%); color: #fff; font-weight: 700; border-radius: 10px; text-decoration: none; box-shadow: 0 4px 12px rgba(22, 163, 74, 0.25); }
 .client-clean-123 { padding: 80px 0; text-align: center; }
 .client-clean-124 { max-width: 500px; margin: 0 auto; background: #fff; padding: 40px; border-radius: 20px; border: 1px solid #E5E7EB; box-shadow: 0 4px 15px rgba(0,0,0,0.04); }
 .client-clean-125 { font-size: 56px; color: #F59E0B; margin-bottom: 20px; }
 .client-clean-126 { font-size: 24px; font-weight: 800; color: #1F2937; margin: 0 0 12px; }
 .client-clean-127 { color: #6B7280; font-size: 15px; line-height: 1.6; margin: 0 0 28px; }
 .client-clean-128 { margin-right: 8px; }
-.client-clean-129 { background: #18181B; color: #D4D4D8; padding: 60px 0 30px; margin-top: 60px; border-top: 2px solid #E05638; }
+.client-clean-129 { background: #18181B; color: #D4D4D8; padding: 60px 0 30px; margin-top: 60px; border-top: 2px solid #16A34A; }
 .client-clean-130 { display: grid; grid-template-columns: 2fr 1fr 1fr 1.5fr; gap: 40px; margin-bottom: 40px; }
 .client-clean-131 { display: flex; align-items: center; gap: 8px; font-size: 24px; font-weight: 800; color: #fff; margin-bottom: 16px; }
-.client-clean-132 { color: #FF6B4A; font-size: 28px; }
+.client-clean-132 { color: #22C55E; font-size: 28px; }
 .client-clean-133 { line-height: 1.6; font-size: 14px; color: #A1A1AA; }
 .client-clean-134 { display: flex; gap: 12px; margin-top: 16px; }
 .client-clean-135 { color: #fff; background: rgba(255, 255, 255, 0.12); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
 .client-clean-136 { color: #fff; font-size: 16px; font-weight: 700; margin-bottom: 20px; }
 .client-clean-137 { list-style: none; padding: 0; margin: 0; line-height: 2; }
 .client-clean-138 { color: #D4D4D8; }
-.client-clean-138:hover { color: #FF6B4A; }
+.client-clean-138:hover { color: #22C55E; }
 .client-clean-139 { font-size: 14px; margin-bottom: 8px; color: #D4D4D8; }
-.client-clean-140 { color: #FF6B4A; margin-right: 8px; }
+.client-clean-140 { color: #22C55E; margin-right: 8px; }
 .client-clean-141 { border: 0; border-top: 1px solid #27272A; margin-bottom: 20px; }
 .client-clean-142 { text-align: center; font-size: 13px; color: #71717A; }
-.client-clean-143 { display: flex; align-items: center; gap: 8px; font-size: 24px; font-weight: 800; color: #E05638; }
-.client-clean-144 { color: #E05638; font-size: 28px; }
-.client-clean-145 { display: flex; align-items: center; gap: 8px; font-size: 20px; font-weight: 800; color: #E05638; }
-.client-clean-146 { color: #E05638; font-size: 22px; }
+.client-clean-143 { display: flex; align-items: center; gap: 8px; font-size: 24px; font-weight: 800; color: #16A34A; }
+.client-clean-144 { color: #16A34A; font-size: 28px; }
+.client-clean-145 { display: flex; align-items: center; gap: 8px; font-size: 20px; font-weight: 800; color: #16A34A; }
+.client-clean-146 { color: #16A34A; font-size: 22px; }
 .client-clean-147 { background: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.04); transition: all 0.3s ease; position: relative; border: 1px solid #E5E7EB; display: flex; flex-direction: column; }
 .client-clean-147:hover { border-color: #FDBA74; box-shadow: 0 8px 24px rgba(0,0,0,0.08); transform: translateY(-3px); }
 .client-clean-148 { position: relative; height: 210px; overflow: hidden; }
@@ -2339,7 +2460,7 @@ input, button, textarea {
 .client-clean-152 { font-size: 16px; font-weight: 700; line-height: 1.4; margin: 0 0 10px; height: 44px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; }
 .client-clean-153 { color: #1F2937; text-decoration: none; }
 .client-clean-154 { display: flex; align-items: baseline; gap: 4px; margin-bottom: 12px; }
-.client-clean-155 { font-size: 20px; font-weight: 800; color: #E05638; }
+.client-clean-155 { font-size: 20px; font-weight: 800; color: #16A34A; }
 .client-clean-156 { font-size: 13px; color: #6B7280; font-weight: 600; }
 .client-clean-157 { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 12px; font-size: 13px; color: #6B7280; border-bottom: 1px dashed #E5E7EB; padding-bottom: 12px; }
 .client-clean-158 { display: flex; align-items: center; gap: 5px; }
@@ -2347,7 +2468,7 @@ input, button, textarea {
 .client-clean-160 { display: flex; align-items: center; gap: 6px; }
 .client-clean-161 { color: #F59E0B; }
 .client-clean-162 { max-width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; }
-.client-clean-163 { color: #E05638; font-weight: 700; display: flex; align-items: center; gap: 4px; }
+.client-clean-163 { color: #16A34A; font-weight: 700; display: flex; align-items: center; gap: 4px; }
 .client-clean-164 { font-size: 11px; }
 
 .room-detail-fav {
@@ -2368,7 +2489,7 @@ input, button, textarea {
 }
 
 .room-sort-link.is-active {
-  background: #E05638;
+  background: #16A34A;
   color: #fff;
 }
 
@@ -2388,9 +2509,9 @@ input, button, textarea {
 }
 
 .room-page-link.is-active {
-  background: #E05638;
+  background: #16A34A;
   color: #fff;
-  border-color: #E05638;
+  border-color: #16A34A;
 }
 
 /* Custom styles bổ trợ cho TroNest */
@@ -2401,7 +2522,7 @@ input, button, textarea {
   font-size: 13px;
   font-weight: 600;
 }
-.badge-green { background: #FFF5F2; color: #E05638; border: 1px solid #FEE2D8; }
+.badge-green { background: #F0FDF4; color: #16A34A; border: 1px solid #BBF7D0; }
 .badge-yellow { background: #FEF3C7; color: #92400E; }
 .badge-red { background: #FEE2E2; color: #991B1B; }
 .badge-blue { background: #E0E7FF; color: #3730A3; }
@@ -2425,7 +2546,7 @@ input, button, textarea {
   color: #94a3b8;
 }
 .btn-fav.active, .btn-fav:hover {
-  color: #E05638;
+  color: #16A34A;
   background: #fff;
   transform: scale(1.1);
 }
@@ -2448,36 +2569,36 @@ input, button, textarea {
 .auth-inline-02 { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 40px 20px; }
 .auth-inline-03 { background: #fff; border-radius: 24px; padding: 50px 40px; width: 100%; max-width: 500px; border: 1px solid #E5E7EB; box-shadow: 0 10px 40px rgba(0,0,0,0.05); }
 .auth-inline-04 { text-align: center; margin-bottom: 24px; }
-.auth-inline-05 { display: inline-flex; align-items: center; gap: 8px; font-size: 26px; font-weight: 800; color: #E05638; text-decoration: none; }
-.auth-inline-06 { color: #E05638; font-size: 32px; }
+.auth-inline-05 { display: inline-flex; align-items: center; gap: 8px; font-size: 26px; font-weight: 800; color: #16A34A; text-decoration: none; }
+.auth-inline-06 { color: #16A34A; font-size: 32px; }
 .auth-inline-07 { font-size: 24px; font-weight: 800; color: #1F2937; text-align: center; margin-bottom: 8px; }
 .auth-inline-08 { text-align: center; color: #6B7280; font-size: 14px; margin-bottom: 28px; }
 .auth-inline-09 { margin-bottom: 18px; }
 .auth-inline-10 { display: block; font-size: 13px; font-weight: 700; color: #374151; margin-bottom: 6px; }
 .auth-inline-11 { width: 100%; padding: 12px 14px; border: 1px solid #E5E7EB; border-radius: 10px; font-size: 14px; outline: none; background: #FAFAFA; color: #1F2937; }
-.auth-inline-11:focus { border-color: #E05638; background: #fff; box-shadow: 0 0 0 3px rgba(224, 86, 56, 0.12); }
+.auth-inline-11:focus { border-color: #16A34A; background: #fff; box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.12); }
 .auth-inline-12 { margin-bottom: 20px; }
 .auth-inline-13 { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; font-size: 13px; }
 .auth-inline-14 { display: flex; align-items: center; gap: 6px; cursor: pointer; color: #6B7280; }
-.auth-inline-15 { accent-color: #E05638; }
+.auth-inline-15 { accent-color: #16A34A; }
 .auth-inline-16 { color: #6B7280; font-size: 12px; }
-.auth-inline-17 { width: 100%; padding: 14px; background: linear-gradient(135deg, #FF6B4A 0%, #E05638 100%); color: #fff; font-weight: 700; border: none; border-radius: 10px; font-size: 15px; cursor: pointer; box-shadow: 0 4px 12px rgba(224, 86, 56, 0.25); }
+.auth-inline-17 { width: 100%; padding: 14px; background: linear-gradient(135deg, #22C55E 0%, #16A34A 100%); color: #fff; font-weight: 700; border: none; border-radius: 10px; font-size: 15px; cursor: pointer; box-shadow: 0 4px 12px rgba(22, 163, 74, 0.25); }
 .auth-inline-18 { text-align: center; margin-top: 24px; font-size: 14px; color: #6B7280; }
-.auth-inline-19 { color: #E05638; font-weight: 700; text-decoration: none; }
+.auth-inline-19 { color: #16A34A; font-weight: 700; text-decoration: none; }
 .auth-inline-20 { margin-top: 24px; padding-top: 20px; border-top: 1px dashed #e2e8f0; font-size: 12px; color: #94a3b8; text-align: center; }
 .auth-inline-21 { background: #fff; border-radius: 24px; padding: 45px 40px; width: 100%; max-width: 550px; border: 1px solid #E5E7EB; box-shadow: 0 10px 40px rgba(0,0,0,0.05); }
 .auth-inline-22 { text-align: center; margin-bottom: 20px; }
 .auth-inline-23 { text-align: center; color: #6B7280; font-size: 14px; margin-bottom: 24px; }
 .auth-inline-24 { margin-bottom: 22px; background: #FAFAFA; padding: 6px; border-radius: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; border: 1px solid #E5E7EB; }
 .auth-inline-25 { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 700; transition: 0.2s; color: #1F2937; }
-.auth-inline-26 { accent-color: #E05638; }
+.auth-inline-26 { accent-color: #16A34A; }
 .auth-inline-27 { background: #FFFBEB; border: 1px solid #FEF3C7; color: #92400E; padding: 12px 16px; border-radius: 10px; font-size: 13px; margin-bottom: 20px; line-height: 1.5; }
 .auth-inline-28 { margin-right: 6px; color: #D97706; }
 .auth-inline-29 { margin-bottom: 16px; }
 .auth-inline-30 { width: 100%; padding: 11px 14px; border: 1px solid #E5E7EB; border-radius: 10px; font-size: 14px; outline: none; background: #FAFAFA; color: #1F2937; }
-.auth-inline-30:focus { border-color: #E05638; background: #fff; box-shadow: 0 0 0 3px rgba(224, 86, 56, 0.12); }
+.auth-inline-30:focus { border-color: #16A34A; background: #fff; box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.12); }
 .auth-inline-31 { margin-bottom: 22px; }
-.auth-submit-landlord { background: linear-gradient(135deg, #FF6B4A 0%, #E05638 100%) !important; box-shadow: 0 4px 12px rgba(224, 86, 56, 0.25) !important; }
+.auth-submit-landlord { background: linear-gradient(135deg, #22C55E 0%, #16A34A 100%) !important; box-shadow: 0 4px 12px rgba(22, 163, 74, 0.25) !important; }
 
 .layout-room-list > *,
 .room-detail-layout > *,
@@ -2607,9 +2728,9 @@ input, button, textarea {
 
 .hero-swiper-btn:hover {
   background: #ffffff;
-  color: #E05638;
-  transform: scale(1.08);
-  box-shadow: 0 6px 20px rgba(224, 86, 56, 0.35);
+  color: #16A34A;
+  transform: scale(1.06);
+  box-shadow: 0 6px 20px rgba(22, 163, 74, 0.2);
 }
 
 .hero-swiper-prev {
@@ -2627,9 +2748,9 @@ input, button, textarea {
 }
 
 .hero-swiper-pagination .swiper-pagination-bullet {
-  width: 9px;
-  height: 9px;
-  background: rgba(255, 255, 255, 0.7);
+  width: 8px;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.75);
   opacity: 1;
   transition: all 0.3s ease;
 }
@@ -2637,8 +2758,8 @@ input, button, textarea {
 .hero-swiper-pagination .swiper-pagination-bullet-active {
   width: 24px;
   border-radius: 10px;
-  background: #E05638;
-  box-shadow: 0 2px 8px rgba(224, 86, 56, 0.6);
+  background: #22C55E;
+  box-shadow: 0 2px 10px rgba(34, 197, 94, 0.5);
 }
 
 /* Hero Search Wrapper (Kết hợp nổi trực tiếp lên phần Banner ảnh) */
@@ -2649,13 +2770,13 @@ input, button, textarea {
   padding: 0 0 32px;
 }
 
-/* Home Search Card (Thẻ form nền trắng tinh khôi, gọn gàng, hiện đại) */
+/* Home Search Card (Thẻ form nền trắng tinh khôi bo góc mềm mại 24px) */
 .home-search-form {
   background: #FFFFFF;
-  padding: 18px 24px;
-  border-radius: 20px;
-  border: 1px solid rgba(229, 231, 235, 0.95);
-  box-shadow: 0 14px 35px rgba(0, 0, 0, 0.09), 0 3px 8px rgba(0, 0, 0, 0.03);
+  padding: 22px 28px;
+  border-radius: 24px;
+  border: 1px solid rgba(229, 231, 235, 0.85);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.02);
   max-width: 1140px;
   margin: 0 auto;
 }
@@ -2685,14 +2806,14 @@ input, button, textarea {
 }
 
 .search-field-label i {
-  color: #E05638;
-  font-size: 12.5px;
+  color: #16A34A;
+  font-size: 13px;
 }
 
 .search-input-wrapper {
-  background: #FAFAFA;
+  background: #F9FAFB;
   border: 1.5px solid #E5E7EB;
-  border-radius: 11px;
+  border-radius: 14px;
   transition: all 0.25s ease;
   display: flex;
   align-items: center;
@@ -2700,13 +2821,13 @@ input, button, textarea {
 
 .search-input-wrapper:hover {
   background: #FFFFFF;
-  border-color: #D1D5DB;
+  border-color: #86EFAC;
 }
 
 .search-input-wrapper:focus-within {
   background: #FFFFFF;
-  border-color: #E05638;
-  box-shadow: 0 0 0 3px rgba(224, 86, 56, 0.12);
+  border-color: #16A34A;
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.15);
 }
 
 .search-input-control,
@@ -2716,7 +2837,7 @@ input, button, textarea {
   background: transparent;
   padding: 10px 14px;
   font-size: 13.5px;
-  color: #1F2937;
+  color: #111827;
   outline: none;
   font-family: inherit;
   height: 44px;
@@ -2730,7 +2851,7 @@ input, button, textarea {
 .search-select-control {
   cursor: pointer;
   appearance: none;
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2316A34A' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
   background-repeat: no-repeat;
   background-position: right 12px center;
   background-size: 13px;
@@ -2742,30 +2863,30 @@ input, button, textarea {
   cursor: not-allowed;
 }
 
-/* Nút Tìm phòng ngay */
+/* Nút Tìm phòng ngay: Phong cách nút 'Dùng ngay' xanh lá tươi của Homigo */
 .btn-search-submit {
   height: 44px;
-  padding: 0 22px;
-  background: linear-gradient(135deg, #FF6B4A 0%, #E05638 100%);
+  padding: 0 24px;
+  background: #16A34A;
   color: #FFFFFF;
   font-weight: 700;
-  font-size: 14.5px;
+  font-size: 14px;
   border: none;
-  border-radius: 11px;
+  border-radius: 9999px; /* Rounded full pill button như Homigo */
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 7px;
-  box-shadow: 0 5px 15px rgba(224, 86, 56, 0.28);
+  gap: 8px;
+  box-shadow: 0 4px 15px rgba(22, 163, 74, 0.28);
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   white-space: nowrap;
 }
 
 .btn-search-submit:hover {
-  background: linear-gradient(135deg, #FF7B5C 0%, #D84627 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(224, 86, 56, 0.38);
+  background: #15803D;
+  transform: translateY(-1.5px);
+  box-shadow: 0 6px 20px rgba(22, 163, 74, 0.38);
 }
 
 /* Gợi ý tìm nhanh gần gũi */
@@ -2775,7 +2896,7 @@ input, button, textarea {
   justify-content: center;
   flex-wrap: wrap;
   gap: 8px;
-  margin-top: 14px;
+  margin-top: 16px;
   font-size: 13px;
 }
 
@@ -2784,7 +2905,7 @@ input, button, textarea {
   font-weight: 600;
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
 }
 
 .quick-tags-title i {
@@ -2794,22 +2915,22 @@ input, button, textarea {
 .quick-tag-item {
   display: inline-flex;
   align-items: center;
-  padding: 5px 12px;
+  padding: 6px 14px;
   background: #FFFFFF;
   border: 1px solid #E5E7EB;
-  border-radius: 20px;
+  border-radius: 9999px;
   color: #4B5563;
   text-decoration: none;
-  font-size: 12px;
-  font-weight: 500;
+  font-size: 12.5px;
+  font-weight: 600;
   transition: all 0.2s ease;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
 }
 
 .quick-tag-item:hover {
-  border-color: #E05638;
-  color: #E05638;
-  background: #FFF9F7;
+  border-color: #86EFAC;
+  color: #16A34A;
+  background: #F0FDF4;
   transform: translateY(-1px);
 }
 
@@ -2878,13 +2999,13 @@ input, button, textarea {
    ============================================================ */
 .btn-nearby-trigger {
   height: 44px;
-  padding: 0 18px;
+  padding: 0 20px;
   background: #FFFFFF;
-  color: #E05638;
+  color: #16A34A;
   font-weight: 700;
   font-size: 14px;
-  border: 2px solid #E05638;
-  border-radius: 11px;
+  border: 1.5px solid #BBF7D0;
+  border-radius: 9999px; /* Pill button */
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -2893,19 +3014,21 @@ input, button, textarea {
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   white-space: nowrap;
   width: 100%;
-  margin-top: auto; /* căn đáy giống btn-submit */
+  margin-top: auto;
+  box-shadow: 0 1px 3px rgba(22, 163, 74, 0.08);
 }
 
 .btn-nearby-trigger:hover {
-  background: #FFF5F2;
-  border-color: #C0442C;
-  color: #C0442C;
-  transform: translateY(-2px);
-  box-shadow: 0 5px 14px rgba(224, 86, 56, 0.2);
+  background: #F0FDF4;
+  border-color: #16A34A;
+  color: #15803D;
+  transform: translateY(-1.5px);
+  box-shadow: 0 4px 14px rgba(22, 163, 74, 0.16);
 }
 
 .btn-nearby-trigger i {
-  font-size: 14px;
+  font-size: 13.5px;
+  color: #16A34A;
 }
 
 .btn-nearby-trigger:disabled {
@@ -3222,13 +3345,13 @@ input, button, textarea {
 }
 
 .room-card-modern:hover .inner-title a {
-  color: #EA580C !important;
+  color: #16A34A !important;
 }
 
 .room-card-modern .price-main {
   font-size: 1.25rem !important;
   font-weight: 800 !important;
-  color: #EA580C !important;
+  color: #16A34A !important;
   letter-spacing: -0.02em !important;
 }
 
@@ -3255,16 +3378,16 @@ input, button, textarea {
 }
 
 .room-card-modern .btn-fav.active svg {
-  fill: #E05638 !important;
-  stroke: #E05638 !important;
+  fill: #EF4444 !important;
+  stroke: #EF4444 !important;
 }
 
 .room-card-modern .btn-view-card {
   display: inline-flex !important;
   align-items: center !important;
   gap: 6px !important;
-  background: #FFF3EE !important;
-  color: #E05638 !important;
+  background: #F0FDF4 !important;
+  color: #16A34A !important;
   font-size: 12px !important;
   font-weight: 600 !important;
   padding: 6px 12px !important;
@@ -3274,11 +3397,11 @@ input, button, textarea {
 
 .room-card-modern:hover .btn-view-card,
 .room-card-modern:hover .inner-footer button {
-  background: #E05638 !important;
+  background: #16A34A !important;
   color: #FFFFFF !important;
 }
 
 .room-card-modern .inner-footer button:hover {
-  background: #C84327 !important;
+  background: #15803D !important;
 }
 

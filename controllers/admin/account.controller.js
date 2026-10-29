@@ -63,6 +63,12 @@ module.exports.loginPost = async (req, res) => {
   });
 };
 
+// [GET] /admin/logout
+module.exports.logoutGet = (req, res) => {
+  res.clearCookie('token_admin');
+  return res.redirect('/admin/login');
+};
+
 // [POST] /admin/logout
 module.exports.logoutPost = (req, res) => {
   res.clearCookie('token_admin');
@@ -72,4 +78,5 @@ module.exports.logoutPost = (req, res) => {
     redirectUrl: '/admin/login'
   });
 };
+
 
