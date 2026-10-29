@@ -18,7 +18,7 @@ block main
       
       //- Breadcrumb
       nav(class="flex items-center gap-2 text-xs sm:text-sm text-neutral-500 mb-5 font-medium")
-        a(href="/" class="hover:text-[#16A34A] transition-colors no-underline text-neutral-500 flex items-center gap-1.5")
+        a(href="/" class="hover:text-[#EA580C] transition-colors no-underline text-neutral-500 flex items-center gap-1.5")
           i.fa-solid.fa-house(class="text-xs")
           span Trang chủ
         span /
@@ -26,8 +26,8 @@ block main
 
       //- Hero Profile Header Card
       .profile-hero(class="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-7 border border-neutral-200/70 shadow-[0_2px_16px_rgba(0,0,0,0.04)] mb-6 sm:mb-8 relative overflow-hidden")
-        div(class="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-emerald-100/40 rounded-full blur-3xl pointer-events-none")
-        div(class="absolute bottom-0 left-1/3 -mb-12 w-48 h-48 bg-teal-50/50 rounded-full blur-2xl pointer-events-none")
+        div(class="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-orange-100/40 rounded-full blur-3xl pointer-events-none")
+        div(class="absolute bottom-0 left-1/3 -mb-12 w-48 h-48 bg-amber-50/50 rounded-full blur-2xl pointer-events-none")
 
         div(class="relative z-10 flex flex-col sm:flex-row items-center sm:items-start gap-5 sm:gap-6")
           
@@ -36,14 +36,14 @@ block main
             img#profile-avatar-display(
               src=user.avatar || "/admin/assets/images/avatar.jpg" 
               alt=user.fullName 
-              class="w-24 h-24 sm:w-28 sm:h-28 rounded-full object-cover border-4 border-white shadow-md ring-2 ring-emerald-200/80 bg-neutral-100 transition-all duration-200 group-hover:brightness-90"
+              class="w-24 h-24 sm:w-28 sm:h-28 rounded-full object-cover border-4 border-white shadow-md ring-2 ring-orange-200/80 bg-neutral-100 transition-all duration-200 group-hover:brightness-90"
             )
             //- Overlay đổi ảnh hiện lên khi hover
             div(class="absolute inset-0 bg-black/45 rounded-full flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-white")
               i.fa-solid.fa-camera(class="text-base sm:text-lg mb-0.5")
               span(class="text-[10px] font-semibold tracking-wide") Đổi ảnh
             //- Huy hiệu máy ảnh nhỏ gọn ở góc dưới bên phải avatar
-            span(class="absolute bottom-0 right-0 w-8 h-8 bg-[#16A34A] text-white border-2 border-white rounded-full flex items-center justify-center text-xs shadow-md group-hover:scale-105 transition-transform" title="Nhấn để tải ảnh lên")
+            span(class="absolute bottom-0 right-0 w-8 h-8 bg-[#EA580C] text-white border-2 border-white rounded-full flex items-center justify-center text-xs shadow-md group-hover:scale-105 transition-transform" title="Nhấn để tải ảnh lên")
               i.fa-solid.fa-camera
             //- Input file ẩn để chọn ảnh trong máy
             input#avatar-file-input(type="file" name="avatar" accept="image/jpeg,image/png,image/webp,image/gif" class="hidden")
@@ -53,7 +53,7 @@ block main
             div(class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 justify-center sm:justify-start mb-2")
               h1#profile-name-display(class="text-2xl sm:text-3xl font-extrabold text-neutral-800 tracking-tight m-0")= user.fullName
               div(class="flex items-center gap-2 flex-wrap justify-center sm:justify-start")
-                span(class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold " + (user.role === 'LANDLORD' ? 'bg-amber-100 text-amber-800 border border-amber-200/60' : (user.role === 'ADMIN' ? 'bg-neutral-800 text-amber-300' : 'bg-emerald-100 text-emerald-800 border border-emerald-200/60')))
+                span(class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold " + (user.role === 'LANDLORD' ? 'bg-orange-100 text-[#EA580C] border border-orange-200/60' : (user.role === 'ADMIN' ? 'bg-neutral-800 text-amber-300' : 'bg-emerald-100 text-emerald-800 border border-emerald-200/60')))
                   i.fa-solid.fa-user-tag(class="text-[11px]")
                   if user.role === 'LANDLORD'
                     | Chủ trọ cho thuê
@@ -67,14 +67,14 @@ block main
 
             div(class="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs sm:text-sm text-neutral-500 justify-center sm:justify-start mt-2.5")
               span(class="flex items-center gap-1.5")
-                i.fa-regular.fa-envelope(class="text-[#16A34A]")
+                i.fa-regular.fa-envelope(class="text-[#EA580C]")
                 span= user.email
               span(class="flex items-center gap-1.5")
-                i.fa-regular.fa-calendar-check(class="text-[#16A34A]")
+                i.fa-regular.fa-calendar-check(class="text-[#EA580C]")
                 | Tham gia: #{new Date(user.createdAt).toLocaleDateString('vi-VN')}
               if user.phone
                 span(class="flex items-center gap-1.5")
-                  i.fa-solid.fa-phone(class="text-[#16A34A]")
+                  i.fa-solid.fa-phone(class="text-[#EA580C]")
                   span= user.phone
               - const heroFbUrl = formatFbUrl(user.facebook)
               a#hero-facebook-link(
@@ -90,12 +90,12 @@ block main
 
           //- Hành động nhanh
           div(class="flex flex-row sm:flex-col gap-2.5 sm:self-center w-full sm:w-auto shrink-0")
-            a(href="/favorites" class="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-full bg-emerald-50 hover:bg-emerald-100/80 text-[#16A34A] text-xs sm:text-sm font-semibold transition-all border border-emerald-200/70 no-underline shadow-sm")
+            a(href="/favorites" class="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-full bg-orange-50 hover:bg-orange-100/80 text-[#EA580C] text-xs sm:text-sm font-semibold transition-all border border-orange-200/70 no-underline shadow-sm")
               i.fa-solid.fa-heart(class="text-xs text-red-500")
               span Phòng yêu thích
-              span(class="bg-[#16A34A] text-white text-[11px] font-bold px-2 py-0.5 rounded-full")= favoriteCount || 0
+              span(class="bg-[#EA580C] text-white text-[11px] font-bold px-2 py-0.5 rounded-full")= favoriteCount || 0
             
-            button#btn-trigger-edit(type="button" class="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-full bg-[#16A34A] hover:bg-[#15803D] text-white text-xs sm:text-sm font-semibold transition-all shadow-md shadow-emerald-600/20 active:scale-95 border-none cursor-pointer")
+            button#btn-trigger-edit(type="button" class="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-full bg-[#EA580C] hover:bg-[#C2410C] text-white text-xs sm:text-sm font-semibold transition-all shadow-md shadow-orange-500/20 active:scale-95 border-none cursor-pointer")
               i.fa-solid.fa-user-pen(class="text-xs")
               span Cập nhật hồ sơ
 
@@ -112,7 +112,7 @@ block main
                 button.profile-tab-btn(
                   type="button" 
                   data-target="#tab-overview" 
-                  class="active w-full flex items-center justify-between px-3.5 py-3 rounded-xl text-left font-semibold text-sm transition-all border-none cursor-pointer bg-emerald-50 text-[#16A34A]"
+                  class="active w-full flex items-center justify-between px-3.5 py-3 rounded-xl text-left font-semibold text-sm transition-all border-none cursor-pointer bg-orange-50 text-[#EA580C]"
                 )
                   span(class="flex items-center gap-3")
                     i.fa-solid.fa-id-card(class="text-base w-5 text-center")
@@ -142,10 +142,10 @@ block main
           //- Thẻ Tóm Tắt Hoạt Động & Tiện Ích
           div(class="bg-white rounded-2xl p-5 border border-neutral-200/70 shadow-[0_2px_12px_rgba(0,0,0,0.03)] space-y-3.5")
             h3(class="text-xs font-bold text-neutral-700 uppercase tracking-wider mb-2 flex items-center gap-2")
-              i.fa-solid.fa-chart-pie(class="text-[#16A34A]")
+              i.fa-solid.fa-chart-pie(class="text-[#EA580C]")
               | Hoạt động & Sở thích
             
-            div(class="p-3.5 rounded-xl bg-emerald-50/50 border border-emerald-100/70 flex items-center justify-between")
+            div(class="p-3.5 rounded-xl bg-orange-50/50 border border-orange-100/70 flex items-center justify-between")
               div(class="flex items-center gap-3")
                 div(class="w-9 h-9 rounded-full bg-white flex items-center justify-center text-red-500 shadow-sm")
                   i.fa-solid.fa-heart(class="text-xs")
@@ -154,16 +154,16 @@ block main
                   div(class="text-base font-bold text-neutral-800")
                     span= favoriteCount || 0
                     span(class="text-xs font-normal text-neutral-500 ml-1") phòng
-              a(href="/favorites" class="text-xs font-semibold text-[#16A34A] hover:underline no-underline") Xem tất cả &rarr;
+              a(href="/favorites" class="text-xs font-semibold text-[#EA580C] hover:underline no-underline") Xem tất cả &rarr;
 
             div(class="p-3.5 rounded-xl bg-neutral-50 border border-neutral-100 flex items-center justify-between")
               div(class="flex items-center gap-3")
-                div(class="w-9 h-9 rounded-full bg-white flex items-center justify-center text-[#16A34A] shadow-sm")
+                div(class="w-9 h-9 rounded-full bg-white flex items-center justify-center text-[#EA580C] shadow-sm")
                   i.fa-solid.fa-magnifying-glass-location(class="text-xs")
                 div
                   div(class="text-xs text-neutral-500") Khám phá phòng trọ
                   div(class="text-sm font-bold text-neutral-800") Hàng ngàn phòng mới
-              a(href="/rooms" class="text-xs font-semibold text-[#16A34A] hover:underline no-underline") Tìm phòng &rarr;
+              a(href="/rooms" class="text-xs font-semibold text-[#EA580C] hover:underline no-underline") Tìm phòng &rarr;
 
             div(class="pt-2 border-t border-neutral-100")
               a(href="/logout" data-logout-url="/logout" class="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl border border-red-200 text-red-600 hover:bg-red-50 text-xs font-semibold transition-colors no-underline")
@@ -179,7 +179,7 @@ block main
               div
                 h2(class="text-lg sm:text-xl font-bold text-neutral-800 m-0") Hồ sơ khách hàng
                 p(class="text-neutral-500 text-xs sm:text-sm mt-1 m-0") Thông tin chi tiết được lưu trữ an toàn trong tài khoản của bạn.
-              button(type="button" onclick="document.querySelector('[data-target=\"#tab-edit\"]').click()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-neutral-200 text-neutral-700 hover:text-[#16A34A] hover:border-emerald-300 text-xs font-medium transition-colors cursor-pointer bg-white")
+              button(type="button" onclick="document.querySelector('[data-target=\"#tab-edit\"]').click()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-neutral-200 text-neutral-700 hover:text-[#EA580C] hover:border-orange-300 text-xs font-medium transition-colors cursor-pointer bg-white")
                 i.fa-solid.fa-pen-to-square
                 | Chỉnh sửa
 
@@ -244,7 +244,7 @@ block main
                 span(class="text-xs font-semibold text-neutral-400 block mb-1.5 flex items-center gap-1.5")
                   i.fa-solid.fa-shield-halved(class="text-neutral-400 text-[11px]")
                   | Vai trò tài khoản
-                p(class="text-sm sm:text-base font-semibold text-[#16A34A] m-0 flex items-center gap-1.5")
+                p(class="text-sm sm:text-base font-semibold text-[#EA580C] m-0 flex items-center gap-1.5")
                   i.fa-solid.fa-circle-check(class="text-emerald-500 text-xs")
                   if user.role === 'LANDLORD'
                     | Chủ trọ (Landlord)
@@ -279,8 +279,8 @@ block main
                   | #{new Date(user.updatedAt || user.createdAt).toLocaleDateString('vi-VN')} #{new Date(user.updatedAt || user.createdAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
 
             //- Banner gợi ý bảo mật
-            div(class="rounded-xl bg-emerald-50/70 border border-emerald-200/70 p-4 flex items-start gap-3 text-xs sm:text-sm text-emerald-900")
-              i.fa-solid.fa-lightbulb(class="text-[#16A34A] mt-0.5 text-base shrink-0")
+            div(class="rounded-xl bg-amber-50/70 border border-amber-200/70 p-4 flex items-start gap-3 text-xs sm:text-sm text-amber-800")
+              i.fa-solid.fa-lightbulb(class="text-amber-500 mt-0.5 text-base shrink-0")
               div
                 strong(class="font-semibold block mb-0.5") Mẹo dành cho Khách thuê:
                 | Cập nhật đầy đủ số điện thoại, địa chỉ và Facebook cá nhân sẽ giúp chủ trọ dễ dàng xác minh và liên hệ hẹn xem phòng trọ nhanh nhất!
@@ -292,12 +292,12 @@ block main
               p(class="text-neutral-500 text-xs sm:text-sm mt-1 m-0") Điền các thông tin bạn muốn cập nhật. Nhấn Lưu thay đổi để hoàn tất.
 
             //- Khu vực tải ảnh đại diện từ máy tính
-            div(class="p-4 sm:p-5 rounded-2xl bg-emerald-50/40 border border-emerald-100/80 flex flex-col sm:flex-row items-center sm:items-start gap-4")
+            div(class="p-4 sm:p-5 rounded-2xl bg-orange-50/40 border border-orange-100/80 flex flex-col sm:flex-row items-center sm:items-start gap-4")
               div(class="relative group cursor-pointer shrink-0" onclick="document.getElementById('avatar-file-input').click()")
                 img#edit-avatar-preview(
                   src=user.avatar || "/admin/assets/images/avatar.jpg" 
                   alt=user.fullName 
-                  class="w-20 h-20 rounded-full object-cover border-2 border-white shadow-md ring-2 ring-emerald-200 transition-all group-hover:brightness-90"
+                  class="w-20 h-20 rounded-full object-cover border-2 border-white shadow-md ring-2 ring-orange-200 transition-all group-hover:brightness-90"
                 )
                 div(class="absolute inset-0 bg-black/40 rounded-full flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-white text-xs")
                   i.fa-solid.fa-camera(class="mb-0.5")
@@ -306,8 +306,8 @@ block main
                 div(class="text-sm font-bold text-neutral-800") Ảnh đại diện tài khoản
                 p(class="text-xs text-neutral-500 m-0 mt-1") Nhấn vào ảnh hoặc nút bên dưới để chọn ảnh từ máy tính (Tối đa 5 MB, định dạng JPG, PNG, WebP).
                 div(class="mt-2.5 flex items-center justify-center sm:justify-start gap-2")
-                  button(type="button" onclick="document.getElementById('avatar-file-input').click()" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-white border border-neutral-200 text-xs font-semibold text-neutral-700 hover:text-[#16A34A] hover:border-emerald-300 transition-all cursor-pointer shadow-sm")
-                    i.fa-solid.fa-upload(class="text-xs text-[#16A34A]")
+                  button(type="button" onclick="document.getElementById('avatar-file-input').click()" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-white border border-neutral-200 text-xs font-semibold text-neutral-700 hover:text-[#EA580C] hover:border-orange-300 transition-all cursor-pointer shadow-sm")
+                    i.fa-solid.fa-upload(class="text-xs text-[#EA580C]")
                     | Chọn ảnh từ máy tính
 
             form#form-update-profile(class="space-y-4 sm:space-y-5")
@@ -322,7 +322,7 @@ block main
                   value=user.fullName 
                   required 
                   placeholder="Nhập họ và tên đầy đủ"
-                  class="w-full px-4 py-2.5 sm:py-3 rounded-xl border border-neutral-200 hover:border-neutral-300 focus:outline-none focus:border-[#16A34A] focus:ring-2 focus:ring-emerald-100 transition-all text-sm text-neutral-800"
+                  class="w-full px-4 py-2.5 sm:py-3 rounded-xl border border-neutral-200 hover:border-neutral-300 focus:outline-none focus:border-[#EA580C] focus:ring-2 focus:ring-orange-100 transition-all text-sm text-neutral-800"
                 )
 
               div
@@ -345,7 +345,7 @@ block main
                     name="phone" 
                     value=user.phone || '' 
                     placeholder="VD: 0912345678"
-                    class="w-full px-4 py-2.5 sm:py-3 rounded-xl border border-neutral-200 hover:border-neutral-300 focus:outline-none focus:border-[#16A34A] focus:ring-2 focus:ring-emerald-100 transition-all text-sm text-neutral-800"
+                    class="w-full px-4 py-2.5 sm:py-3 rounded-xl border border-neutral-200 hover:border-neutral-300 focus:outline-none focus:border-[#EA580C] focus:ring-2 focus:ring-orange-100 transition-all text-sm text-neutral-800"
                   )
                 div
                   label(for="edit-facebook" class="block text-xs font-bold text-neutral-700 uppercase tracking-wider mb-2 flex items-center gap-1.5")
@@ -356,7 +356,7 @@ block main
                     name="facebook" 
                     value=user.facebook || '' 
                     placeholder="VD: https://facebook.com/username hoặc username"
-                    class="w-full px-4 py-2.5 sm:py-3 rounded-xl border border-neutral-200 hover:border-neutral-300 focus:outline-none focus:border-[#16A34A] focus:ring-2 focus:ring-emerald-100 transition-all text-sm text-neutral-800"
+                    class="w-full px-4 py-2.5 sm:py-3 rounded-xl border border-neutral-200 hover:border-neutral-300 focus:outline-none focus:border-[#EA580C] focus:ring-2 focus:ring-orange-100 transition-all text-sm text-neutral-800"
                   )
                   span(class="text-[11px] text-neutral-400 mt-1.5 block") Dán link Facebook hoặc username để liên kết trực tiếp.
 
@@ -368,7 +368,7 @@ block main
                   name="address" 
                   value=user.address || '' 
                   placeholder="VD: Cầu Giấy, Hà Nội"
-                  class="w-full px-4 py-2.5 sm:py-3 rounded-xl border border-neutral-200 hover:border-neutral-300 focus:outline-none focus:border-[#16A34A] focus:ring-2 focus:ring-emerald-100 transition-all text-sm text-neutral-800"
+                  class="w-full px-4 py-2.5 sm:py-3 rounded-xl border border-neutral-200 hover:border-neutral-300 focus:outline-none focus:border-[#EA580C] focus:ring-2 focus:ring-orange-100 transition-all text-sm text-neutral-800"
                 )
 
               div(class="flex items-center justify-end gap-3 pt-4 border-t border-neutral-100 mt-6")
@@ -379,7 +379,7 @@ block main
                 ) Hủy bỏ
                 button#btn-save-profile(
                   type="submit" 
-                  class="px-6 py-2.5 rounded-xl bg-[#16A34A] hover:bg-[#15803D] text-white text-sm font-semibold transition-all shadow-md shadow-emerald-600/20 active:scale-95 border-none cursor-pointer flex items-center gap-2"
+                  class="px-6 py-2.5 rounded-xl bg-[#EA580C] hover:bg-[#C2410C] text-white text-sm font-semibold transition-all shadow-md shadow-orange-500/20 active:scale-95 border-none cursor-pointer flex items-center gap-2"
                 )
                   i.fa-solid.fa-floppy-disk
                   span Lưu thay đổi
@@ -401,7 +401,7 @@ block main
                   name="oldPassword" 
                   required 
                   placeholder="Nhập mật khẩu hiện tại"
-                  class="w-full px-4 py-2.5 sm:py-3 rounded-xl border border-neutral-200 hover:border-neutral-300 focus:outline-none focus:border-[#16A34A] focus:ring-2 focus:ring-emerald-100 transition-all text-sm text-neutral-800"
+                  class="w-full px-4 py-2.5 sm:py-3 rounded-xl border border-neutral-200 hover:border-neutral-300 focus:outline-none focus:border-[#EA580C] focus:ring-2 focus:ring-orange-100 transition-all text-sm text-neutral-800"
                 )
 
               div
@@ -414,7 +414,7 @@ block main
                   required 
                   minlength="6"
                   placeholder="Tối thiểu 6 ký tự"
-                  class="w-full px-4 py-2.5 sm:py-3 rounded-xl border border-neutral-200 hover:border-neutral-300 focus:outline-none focus:border-[#16A34A] focus:ring-2 focus:ring-emerald-100 transition-all text-sm text-neutral-800"
+                  class="w-full px-4 py-2.5 sm:py-3 rounded-xl border border-neutral-200 hover:border-neutral-300 focus:outline-none focus:border-[#EA580C] focus:ring-2 focus:ring-orange-100 transition-all text-sm text-neutral-800"
                 )
                 span(class="text-[11px] text-neutral-400 mt-1.5 block") Nên kết hợp chữ cái, số và ký tự đặc biệt để an toàn nhất.
 
@@ -428,7 +428,7 @@ block main
                   required 
                   minlength="6"
                   placeholder="Nhập lại mật khẩu mới"
-                  class="w-full px-4 py-2.5 sm:py-3 rounded-xl border border-neutral-200 hover:border-neutral-300 focus:outline-none focus:border-[#16A34A] focus:ring-2 focus:ring-emerald-100 transition-all text-sm text-neutral-800"
+                  class="w-full px-4 py-2.5 sm:py-3 rounded-xl border border-neutral-200 hover:border-neutral-300 focus:outline-none focus:border-[#EA580C] focus:ring-2 focus:ring-orange-100 transition-all text-sm text-neutral-800"
                 )
 
               div(class="pt-4 border-t border-neutral-100 flex items-center justify-end gap-3 mt-6")
@@ -438,7 +438,7 @@ block main
                 ) Đặt lại
                 button#btn-save-password(
                   type="submit" 
-                  class="px-6 py-2.5 rounded-xl bg-[#16A34A] hover:bg-[#15803D] text-white text-sm font-semibold transition-all shadow-md shadow-emerald-600/20 active:scale-95 border-none cursor-pointer flex items-center gap-2"
+                  class="px-6 py-2.5 rounded-xl bg-[#EA580C] hover:bg-[#C2410C] text-white text-sm font-semibold transition-all shadow-md shadow-orange-500/20 active:scale-95 border-none cursor-pointer flex items-center gap-2"
                 )
                   i.fa-solid.fa-key
                   span Đổi mật khẩu
@@ -454,10 +454,10 @@ block main
       function switchTab(targetSelector) {
         tabButtons.forEach(function (btn) {
           if (btn.getAttribute("data-target") === targetSelector) {
-            btn.classList.add("active", "bg-emerald-50", "text-[#16A34A]");
+            btn.classList.add("active", "bg-orange-50", "text-[#EA580C]");
             btn.classList.remove("bg-transparent", "text-neutral-600");
           } else {
-            btn.classList.remove("active", "bg-emerald-50", "text-[#16A34A]");
+            btn.classList.remove("active", "bg-orange-50", "text-[#EA580C]");
             btn.classList.add("bg-transparent", "text-neutral-600");
           }
         });

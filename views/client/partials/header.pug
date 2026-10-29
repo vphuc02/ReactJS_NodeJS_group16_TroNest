@@ -43,6 +43,8 @@ header.header(class="fixed top-4 inset-x-0 z-50 px-2 sm:px-6 pointer-events-none
           //- Thẻ người dùng
           div(class="flex items-center gap-1.5")
             a(href=user.role === 'LANDLORD' ? '/landlord/dashboard' : (user.role === 'ADMIN' ? '/admin/dashboard' : '/profile') title="Tài khoản cá nhân" class="flex items-center gap-2 py-1 px-1.5 sm:px-3 rounded-full border border-neutral-200/90 bg-neutral-50/60 hover:bg-emerald-50/60 hover:border-emerald-300 transition-all duration-200 no-underline shadow-xs")
+          div(class="flex items-center gap-1.5 pl-1")
+            a(href=user.role === 'LANDLORD' ? '/landlord/dashboard' : (user.role === 'ADMIN' ? '/admin/dashboard' : '/profile') title="Tài khoản cá nhân" class="flex items-center gap-1.5 sm:gap-2 py-1 px-1.5 sm:px-3 rounded-full border border-neutral-200 bg-white hover:bg-orange-50/50 hover:border-orange-300 transition-all duration-200 no-underline")
               img(src=user.avatar || "/admin/assets/images/avatar.jpg" alt=user.fullName class="w-6 h-6 sm:w-7 sm:h-7 rounded-full object-cover border border-neutral-200")
               span(class="text-xs font-semibold text-neutral-800 hidden lg:inline")= user.fullName ? user.fullName.replace(/\s*\([^)]*\)/g, '') : ''
               span(class="text-[10px] sm:text-[11px] px-2 py-0.5 rounded-full font-bold " + (user.role === 'LANDLORD' ? 'bg-amber-100 text-amber-800' : (user.role === 'ADMIN' ? 'bg-neutral-800 text-amber-300' : 'bg-emerald-100 text-emerald-800')))
@@ -105,11 +107,13 @@ header.header(class="fixed top-4 inset-x-0 z-50 px-2 sm:px-6 pointer-events-none
           li(class="border-t border-neutral-100 mt-2 pt-2")
             a(href=user.role === 'LANDLORD' ? '/landlord/dashboard' : (user.role === 'ADMIN' ? '/admin/dashboard' : '/profile'))
               i.fa-solid.fa-user(class="client-clean-059 text-[#16A34A]")
+              i.fa-solid.fa-user(class="client-clean-059 text-[#EA580C]")
               span Thông tin cá nhân
           if user.role === 'CUSTOMER'
             li
               a(href="/favorites")
                 i.fa-solid.fa-heart(class="client-clean-059 text-[#16A34A]")
+                i.fa-solid.fa-heart(class="client-clean-059 text-[#EA580C]")
                 span Phòng yêu thích
         li(class="mt-2")
           a(href="/landlord/rooms/create" class="text-[#16A34A] font-bold")

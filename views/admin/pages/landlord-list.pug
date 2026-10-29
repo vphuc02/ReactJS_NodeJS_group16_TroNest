@@ -14,34 +14,19 @@ block main
         p(class="text-xs text-slate-500 m-0 mt-1")
           | Kiểm tra thông tin các đối tác Chủ trọ và quyết định cấp quyền đăng tin phòng
 
-    //- 2. Card Container
-    div(class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden")
-      //- Toolbar: Filter Tabs & Search Box
-      div(class="p-4 sm:p-5 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-3.5")
-        .filter-tabs(class="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-1 md:pb-0 scrollbar-none m-0")
-          a(
-            href="/admin/landlords" + (keyword ? `?keyword=${encodeURIComponent(keyword)}` : '')
-            class="px-3 py-1.5 rounded-lg text-xs transition-colors no-underline whitespace-nowrap " + (!statusFilter ? 'font-semibold bg-slate-900 text-white' : 'font-medium text-slate-600 hover:bg-slate-100')
-          )
-            | Tất cả (#{counts.all})
-          a(
-            href="/admin/landlords?status=" + USER_STATUS.PENDING + (keyword ? `&keyword=${encodeURIComponent(keyword)}` : '')
-            class="px-3 py-1.5 rounded-lg text-xs transition-colors no-underline whitespace-nowrap inline-flex items-center gap-1.5 " + (statusFilter === USER_STATUS.PENDING ? 'font-semibold bg-slate-900 text-white' : 'font-medium text-slate-600 hover:bg-slate-100')
-          )
-            i.fa-solid.fa-clock(class=statusFilter === USER_STATUS.PENDING ? 'text-amber-400' : 'text-amber-500')
-            span Chờ duyệt (#{counts.pending})
-          a(
-            href="/admin/landlords?status=" + USER_STATUS.APPROVED + (keyword ? `&keyword=${encodeURIComponent(keyword)}` : '')
-            class="px-3 py-1.5 rounded-lg text-xs transition-colors no-underline whitespace-nowrap inline-flex items-center gap-1.5 " + (statusFilter === USER_STATUS.APPROVED ? 'font-semibold bg-slate-900 text-white' : 'font-medium text-slate-600 hover:bg-slate-100')
-          )
-            i.fa-solid.fa-circle-check(class=statusFilter === USER_STATUS.APPROVED ? 'text-emerald-400' : 'text-[#16A34A]')
-            span Đã duyệt (#{counts.approved})
-          a(
-            href="/admin/landlords?status=" + USER_STATUS.REJECTED + (keyword ? `&keyword=${encodeURIComponent(keyword)}` : '')
-            class="px-3 py-1.5 rounded-lg text-xs transition-colors no-underline whitespace-nowrap inline-flex items-center gap-1.5 " + (statusFilter === USER_STATUS.REJECTED ? 'font-semibold bg-slate-900 text-white' : 'font-medium text-slate-600 hover:bg-slate-100')
-          )
-            i.fa-solid.fa-circle-xmark(class=statusFilter === USER_STATUS.REJECTED ? 'text-rose-400' : 'text-rose-500')
-            span Bị từ chối (#{counts.rejected})
+  // Filter Tabs
+  .filter-tabs(class="admin-clean-070")
+    a.btn(href="/admin/landlords" + (keyword ? '?keyword=' + encodeURIComponent(keyword) : '') class=!statusFilter ? 'btn-primary' : 'btn-secondary')
+      | Tất cả (#{counts.all})
+    a.btn(href="/admin/landlords?status=" + USER_STATUS.PENDING + (keyword ? '&keyword=' + encodeURIComponent(keyword) : '') class=statusFilter === USER_STATUS.PENDING ? 'btn-primary' : 'btn-secondary')
+      i.fa-solid.fa-clock(class="admin-clean-071")
+      | Chờ duyệt (#{counts.pending})
+    a.btn(href="/admin/landlords?status=" + USER_STATUS.APPROVED + (keyword ? '&keyword=' + encodeURIComponent(keyword) : '') class=statusFilter === USER_STATUS.APPROVED ? 'btn-primary' : 'btn-secondary')
+      i.fa-solid.fa-circle-check(class="admin-clean-072")
+      | Đã duyệt (#{counts.approved})
+    a.btn(href="/admin/landlords?status=" + USER_STATUS.REJECTED + (keyword ? '&keyword=' + encodeURIComponent(keyword) : '') class=statusFilter === USER_STATUS.REJECTED ? 'btn-primary' : 'btn-secondary')
+      i.fa-solid.fa-circle-xmark(class="admin-clean-073")
+      | Bị từ chối (#{counts.rejected})
 
         form(action="/admin/landlords" method="GET" class="flex items-center gap-2 w-full md:w-80 shrink-0 m-0")
           if statusFilter
@@ -61,79 +46,65 @@ block main
             class="px-4 py-2 rounded-xl bg-[#16A34A] hover:bg-[#15803D] text-white text-xs font-semibold transition-all cursor-pointer border-0 shrink-0"
           ) Tìm kiếm
 
-      //- Table
-      div(class="overflow-x-auto")
-        table(class="w-full text-left border-collapse min-w-[760px]")
-          thead
-            tr(class="bg-slate-50/80 text-[11px] font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-100")
-              th(class="py-3 px-5") Họ tên
-              th(class="py-3 px-4") Liên hệ
-              th(class="py-3 px-4") Địa chỉ
-              th(class="py-3 px-4") Số bài trọ
-              th(class="py-3 px-4") Trạng thái
-              th(class="py-3 px-5 text-right") Thao tác
-          tbody(class="divide-y divide-slate-100 text-xs")
-            if landlords && landlords.length > 0
-              each l in landlords
-                tr(class="hover:bg-slate-50/70 transition-colors")
-                  td(class="py-3.5 px-5")
-                    div(class="flex items-center gap-3")
-                      img(
-                        src=l.avatar || "/admin/assets/images/avatar.jpg"
-                        alt=l.fullName
-                        class="w-9 h-9 rounded-full object-cover border border-slate-200 shrink-0"
-                      )
-                      div
-                        b(class="font-semibold text-slate-900 block")= l.fullName
-                        span(class="text-[11px] text-slate-400") Tham gia: #{new Date(l.createdAt).toLocaleDateString('vi-VN')}
-                  td(class="py-3.5 px-4")
-                    div(class="text-slate-700")= l.email
-                    div(class="font-semibold text-[#16A34A] mt-0.5")= l.phone || '-'
-                  td(class="py-3.5 px-4 text-slate-600")= l.address || '-'
-                  td(class="py-3.5 px-4")
-                    span(class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-700")
-                      | #{l.roomCount || 0} phòng
-                  td(class="py-3.5 px-4")
-                    if l.status === USER_STATUS.APPROVED
-                      span(class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/60")
-                        span(class="w-1.5 h-1.5 rounded-full bg-emerald-500")
-                        | Đã duyệt (APPROVED)
-                    else if l.status === USER_STATUS.PENDING
-                      span(class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200/60")
-                        span(class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse")
-                        | Chờ duyệt (PENDING)
-                    else if l.status === USER_STATUS.REJECTED
-                      span(class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200/60")
-                        span(class="w-1.5 h-1.5 rounded-full bg-rose-500")
-                        | Bị từ chối (REJECTED)
-                      if l.rejectReason
-                        div(class="text-[11px] text-rose-600 mt-1 max-w-[220px]")= l.rejectReason
-                  td(class="py-3.5 px-5 text-right")
-                    div(class="inline-flex items-center gap-1.5 justify-end")
-                      if l.status !== USER_STATUS.APPROVED
-                        button(
-                          type="button"
-                          data-admin-action="approve-landlord"
-                          data-id=l._id
-                          class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#16A34A] hover:bg-[#15803D] text-white text-xs font-semibold transition-all cursor-pointer border-0"
-                          title="Phê duyệt tài khoản"
-                        )
-                          i.fa-solid.fa-check(class="text-[11px]")
-                          span Duyệt
-                      if l.status !== USER_STATUS.REJECTED
-                        button(
-                          type="button"
-                          data-admin-action="reject-landlord"
-                          data-id=l._id
-                          class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white border border-rose-200 hover:border-rose-600 text-xs font-semibold transition-all cursor-pointer"
-                          title="Từ chối tài khoản"
-                        )
-                          i.fa-solid.fa-xmark(class="text-[11px]")
-                          span Từ chối
-            else
-              tr
-                td(colspan="6" class="py-12 text-center text-slate-400 text-xs")
-                  | Không tìm thấy tài khoản Chủ trọ nào phù hợp.
+  // Table
+  .table-2(class="admin-clean-024")
+    table
+      thead
+        tr
+          th Họ tên
+          th Liên hệ
+          th Địa chỉ
+          th Số bài trọ
+          th Trạng thái
+          th Thao tác
+      tbody
+        if landlords && landlords.length > 0
+          each l in landlords
+            tr
+              td
+                div(class="admin-clean-098")
+                  img(src=l.avatar || "/admin/assets/images/avatar.jpg" class="admin-clean-099")
+                  div
+                    b(class="admin-clean-100")= l.fullName
+                    span(class="admin-clean-035") Tham gia: #{new Date(l.createdAt).toLocaleDateString('vi-VN')}
+              td
+                div(class="admin-clean-101")= l.email
+                div(class="admin-clean-102")= l.phone || '-'
+              td= l.address || '-'
+              td(class="admin-clean-103")
+                if l.roomCount > 0
+                  a.badge.badge-blue(href=`/admin/rooms?keyword=${encodeURIComponent(l.email)}` title="Xem các phòng của chủ trọ này")= `${l.roomCount} phòng`
+                else
+                  span.badge.badge-gray 0 phòng
+              td
+                if l.isBlocked || l.status === USER_STATUS.INACTIVE
+                  span.badge.badge-red Đã bị khóa
+                else if l.status === USER_STATUS.APPROVED
+                  span.badge.badge-green Đã duyệt (APPROVED)
+                else if l.status === USER_STATUS.PENDING
+                  span.badge.badge-yellow Chờ duyệt (PENDING)
+                else if l.status === USER_STATUS.REJECTED
+                  span.badge.badge-red Bị từ chối (REJECTED)
+                  if l.rejectReason
+                    div(class="admin-clean-104")
+                      | #{l.rejectReason}
+              td
+                div(class="admin-clean-027")
+                  if l.status !== USER_STATUS.APPROVED
+                    button.btn.btn-success(data-admin-action="approve-landlord" data-id=l._id class="admin-clean-028" title="Phê duyệt tài khoản")
+                      i.fa-solid.fa-check
+                      | Duyệt
+                  if l.status !== USER_STATUS.REJECTED
+                    button.btn.btn-danger(data-admin-action="reject-landlord" data-id=l._id class="admin-clean-028" title="Từ chối tài khoản")
+                      i.fa-solid.fa-xmark
+                      | Từ chối
+                  button.btn(data-admin-action="toggle-user-status" data-id=l._id class=l.isBlocked ? 'btn-success' : 'btn-secondary' title=l.isBlocked ? 'Mở khóa tài khoản' : 'Khóa tài khoản')
+                    i.fa-solid(class=l.isBlocked ? 'fa-lock-open' : 'fa-lock')
+
+        else
+          tr
+            td(colspan="6" class="admin-clean-088")
+              | Không tìm thấy tài khoản Chủ trọ nào phù hợp.
 
       if paging && paging.totalPages > 1
         div(class="p-4 border-t border-slate-100 flex items-center justify-center sm:justify-between text-xs text-slate-500")
