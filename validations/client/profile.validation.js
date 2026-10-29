@@ -15,6 +15,7 @@ const updateProfileSchema = Joi.object({
       'string.pattern.base': 'Số điện thoại không hợp lệ (phải gồm 9-11 chữ số)!'
     }),
   address: Joi.string().allow('', null).optional(),
+  facebook: Joi.string().allow('', null).optional(),
   avatar: Joi.string().allow('', null).optional()
 });
 

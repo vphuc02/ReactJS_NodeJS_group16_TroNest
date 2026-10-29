@@ -7,6 +7,8 @@ const { TestClient } = require('./helpers/test-client');
 const User = require('../models/user.model');
 const { ROLES, USER_STATUS } = require('../configs/system.config');
 
+const sharp = require('sharp');
+
 let baseUrl;
 
 before(async () => {
@@ -101,7 +103,8 @@ describe('Xem & Quản Lý Thông Tin Cá Nhân Khách Hàng (Client Profile)', 
     const editRes = await client.post('/profile/edit', {
       fullName: 'Khách Mới Đã Đổi Tên',
       phone: '0988888888',
-      address: 'Ba Đình, Hà Nội'
+      address: 'Ba Đình, Hà Nội',
+      facebook: 'https://facebook.com/khachmoi'
     });
 
     assert.equal(editRes.status, 200);
@@ -109,12 +112,102 @@ describe('Xem & Quản Lý Thông Tin Cá Nhân Khách Hàng (Client Profile)', 
     assert.equal(editRes.body.user.fullName, 'Khách Mới Đã Đổi Tên');
     assert.equal(editRes.body.user.phone, '0988888888');
     assert.equal(editRes.body.user.address, 'Ba Đình, Hà Nội');
+    assert.equal(editRes.body.user.facebook, 'https://facebook.com/khachmoi');
 
     // Kiểm tra DB thực tế
     const updatedInDb = await User.findById(customer._id);
     assert.equal(updatedInDb.fullName, 'Khách Mới Đã Đổi Tên');
     assert.equal(updatedInDb.phone, '0988888888');
     assert.equal(updatedInDb.address, 'Ba Đình, Hà Nội');
+    assert.equal(updatedInDb.facebook, 'https://facebook.com/khachmoi');
+
+    // Kiểm tra HTML trang cá nhân render đúng thẻ <a> chuyển hướng sang Facebook với target="_blank"
+    const profileHtmlRes = await client.get('/profile', { wantsJson: false });
+    assert.equal(profileHtmlRes.status, 200);
+    assert.match(profileHtmlRes.body, /id="profile-facebook-link"[^>]*href="https:\/\/facebook\.com\/khachmoi"/);
+    assert.match(profileHtmlRes.body, /target="_blank"/);
+    assert.match(profileHtmlRes.body, /rel="noopener noreferrer"/);
+  });
+
+  test('Thêm link Facebook dạng username hoặc domain không tiền tố -> chuẩn hóa href để click chuyển hướng sang Facebook', async () => {
+    const passwordHash = await bcrypt.hash('password123', 10);
+    const customer = await User.create({
+      fullName: 'Khách Test Facebook',
+      email: 'khachfb@profile-test.tronest.com',
+      password: passwordHash,
+      role: ROLES.CUSTOMER,
+      status: USER_STATUS.ACTIVE
+    });
+
+    const client = new TestClient(baseUrl);
+    await client.post('/login', {
+      email: customer.email,
+      password: 'password123'
+    });
+
+    // 1. Thêm dạng username thuần túy
+    const editRes1 = await client.post('/profile/edit', {
+      fullName: 'Khách Test Facebook',
+      facebook: 'trungnguyen.profile'
+    });
+    assert.equal(editRes1.status, 200);
+
+    const htmlRes1 = await client.get('/profile', { wantsJson: false });
+    assert.equal(htmlRes1.status, 200);
+    assert.match(htmlRes1.body, /href="https:\/\/facebook\.com\/trungnguyen\.profile"/);
+    assert.match(htmlRes1.body, /target="_blank"/);
+
+    // 2. Thêm dạng facebook.com/username
+    const editRes2 = await client.post('/profile/edit', {
+      fullName: 'Khách Test Facebook',
+      facebook: 'facebook.com/trungnguyen.profile'
+    });
+    assert.equal(editRes2.status, 200);
+
+    const htmlRes2 = await client.get('/profile', { wantsJson: false });
+    assert.equal(htmlRes2.status, 200);
+    assert.match(htmlRes2.body, /href="https:\/\/facebook\.com\/trungnguyen\.profile"/);
+  });
+
+  test('Tải lên ảnh đại diện từ máy tính thành công (POST /profile/avatar)', async () => {
+    const passwordHash = await bcrypt.hash('password123', 10);
+    const customer = await User.create({
+      fullName: 'Khách Đổi Avatar',
+      email: 'khachavatar@profile-test.tronest.com',
+      password: passwordHash,
+      role: ROLES.CUSTOMER,
+      status: USER_STATUS.ACTIVE
+    });
+
+    const client = new TestClient(baseUrl);
+    await client.post('/login', {
+      email: customer.email,
+      password: 'password123'
+    });
+
+    // Tạo buffer ảnh PNG thật 20x20 pixel bằng Sharp
+    const pngBuffer = await sharp({
+      create: {
+        width: 20,
+        height: 20,
+        channels: 4,
+        background: { r: 234, g: 88, b: 12, alpha: 1 }
+      }
+    }).png().toBuffer();
+
+    const formData = new FormData();
+    const imageBlob = new Blob([pngBuffer], { type: 'image/png' });
+    formData.append('avatar', imageBlob, 'my-avatar.png');
+
+    const res = await client.post('/profile/avatar', formData);
+    assert.equal(res.status, 200);
+    assert.equal(res.body.code, 200);
+    assert.ok(res.body.avatar);
+    assert.match(res.body.avatar, /^\/uploads\/avatars\/avatar-[a-zA-Z0-9-]+\.webp$/);
+
+    // Kiểm tra DB lưu đúng ảnh đại diện mới
+    const userInDb = await User.findById(customer._id);
+    assert.equal(userInDb.avatar, res.body.avatar);
   });
 
   test('Báo lỗi 400 khi cập nhật thông tin không hợp lệ', async () => {

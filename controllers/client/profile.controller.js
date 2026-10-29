@@ -31,15 +31,18 @@ module.exports.index = async (req, res) => {
 
 // [POST] /profile/edit
 module.exports.editPost = async (req, res) => {
-  const { fullName, phone, address, avatar } = req.body;
+  const { fullName, phone, address, facebook, avatar } = req.body;
 
   const updateData = {
     fullName: fullName.trim(),
     phone: phone ? phone.trim() : '',
-    address: address ? address.trim() : ''
+    address: address ? address.trim() : '',
+    facebook: facebook ? facebook.trim() : ''
   };
 
-  if (avatar && avatar.trim()) {
+  if (req.file && req.file.storedPath) {
+    updateData.avatar = req.file.storedPath;
+  } else if (avatar && avatar.trim()) {
     updateData.avatar = avatar.trim();
   }
 
@@ -52,6 +55,30 @@ module.exports.editPost = async (req, res) => {
   return res.json({
     code: 200,
     message: 'Cập nhật thông tin cá nhân thành công!',
+    user: updatedUser
+  });
+};
+
+// [POST] /profile/avatar
+module.exports.uploadAvatarPost = async (req, res) => {
+  if (!req.file || !req.file.storedPath) {
+    throw new AppError(400, 'Vui lòng chọn tệp ảnh đại diện hợp lệ từ thiết bị!');
+  }
+
+  const updatedUser = await User.findByIdAndUpdate(
+    req.user._id,
+    { avatar: req.file.storedPath },
+    { returnDocument: 'after' }
+  ).select('-password');
+
+  if (!updatedUser) {
+    throw new AppError(404, 'Không tìm thấy người dùng!');
+  }
+
+  return res.json({
+    code: 200,
+    message: 'Cập nhật ảnh đại diện thành công!',
+    avatar: req.file.storedPath,
     user: updatedUser
   });
 };
