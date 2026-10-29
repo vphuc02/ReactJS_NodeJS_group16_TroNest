@@ -1,14 +1,14 @@
-//- Sidebar Chủ Trọ TroNest (Nền trắng tinh khôi, tông cam đất #E05638)
+//- Sidebar Chủ Trọ TroNest (Nền trắng tinh khôi, tông cam đất #16A34A)
 nav.sider(class="bg-white border-r border-slate-200 flex flex-col justify-between shrink-0 shadow-sm")
   div
     //- Logo Brand
     .sider-logo(class="h-16 flex items-center px-6 gap-2.5 border-b border-slate-100")
       a(href="/landlord/dashboard" class="flex items-center gap-2.5 no-underline")
-        div(class="w-8 h-8 rounded-xl bg-[#E05638] flex items-center justify-center text-white shadow-sm")
+        div(class="w-8 h-8 rounded-xl bg-[#16A34A] flex items-center justify-center text-white shadow-sm")
           i.fa-solid.fa-house-chimney-user(class="text-sm")
         div(class="flex flex-col")
           span(class="font-bold text-slate-800 text-base leading-tight tracking-tight") TroNest
-          span(class="text-[11px] font-semibold text-[#E05638]") Kênh Chủ Trọ
+          span(class="text-[11px] font-semibold text-[#16A34A]") Kênh Chủ Trọ
 
     //- Navigation Menu
     - const isRoomsPage = currentPath && currentPath.startsWith('/landlord/rooms') && currentPath !== '/landlord/rooms/create';
@@ -18,25 +18,25 @@ nav.sider(class="bg-white border-r border-slate-200 flex flex-col justify-betwee
       li
         a(
           href="/landlord/dashboard"
-          class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all duration-200 no-underline " + (isDashboardPage ? 'active bg-[#FFF3EE] text-[#E05638] font-semibold border-l-4 border-[#E05638]' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium')
+          class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all duration-200 no-underline " + (isDashboardPage ? 'active bg-[#F0FDF4] text-[#16A34A] font-semibold border-l-4 border-[#16A34A]' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium')
         )
-          i.fa-solid.fa-gauge-high(class="w-5 text-base " + (isDashboardPage ? 'text-[#E05638]' : 'text-slate-400'))
+          i.fa-solid.fa-gauge-high(class="w-5 text-base " + (isDashboardPage ? 'text-[#16A34A]' : 'text-slate-400'))
           span Tổng quan
 
       li
         a(
           href="/landlord/rooms"
-          class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all duration-200 no-underline " + (isRoomsPage ? 'active bg-[#FFF3EE] text-[#E05638] font-semibold border-l-4 border-[#E05638]' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium')
+          class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all duration-200 no-underline " + (isRoomsPage ? 'active bg-[#F0FDF4] text-[#16A34A] font-semibold border-l-4 border-[#16A34A]' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium')
         )
-          i.fa-solid.fa-list-check(class="w-5 text-base " + (isRoomsPage ? 'text-[#E05638]' : 'text-slate-400'))
+          i.fa-solid.fa-list-check(class="w-5 text-base " + (isRoomsPage ? 'text-[#16A34A]' : 'text-slate-400'))
           span Quản lý bài đăng
 
       li
         a(
           href="/landlord/rooms/create"
-          class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all duration-200 no-underline " + (isCreatePage ? 'active bg-[#FFF3EE] text-[#E05638] font-semibold border-l-4 border-[#E05638]' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium')
+          class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all duration-200 no-underline " + (isCreatePage ? 'active bg-[#F0FDF4] text-[#16A34A] font-semibold border-l-4 border-[#16A34A]' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium')
         )
-          i.fa-solid.fa-circle-plus(class="w-5 text-base " + (isCreatePage ? 'text-[#E05638]' : 'text-slate-400'))
+          i.fa-solid.fa-circle-plus(class="w-5 text-base " + (isCreatePage ? 'text-[#16A34A]' : 'text-slate-400'))
           span Đăng phòng mới
 
   //- Bottom sidebar
@@ -44,7 +44,7 @@ nav.sider(class="bg-white border-r border-slate-200 flex flex-col justify-betwee
     a(
       href="/rooms"
       target="_blank"
-      class="flex items-center gap-2.5 px-3.5 py-2 text-xs font-medium text-slate-500 hover:text-[#E05638] hover:bg-orange-50/50 rounded-lg transition-colors no-underline"
+      class="flex items-center gap-2.5 px-3.5 py-2 text-xs font-medium text-slate-500 hover:text-[#16A34A] hover:bg-emerald-50/50 rounded-lg transition-colors no-underline"
     )
       i.fa-solid.fa-globe(class="text-xs text-slate-400")
       span Xem trang tìm phòng

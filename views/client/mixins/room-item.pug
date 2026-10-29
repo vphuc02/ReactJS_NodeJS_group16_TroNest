@@ -52,13 +52,13 @@ mixin roomItem(room, favoriteRoomIds)
       //- Nút lưu yêu thích (Heart)
       button.btn-fav(
         type="button"
-        class=(isFav ? 'active ' : '') + "absolute right-3 top-3 z-20 flex h-8 w-8 items-center justify-center rounded-full bg-white/85 text-slate-600 shadow-sm backdrop-blur-md transition-all hover:bg-white hover:scale-110 active:scale-95 border-0 cursor-pointer pointer-events-auto"
+        class=(isFav ? 'active ' : '') + "absolute right-3 top-3 z-20 flex h-8 w-8 items-center justify-center rounded-full bg-white/95 text-slate-600 shadow-sm backdrop-blur-md transition-all hover:bg-white hover:scale-110 active:scale-95 border-0 cursor-pointer pointer-events-auto"
         data-room-id=room._id.toString()
         title="Lưu vào danh sách yêu thích"
         aria-label="Lưu phòng"
       )
         svg(
-          class=`h-4 w-4 transition-colors ${isFav ? 'fill-[#E05638] stroke-[#E05638]' : 'fill-none stroke-current'}`
+          class=`h-4 w-4 transition-colors ${isFav ? 'fill-red-500 stroke-red-500' : 'fill-none stroke-current'}`
           viewBox="0 0 24 24"
           stroke-width="2"
         )
@@ -70,17 +70,17 @@ mixin roomItem(room, favoriteRoomIds)
 
     //- 2. Phần nội dung chi tiết
     .inner-content(class="flex flex-1 flex-col p-4 z-[3]")
-      //- Giá tiền nổi bật với màu cam đất
+      //- Giá tiền nổi bật với màu Xanh Clover tươi sáng Homigo
       div(class="mb-1.5 flex items-baseline gap-1")
-        span.price-main(class="text-xl font-bold tracking-tight text-[#E05638]")
+        span.price-main(class="text-xl font-extrabold tracking-tight text-[#16A34A]")
           = (room.price || 0).toLocaleString('vi-VN') + ' đ'
         span(class="text-xs font-medium text-slate-400") đ/tháng
         if room.isFeatured
-          span(class="ml-auto text-[10px] uppercase font-bold text-[#E05638] bg-[#FFF3EE] px-2 py-0.5 rounded-full") Nổi bật
+          span(class="ml-auto text-[10px] uppercase font-bold text-amber-700 bg-amber-50 border border-amber-200/90 px-2.5 py-0.5 rounded-full") Nổi bật
 
       //- Tiêu đề phòng
-      h3.inner-title(class="line-clamp-2 text-[15px] font-semibold leading-snug text-slate-800 transition-colors group-hover:text-[#E05638] m-0")
-        a(href=`/rooms/detail/${room._id}` class="text-slate-800 group-hover:text-[#E05638] no-underline")
+      h3.inner-title(class="line-clamp-2 text-[15px] font-bold leading-snug text-neutral-900 transition-colors group-hover:text-[#16A34A] m-0")
+        a(href=`/rooms/detail/${room._id}` class="text-neutral-900 group-hover:text-[#16A34A] no-underline")
           = room.title
 
       //- Địa chỉ rút gọn
@@ -113,12 +113,12 @@ mixin roomItem(room, favoriteRoomIds)
           span(class="text-xs font-medium text-slate-600 truncate max-w-[110px]")
             = landlordName
           if isVerified
-            svg(class="w-3.5 h-3.5 text-blue-500 shrink-0" fill="currentColor" viewBox="0 0 20 20")
+            svg(class="w-3.5 h-3.5 text-emerald-500 shrink-0" fill="currentColor" viewBox="0 0 20 20")
               path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd")
 
         button(
           type="button"
-          class="flex items-center gap-1 rounded-lg bg-[#FFF3EE] px-3 py-1.5 text-xs font-semibold text-[#E05638] transition-colors group-hover:bg-[#E05638] group-hover:text-white border-0 cursor-pointer"
+          class="flex items-center gap-1.5 rounded-full bg-emerald-50 hover:bg-[#16A34A] text-[#16A34A] hover:text-white px-3.5 py-1.5 text-xs font-bold transition-all border border-emerald-200 hover:border-[#16A34A] cursor-pointer shadow-2xs"
         )
           span Xem phòng
           svg(class="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24")

@@ -99,7 +99,7 @@ document.addEventListener("click", (event) => {
           if (icon) icon.className = added ? "fa-solid fa-heart" : "fa-regular fa-heart";
           const svg = button.querySelector("svg");
           if (svg) {
-            svg.setAttribute("class", added ? "h-4 w-4 transition-colors fill-[#E05638] stroke-[#E05638]" : "h-4 w-4 transition-colors fill-none stroke-current");
+            svg.setAttribute("class", added ? "h-4 w-4 transition-colors fill-[#EF4444] stroke-[#EF4444]" : "h-4 w-4 transition-colors fill-none stroke-current");
           }
         });
         window.notyf?.success(data.message);

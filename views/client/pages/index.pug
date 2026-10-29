@@ -231,7 +231,7 @@ block main
               ? `${room.distanceM} m`
               : `${(room.distanceM / 1000).toFixed(1)} km`;
             distanceBadge = `
-              <span class="backdrop-blur-md bg-orange-600/90 text-white text-[10px] sm:text-[11px] font-semibold px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
+              <span class="backdrop-blur-md bg-emerald-600/90 text-white text-[10px] sm:text-[11px] font-semibold px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
                 <i class="fa-solid fa-location-crosshairs text-[10px]"></i> ${dist}
               </span>`;
           }
@@ -276,11 +276,11 @@ block main
               </div>
               <div class="inner-content flex flex-1 flex-col p-4 z-[3]">
                 <div class="mb-1.5 flex items-baseline gap-1">
-                  <span class="price-main text-xl font-bold tracking-tight text-[#E05638]">${price}</span>
+                  <span class="price-main text-xl font-extrabold tracking-tight text-[#16A34A]">${price}</span>
                   <span class="text-xs font-medium text-slate-400">đ/tháng</span>
                 </div>
-                <h3 class="inner-title line-clamp-2 text-[15px] font-semibold leading-snug text-slate-800 transition-colors group-hover:text-[#E05638] m-0">
-                  <a href="/rooms/detail/${room._id}" class="text-slate-800 group-hover:text-[#E05638] no-underline">${room.title}</a>
+                <h3 class="inner-title line-clamp-2 text-[15px] font-bold leading-snug text-neutral-900 transition-colors group-hover:text-[#16A34A] m-0">
+                  <a href="/rooms/detail/${room._id}" class="text-neutral-900 group-hover:text-[#16A34A] no-underline">${room.title}</a>
                 </h3>
                 <p class="inner-address mt-1.5 flex items-center gap-1 text-xs text-slate-500 mb-0">
                   <svg class="h-3.5 w-3.5 shrink-0 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
@@ -297,9 +297,9 @@ block main
                   <div class="flex items-center gap-2">
                     ${avatarHtml}
                     <span class="text-xs font-medium text-slate-600 truncate max-w-[110px]">${landlord}</span>
-                    <svg class="w-3.5 h-3.5 text-blue-500 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>
+                    <svg class="w-3.5 h-3.5 text-emerald-500 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>
                   </div>
-                  <button type="button" class="flex items-center gap-1 rounded-lg bg-[#FFF3EE] px-3 py-1.5 text-xs font-semibold text-[#E05638] transition-colors group-hover:bg-[#E05638] group-hover:text-white border-0 cursor-pointer">
+                  <button type="button" class="flex items-center gap-1.5 rounded-full bg-emerald-50 hover:bg-[#16A34A] text-[#16A34A] hover:text-white px-3.5 py-1.5 text-xs font-bold transition-all border border-emerald-200 hover:border-[#16A34A] cursor-pointer shadow-2xs">
                     <span>Xem phòng</span>
                     <svg class="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
                   </button>

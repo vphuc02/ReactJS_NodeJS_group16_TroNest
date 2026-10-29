@@ -39,7 +39,7 @@ block main
         if landlordStatus === USER_STATUS.APPROVED
           a(
             href="/landlord/rooms/create"
-            class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#E05638] text-white text-xs font-semibold shadow-sm hover:bg-[#C84327] transition-all hover:shadow no-underline"
+            class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#16A34A] text-white text-xs font-semibold shadow-sm hover:bg-[#15803D] transition-all hover:shadow no-underline"
           )
             i.fa-solid.fa-plus(class="text-xs")
             span Đăng phòng mới
@@ -58,7 +58,7 @@ block main
       //- Tổng bài đăng
       div(
         data-metric-filter="ALL"
-        class="stat-card-clickable bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-md hover:border-[#E05638]/50 transition-all cursor-pointer flex items-center gap-3.5 sm:gap-4 select-none ring-2 ring-transparent hover:ring-[#E05638]/20"
+        class="stat-card-clickable bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-md hover:border-[#16A34A]/50 transition-all cursor-pointer flex items-center gap-3.5 sm:gap-4 select-none ring-2 ring-transparent hover:ring-[#16A34A]/20"
         title="Bấm để lọc Tất cả bài đăng"
       )
         div(class="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center text-lg sm:text-xl shrink-0")
@@ -157,7 +157,7 @@ block main
           input#table-search-input(
             type="text"
             placeholder="Tìm theo tiêu đề, địa chỉ..."
-            class="w-full pl-8 pr-3 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:border-[#E05638] focus:ring-1 focus:ring-[#E05638] bg-slate-50/50"
+            class="w-full pl-8 pr-3 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:border-[#16A34A] focus:ring-1 focus:ring-[#16A34A] bg-slate-50/50"
           )
           span(class="absolute left-2.5 top-2.5 text-slate-400 text-xs pointer-events-none")
             i.fa-solid.fa-magnifying-glass
@@ -190,7 +190,7 @@ block main
                         class="w-14 h-11 rounded-lg object-cover border border-slate-200/90 shrink-0 bg-slate-100"
                       )
                       div(class="max-w-xs sm:max-w-sm")
-                        p(class="font-semibold text-slate-900 line-clamp-1 hover:text-[#E05638] transition-colors m-0 text-xs")
+                        p(class="font-semibold text-slate-900 line-clamp-1 hover:text-[#16A34A] transition-colors m-0 text-xs")
                           = room.title
                         p(class="text-[11px] text-slate-400 truncate m-0 mt-1 flex items-center gap-1")
                           span 📍
@@ -201,7 +201,7 @@ block main
                     = room.categoryId ? room.categoryId.title : '-'
 
                   //- Giá thuê cam đất
-                  td(class="py-3.5 px-4 font-bold text-[#E05638]")
+                  td(class="py-3.5 px-4 font-bold text-[#16A34A]")
                     | #{room.price.toLocaleString('vi-VN')} đ
 
                   //- Diện tích
@@ -241,7 +241,7 @@ block main
                       //- Nút Sửa tin dạng pill bo tròn
                       a(
                         href=`/landlord/rooms/edit/${room._id}`
-                        class="px-3 py-1.5 rounded-full bg-slate-100 hover:bg-[#FFF3EE] hover:text-[#E05638] text-slate-700 font-semibold text-xs transition-colors no-underline inline-flex items-center gap-1"
+                        class="px-3 py-1.5 rounded-full bg-slate-100 hover:bg-[#F0FDF4] hover:text-[#16A34A] text-slate-700 font-semibold text-xs transition-colors no-underline inline-flex items-center gap-1"
                         title="Chỉnh sửa bài đăng"
                       )
                         i.fa-solid.fa-pen-to-square(class="text-[11px]")
@@ -299,7 +299,7 @@ block main
         div(class="flex items-center gap-2")
           a(
             href="/landlord/rooms"
-            class="text-[#E05638] font-semibold hover:underline no-underline"
+            class="text-[#16A34A] font-semibold hover:underline no-underline"
           )
             | Quản lý nâng cao tại trang Danh sách phòng →
 
@@ -394,9 +394,9 @@ block scripts
         metricCards.forEach(card => {
           const cardKey = card.getAttribute('data-metric-filter');
           if (cardKey === status) {
-            card.classList.add('ring-2', 'ring-[#E05638]', 'bg-orange-50/20');
+            card.classList.add('ring-2', 'ring-[#16A34A]', 'bg-emerald-50/20');
           } else {
-            card.classList.remove('ring-2', 'ring-[#E05638]', 'bg-orange-50/20');
+            card.classList.remove('ring-2', 'ring-[#16A34A]', 'bg-emerald-50/20');
           }
         });
 

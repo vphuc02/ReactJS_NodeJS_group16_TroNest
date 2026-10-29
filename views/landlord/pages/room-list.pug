@@ -17,7 +17,7 @@ block main
         if landlordStatus === USER_STATUS.APPROVED
           a(
             href="/landlord/rooms/create"
-            class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#E05638] text-white text-xs font-semibold shadow-sm hover:bg-[#C84327] transition-all hover:shadow no-underline"
+            class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#16A34A] text-white text-xs font-semibold shadow-sm hover:bg-[#15803D] transition-all hover:shadow no-underline"
           )
             i.fa-solid.fa-plus(class="text-xs")
             span Đăng bài mới
@@ -76,7 +76,7 @@ block main
             name="keyword"
             value=keyword
             placeholder="Tìm theo tiêu đề phòng..."
-            class="w-full pl-8 pr-8 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:border-[#E05638] focus:ring-1 focus:ring-[#E05638] bg-slate-50/50"
+            class="w-full pl-8 pr-8 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:border-[#16A34A] focus:ring-1 focus:ring-[#16A34A] bg-slate-50/50"
           )
           span(class="absolute left-2.5 top-2.5 text-slate-400 text-xs pointer-events-none")
             i.fa-solid.fa-magnifying-glass
@@ -112,7 +112,7 @@ block main
                         class="w-14 h-11 rounded-lg object-cover border border-slate-200/90 shrink-0 bg-slate-100"
                       )
                       div(class="max-w-xs sm:max-w-sm")
-                        p(class="font-semibold text-slate-900 line-clamp-1 hover:text-[#E05638] transition-colors m-0 text-xs")
+                        p(class="font-semibold text-slate-900 line-clamp-1 hover:text-[#16A34A] transition-colors m-0 text-xs")
                           = room.title
                         p(class="text-[11px] text-slate-400 truncate m-0 mt-1 flex items-center gap-1")
                           span 📍
@@ -123,7 +123,7 @@ block main
                     = room.categoryId ? room.categoryId.title : '-'
 
                   //- Giá thuê
-                  td(class="py-3.5 px-4 font-bold text-[#E05638]")
+                  td(class="py-3.5 px-4 font-bold text-[#16A34A]")
                     | #{room.price.toLocaleString('vi-VN')} đ
 
                   //- Diện tích & Sức chứa
@@ -165,7 +165,7 @@ block main
                       //- Nút Sửa tin dạng pill bo tròn
                       a(
                         href=`/landlord/rooms/edit/${room._id}`
-                        class="px-3 py-1.5 rounded-full bg-slate-100 hover:bg-[#FFF3EE] hover:text-[#E05638] text-slate-700 font-semibold text-xs transition-colors no-underline inline-flex items-center gap-1"
+                        class="px-3 py-1.5 rounded-full bg-slate-100 hover:bg-[#F0FDF4] hover:text-[#16A34A] text-slate-700 font-semibold text-xs transition-colors no-underline inline-flex items-center gap-1"
                         title="Chỉnh sửa bài đăng"
                       )
                         i.fa-solid.fa-pen-to-square(class="text-[11px]")
@@ -211,10 +211,10 @@ block main
                       p(class="text-xs text-slate-400 m-0") Thử xóa bộ lọc để xem toàn bộ danh sách phòng.
 
       //- Phân trang dưới bảng
-      if paging && paging.totalPage > 1
+      if paging && paging.totalPages > 1
         div(class="p-4 border-t border-slate-100 flex items-center justify-center sm:justify-between text-xs text-slate-500")
           span(class="hidden sm:inline")
-            | Trang #{paging.currentPage} / #{paging.totalPage} (Tổng #{paging.totalRecord} bài đăng)
+            | Trang #{paging.currentPage} / #{paging.totalPages} (Tổng #{paging.total} bài đăng)
           +pagination(paging, query, '/landlord/rooms')
 
   //- Modal Popover: Xem lý do từ chối

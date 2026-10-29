@@ -127,14 +127,26 @@ block main
 
         div(class="admin-clean-068")
           div
-            b Email: 
-            span= room.landlordId.email
+            span(class="block text-xs text-slate-500 mb-1") Giá thuê
+            b(class="text-base sm:text-lg font-extrabold text-[#16A34A]") #{room.price.toLocaleString('vi-VN')} đ/tháng
           div
-            b SĐT: 
-            span= room.landlordId.phone || '-'
+            span(class="block text-xs text-slate-500 mb-1") Diện tích
+            b(class="text-base sm:text-lg font-bold text-slate-800") #{room.area} m²
           div
-            b Địa chỉ: 
-            span= room.landlordId.address || '-'
+            span(class="block text-xs text-slate-500 mb-1") Sức chứa
+            b(class="text-base sm:text-lg font-bold text-slate-800") #{room.capacity || 2} người
+
+        //- Chi tiết địa chỉ & dịch vụ
+        div(class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm text-slate-600 bg-white p-4 rounded-xl border border-slate-100")
+          div(class="sm:col-span-2")
+            b(class="text-slate-800") Địa chỉ: 
+            span #{room.address}, #{room.district}, #{room.province}
+          div
+            b(class="text-slate-800") Loại phòng: 
+            span= room.categoryId ? room.categoryId.title : '-'
+          div
+            b(class="text-slate-800") Giá điện: 
+            span= room.electricityPrice
           div
             b Ngày tham gia: 
             span= room.landlordId.createdAt ? new Date(room.landlordId.createdAt).toLocaleDateString('vi-VN') : '-'

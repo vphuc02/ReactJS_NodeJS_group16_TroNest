@@ -4,39 +4,59 @@ block title
   title Đăng nhập Quản trị viên - TroNest
 
 block main
-  .form-account
-    .inner-logo(class="admin-clean-113")
-      div(class="admin-clean-114")
-        i.fa-solid.fa-shield-halved(class="admin-clean-115")
-        span TroNest Admin
-    h2.inner-title Đăng nhập Quản trị
-    p.inner-desc(class="admin-clean-116") Cổng xác thực Ban Quản trị hệ thống
-    
-    form.inner-form#login-form
-      .inner-group
-        label.inner-label(for="email") Email Quản trị viên
+  .form-account(class="bg-white rounded-3xl p-8 sm:p-11 w-full max-w-[480px] border border-slate-200/90 shadow-[0_12px_40px_rgba(0,0,0,0.05)]")
+    .inner-logo(class="text-center mb-6")
+      a(href="/" class="inline-flex items-center gap-2.5 no-underline group")
+        span(class="w-11 h-11 rounded-2xl bg-emerald-50 border border-emerald-200/80 flex items-center justify-center text-[#16A34A] group-hover:bg-[#16A34A] group-hover:text-white transition-all duration-200 shadow-2xs")
+          i.fa-solid.fa-shield-halved(class="text-lg")
+        div(class="text-left")
+          span(class="block text-2xl font-black tracking-tight text-slate-900 leading-none") TroNest
+          span(class="block text-[11px] font-bold text-[#16A34A] mt-0.5") Cổng Quản Trị Hệ Thống
+
+    h2.inner-title(class="text-2xl font-extrabold text-slate-900 text-center m-0 mb-1.5") Đăng nhập Quản trị
+    p.inner-desc(class="text-xs sm:text-sm text-slate-500 text-center m-0 mb-7 font-normal") Dành riêng cho Ban Quản trị viên hệ thống TroNest
+
+    form.inner-form#login-form(class="m-0 space-y-5")
+      .inner-group(class="m-0 relative")
+        label.inner-label(for="email" class="block text-xs font-bold text-slate-700 mb-1.5 opacity-100") Email Quản trị viên
         input.inner-control(
           type="email"
           name="email"
           id="email"
           value="admin@tronest.com"
           placeholder="admin@tronest.com"
+          class="w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/60 text-sm font-medium text-slate-900 focus:bg-white focus:border-[#16A34A] focus:ring-2 focus:ring-[#16A34A]/15 outline-none transition-all"
         )
-      .inner-group
-        label.inner-label(for="password") Mật khẩu
+      .inner-group(class="m-0 relative")
+        label.inner-label(for="password" class="block text-xs font-bold text-slate-700 mb-1.5 opacity-100") Mật khẩu
         input.inner-control(
           type="password"
           name="password"
           id="password"
           value="123456"
+          placeholder="••••••••"
+          class="w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/60 text-sm font-medium text-slate-900 focus:bg-white focus:border-[#16A34A] focus:ring-2 focus:ring-[#16A34A]/15 outline-none transition-all"
         )
-      .inner-meta
-        .inner-confirm
+      .inner-meta(class="flex items-center justify-between text-xs m-0 pt-1")
+        .inner-confirm(class="flex items-center gap-2")
           input.inner-check(
             type="checkbox"
             name="rememberPassword"
             id="remember-password"
             checked
+            class="w-4 h-4 accent-[#16A34A] rounded cursor-pointer"
           )
-          label.inner-label(for="remember-password") Nhớ mật khẩu
-      button.inner-button(type="submit" class="admin-clean-117") Đăng Nhập Quản Trị
+          label.inner-label(for="remember-password" class="text-xs font-medium text-slate-600 cursor-pointer m-0 opacity-100") Ghi nhớ đăng nhập
+        span(class="text-[11px] text-slate-400") (Mặc định: 123456)
+
+      button.inner-button(
+        type="submit"
+        class="w-full h-12 rounded-xl bg-gradient-to-r from-[#22C55E] to-[#16A34A] hover:from-[#16A34A] hover:to-[#15803D] text-white text-sm font-bold shadow-md shadow-emerald-600/25 transition-all cursor-pointer border-0 mt-2"
+      )
+        | Đăng Nhập Quản Trị
+
+    div(class="mt-6 pt-5 border-t border-dashed border-slate-200 text-center flex items-center justify-between text-xs text-slate-500")
+      span Tài khoản mẫu: admin@tronest.com
+      a(href="/" class="font-semibold text-[#16A34A] hover:underline no-underline flex items-center gap-1")
+        i.fa-solid.fa-arrow-left(class="text-[10px]")
+        span Về trang chủ

@@ -5,12 +5,14 @@ block title
   title Quản lý và Phê duyệt bài đăng phòng trọ - TroNest
 
 block main
-  div(class="admin-clean-040")
-    div
-      h1.box-title(class="admin-clean-041")
-        | Quản lý & Phê duyệt Bài đăng phòng trọ
-      p(class="admin-clean-042")
-        | Kiểm duyệt nội dung bài đăng phòng trước khi cho phép hiển thị công khai trên website
+  div(class="space-y-6 max-w-7xl mx-auto")
+    //- 1. Header
+    div(class="flex flex-col sm:flex-row sm:items-center justify-between gap-4")
+      div
+        h1.box-title(class="text-2xl font-bold tracking-tight text-slate-900 m-0")
+          | Quản lý & Phê duyệt Bài đăng phòng trọ
+        p(class="text-xs text-slate-500 m-0 mt-1")
+          | Kiểm duyệt nội dung bài đăng phòng trước khi cho phép hiển thị công khai trên website
 
   // Filter Tabs
   .filter-tabs(class="admin-clean-070")
@@ -109,4 +111,31 @@ block main
             td(colspan="6" class="admin-clean-088")
               | Không có bài đăng nào trong danh mục này.
 
-  +pagination(paging, query, '/admin/rooms')
+                      if room.status === ROOM_STATUS.PENDING
+                        button(
+                          type="button"
+                          data-admin-action="reject-room"
+                          data-id=room._id
+                          class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white border border-rose-200 hover:border-rose-600 text-xs font-semibold transition-colors cursor-pointer"
+                          title="Từ chối bài đăng"
+                        )
+                          i.fa-solid.fa-xmark(class="text-[11px]")
+                          span Từ chối
+
+                      button(
+                        type="button"
+                        data-admin-action="delete-room"
+                        data-id=room._id
+                        class="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors bg-transparent border-0 cursor-pointer"
+                        title="Xóa vĩnh viễn"
+                      )
+                        i.fa-solid.fa-trash-can(class="text-xs")
+            else
+              tr
+                td(colspan="5" class="py-12 text-center text-slate-400 text-xs")
+                  | Không có bài đăng nào trong danh mục này.
+
+      if paging && paging.totalPages > 1
+        div(class="p-4 border-t border-slate-100 flex items-center justify-center sm:justify-between text-xs text-slate-500")
+          span(class="hidden sm:inline") Trang #{paging.currentPage} / #{paging.totalPages} (Tổng #{paging.total} bài đăng)
+          +pagination(paging, query, '/admin/rooms')

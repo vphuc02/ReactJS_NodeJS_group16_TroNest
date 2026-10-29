@@ -12,5 +12,8 @@ pnpm-debug.log*
 Thumbs.db
 
 .vscode/
+.agents/
+.taste-skill/
+skills-lock.json
 public/uploads/*
 !public/uploads/.gitkeep

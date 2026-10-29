@@ -1,33 +1,79 @@
-nav.sider
-  ul.inner-menu
-    li
-      a(href="/admin/dashboard")
-        i.fa-solid.fa-gauge-high
-        | Tổng quan
-    li
-      a(href="/admin/landlords")
-        i.fa-solid.fa-user-check
-        | Duyệt Chủ trọ
-    li
-      a(href="/admin/rooms")
-        i.fa-solid.fa-house-circle-check
-        | Duyệt bài đăng phòng
-    li
-      a(href="/admin/users")
-        i.fa-solid.fa-users
-        | Quản lý người dùng
-    li
-      a(href="/admin/categories")
-        i.fa-solid.fa-table-cells-large
-        | Loại phòng trọ
-  hr
-  ul.inner-menu
-    li
-      a(href="/" target="_blank")
-        i.fa-solid.fa-globe
-        | Xem trang chủ
-    li
-      a(href="#" data-logout-url="/admin/logout" class="inner-logout")
-        i.fa-solid.fa-power-off
-        | Đăng xuất
+//- Sidebar Quản Trị Viên TroNest (Đồng bộ phong cách Clover Green #16A34A)
+nav.sider(class="bg-white border-r border-slate-200 flex flex-col justify-between shrink-0 shadow-sm")
+  div
+    //- Logo Brand
+    .sider-logo(class="h-16 flex items-center px-6 gap-2.5 border-b border-slate-100")
+      a(href="/admin/dashboard" class="flex items-center gap-2.5 no-underline")
+        div(class="w-8 h-8 rounded-xl bg-[#16A34A] flex items-center justify-center text-white shadow-sm")
+          i.fa-solid.fa-shield-halved(class="text-sm")
+        div(class="flex flex-col")
+          span(class="font-bold text-slate-800 text-base leading-tight tracking-tight") TroNest
+          span(class="text-[11px] font-semibold text-[#16A34A]") Cổng Quản Trị
+
+    //- Navigation Menu
+    - const isLandlordsPage = currentPath && currentPath.startsWith('/admin/landlords');
+    - const isRoomsPage = currentPath && currentPath.startsWith('/admin/rooms');
+    - const isUsersPage = currentPath && currentPath.startsWith('/admin/users');
+    - const isCategoriesPage = currentPath && currentPath.startsWith('/admin/categories');
+    - const isDashboardPage = !isLandlordsPage && !isRoomsPage && !isUsersPage && !isCategoriesPage;
+
+    ul.inner-menu(class="p-4 space-y-1.5 list-none m-0")
+      li
+        a(
+          href="/admin/dashboard"
+          class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all duration-200 no-underline " + (isDashboardPage ? 'active bg-[#F0FDF4] text-[#16A34A] font-semibold border-l-4 border-[#16A34A]' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium')
+        )
+          i.fa-solid.fa-gauge-high(class="w-5 text-base " + (isDashboardPage ? 'text-[#16A34A]' : 'text-slate-400'))
+          span Tổng quan
+
+      li
+        a(
+          href="/admin/landlords"
+          class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all duration-200 no-underline " + (isLandlordsPage ? 'active bg-[#F0FDF4] text-[#16A34A] font-semibold border-l-4 border-[#16A34A]' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium')
+        )
+          i.fa-solid.fa-user-check(class="w-5 text-base " + (isLandlordsPage ? 'text-[#16A34A]' : 'text-slate-400'))
+          span Duyệt Chủ trọ
+
+      li
+        a(
+          href="/admin/rooms"
+          class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all duration-200 no-underline " + (isRoomsPage ? 'active bg-[#F0FDF4] text-[#16A34A] font-semibold border-l-4 border-[#16A34A]' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium')
+        )
+          i.fa-solid.fa-house-circle-check(class="w-5 text-base " + (isRoomsPage ? 'text-[#16A34A]' : 'text-slate-400'))
+          span Duyệt bài đăng phòng
+
+      li
+        a(
+          href="/admin/users"
+          class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all duration-200 no-underline " + (isUsersPage ? 'active bg-[#F0FDF4] text-[#16A34A] font-semibold border-l-4 border-[#16A34A]' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium')
+        )
+          i.fa-solid.fa-users(class="w-5 text-base " + (isUsersPage ? 'text-[#16A34A]' : 'text-slate-400'))
+          span Quản lý người dùng
+
+      li
+        a(
+          href="/admin/categories"
+          class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all duration-200 no-underline " + (isCategoriesPage ? 'active bg-[#F0FDF4] text-[#16A34A] font-semibold border-l-4 border-[#16A34A]' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium')
+        )
+          i.fa-solid.fa-table-cells-large(class="w-5 text-base " + (isCategoriesPage ? 'text-[#16A34A]' : 'text-slate-400'))
+          span Loại phòng trọ
+
+  //- Bottom sidebar
+  .sider-bottom(class="p-4 border-t border-slate-100 space-y-1.5")
+    a(
+      href="/"
+      target="_blank"
+      class="flex items-center gap-2.5 px-3.5 py-2 text-xs font-medium text-slate-500 hover:text-[#16A34A] hover:bg-emerald-50/50 rounded-lg transition-colors no-underline"
+    )
+      i.fa-solid.fa-globe(class="text-xs text-slate-400")
+      span Xem trang chủ
+
+    a(
+      href="#"
+      data-logout-url="/admin/logout"
+      class="inner-logout w-full flex items-center gap-2.5 px-3.5 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 rounded-lg transition-colors no-underline cursor-pointer"
+    )
+      i.fa-solid.fa-arrow-right-from-bracket(class="text-xs text-rose-500")
+      span Đăng xuất
+
 .sider-overlay

@@ -4,35 +4,44 @@ block title
   title Tài khoản chưa được phê duyệt - TroNest
 
 block main
-  .section-pending(class="admin-clean-158")
-    if status === USER_STATUS.PENDING
-      div(class="admin-clean-159")
-        i.fa-solid.fa-clock-rotate-left
-      h1(class="admin-clean-160")
-        | Tài Khoản Chủ Trọ Đang Chờ Phê Duyệt
-      p(class="admin-clean-161")
-        | Cảm ơn bạn đã đăng ký làm Chủ trọ tại TroNest! Theo quy định, để đảm bảo an toàn cho khách thuê, tài khoản của bạn cần được 
-        b Admin kiểm tra và phê duyệt
-        |  trước khi được phép đăng tin phòng trọ.
-      div(class="admin-clean-162")
-        | Trạng thái hiện tại: 
-        span.badge.badge-yellow PENDING (Đang chờ duyệt)
-    else if status === USER_STATUS.REJECTED
-      div(class="admin-clean-163")
-        i.fa-solid.fa-triangle-exclamation
-      h1(class="admin-clean-160")
-        | Tài Khoản Chủ Trọ Bị Từ Chối
-      p(class="admin-clean-164")
-        | Rất tiếc, tài khoản Chủ trọ của bạn chưa đáp ứng tiêu chuẩn của hệ thống hoặc thông tin chưa chính xác.
-      if rejectReason
-        div(class="admin-clean-165")
-          b Lý do từ chối: 
-          span= rejectReason
+  div(class="max-w-2xl mx-auto py-8 sm:py-12")
+    .section-pending(class="bg-white rounded-3xl border border-slate-200/90 p-8 sm:p-10 text-center shadow-sm space-y-5")
+      if status === USER_STATUS.PENDING
+        div(class="w-16 h-16 rounded-2xl bg-amber-50 border border-amber-200/70 text-amber-500 flex items-center justify-center text-3xl mx-auto shadow-2xs")
+          i.fa-solid.fa-clock-rotate-left
+        div(class="space-y-2")
+          h1(class="text-xl sm:text-2xl font-bold text-slate-900 m-0")
+            | Tài Khoản Chủ Trọ Đang Chờ Phê Duyệt
+          p(class="text-xs sm:text-sm text-slate-500 leading-relaxed m-0 max-w-lg mx-auto")
+            | Cảm ơn bạn đã đăng ký làm Chủ trọ tại TroNest! Theo quy định, để đảm bảo an toàn cho khách thuê, tài khoản của bạn cần được 
+            b(class="text-slate-700") Admin kiểm tra và phê duyệt
+            |  trước khi được phép đăng tin phòng trọ.
+        div(class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-50 border border-amber-200 text-xs font-semibold text-amber-800")
+          span(class="w-2 h-2 rounded-full bg-amber-500 animate-pulse")
+          span Trạng thái hiện tại: PENDING (Đang chờ duyệt)
+      else if status === USER_STATUS.REJECTED
+        div(class="w-16 h-16 rounded-2xl bg-rose-50 border border-rose-200/70 text-rose-600 flex items-center justify-center text-3xl mx-auto shadow-2xs")
+          i.fa-solid.fa-triangle-exclamation
+        div(class="space-y-2")
+          h1(class="text-xl sm:text-2xl font-bold text-slate-900 m-0")
+            | Tài Khoản Chủ Trọ Bị Từ Chối
+          p(class="text-xs sm:text-sm text-slate-500 leading-relaxed m-0 max-w-lg mx-auto")
+            | Rất tiếc, tài khoản Chủ trọ của bạn chưa đáp ứng tiêu chuẩn của hệ thống hoặc thông tin chưa chính xác.
+        if rejectReason
+          div(class="p-4 rounded-2xl bg-rose-50/80 border border-rose-200 text-left text-xs text-rose-800 max-w-md mx-auto")
+            b(class="text-rose-900") Lý do từ chối: 
+            span= rejectReason
 
-    div(class="admin-clean-166")
-      a.btn.btn-secondary(href="/landlord/dashboard")
-        i.fa-solid.fa-gauge-high
-        | Bảng điều khiển
-      a.btn.btn-primary(href="/")
-        i.fa-solid.fa-house
-        | Về trang chủ
+      div(class="pt-2 flex flex-wrap items-center justify-center gap-3")
+        a(
+          href="/landlord/dashboard"
+          class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-all no-underline"
+        )
+          i.fa-solid.fa-gauge-high
+          span Bảng điều khiển
+        a(
+          href="/"
+          class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#16A34A] hover:bg-[#15803D] text-white text-xs font-semibold shadow-sm transition-all no-underline"
+        )
+          i.fa-solid.fa-house
+          span Về trang chủ

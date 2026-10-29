@@ -5,24 +5,34 @@ block title
   title Chỉnh sửa bài đăng - TroNest
 
 block main
-  div(class="admin-clean-045")
-    h1.box-title(class="admin-clean-041")
-      | Chỉnh sửa bài đăng phòng trọ
-    p(class="admin-clean-042")
-      | Cập nhật lại thông tin bài đăng hoặc chỉnh sửa để gửi duyệt lại nếu bị từ chối
+  div(class="max-w-4xl mx-auto space-y-6")
+    div(class="flex flex-col sm:flex-row sm:items-center justify-between gap-4")
+      div
+        h1.box-title(class="text-2xl font-bold tracking-tight text-slate-900 m-0")
+          | Chỉnh sửa bài đăng phòng trọ
+        p(class="text-xs text-slate-500 m-0 mt-1")
+          | Cập nhật lại thông tin bài đăng hoặc chỉnh sửa để gửi duyệt lại nếu bị từ chối
+      a(
+        href="/landlord/rooms"
+        class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50 text-xs font-semibold transition-all no-underline shadow-2xs self-start sm:self-auto"
+      )
+        i.fa-solid.fa-arrow-left(class="text-[11px]")
+        span Quay lại danh sách
 
-  if room.status === ROOM_STATUS.REJECTED && room.rejectReason
-    .alert-rejected(class="admin-clean-153")
-      b(class="admin-clean-154")
-        i.fa-solid.fa-triangle-exclamation(class="admin-clean-155")
-        | Bài đăng này bị Admin từ chối phê duyệt!
-      span(class="admin-clean-156")
-        b Lý do: 
-        = room.rejectReason
-      div(class="admin-clean-157")
-        | Hãy sửa lại các thông tin chưa đạt và nhấn "Gửi Admin duyệt lại" bên dưới để Admin xem xét lại.
+    if room.status === ROOM_STATUS.REJECTED && room.rejectReason
+      .alert-rejected(class="rounded-2xl border border-rose-200 bg-rose-50/90 p-4 sm:p-5 flex items-start gap-3.5 shadow-2xs")
+        div(class="w-9 h-9 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center shrink-0 mt-0.5")
+          i.fa-solid.fa-triangle-exclamation(class="text-base")
+        div(class="space-y-1")
+          p(class="text-xs sm:text-sm font-bold text-rose-900 m-0")
+            | Bài đăng này bị Admin từ chối phê duyệt!
+          p(class="text-xs text-rose-700 m-0")
+            b Lý do: 
+            = room.rejectReason
+          p(class="text-[11px] text-rose-600/90 m-0 pt-0.5")
+            | Hãy sửa lại các thông tin chưa đạt và nhấn "Gửi Admin duyệt lại" bên dưới để Admin xem xét lại.
 
-  +roomForm({ mode: 'edit', room })
+    +roomForm({ mode: 'edit', room })
 
 block scripts
   - const editImages = room.images && room.images.length > 0 ? room.images : (room.thumbnail ? [room.thumbnail] : ['/client/assets/images/product-1.jpg']);
