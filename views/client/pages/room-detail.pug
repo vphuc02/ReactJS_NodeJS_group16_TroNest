@@ -106,13 +106,31 @@ block main
           // Landlord Contact Card
           .landlord-card(class="client-clean-036")
             div(class="client-clean-037")
-              img(src=(room.landlordId && room.landlordId.avatar) || "/admin/assets/images/avatar.jpg" alt=room.landlordId ? room.landlordId.fullName : "" class="client-clean-038")
+              if room.landlordId && room.landlordId._id
+                a(href=`/landlords/${room.landlordId._id}` title=`Xem thông tin chủ trọ: ${room.landlordId.fullName || ''}` class="block no-underline")
+                  img(src=(room.landlordId && room.landlordId.avatar) || "/admin/assets/images/avatar.jpg" alt=room.landlordId ? room.landlordId.fullName : "" class="client-clean-038 hover:opacity-90 hover:scale-105 transition-all duration-200")
+              else
+                img(src=(room.landlordId && room.landlordId.avatar) || "/admin/assets/images/avatar.jpg" alt=room.landlordId ? room.landlordId.fullName : "" class="client-clean-038")
               span(class="client-clean-039" title="Chủ trọ đã được duyệt xác thực")
                 i.fa-solid.fa-check
 
             h3(class="client-clean-040")
-              = room.landlordId ? room.landlordId.fullName : "Chủ trọ TroNest"
+              if room.landlordId && room.landlordId._id
+                a(href=`/landlords/${room.landlordId._id}` class="text-inherit hover:text-[#16A34A] transition-colors no-underline inline-flex items-center justify-center gap-1.5" title="Xem thông tin chi tiết chủ trọ")
+                  span= room.landlordId ? room.landlordId.fullName.replace(/\s*\([^)]*\)/g, '') : "Chủ trọ TroNest"
+                  i.fa-solid.fa-arrow-up-right-from-square(class="text-[11px] text-slate-400")
+              else
+                = room.landlordId ? room.landlordId.fullName.replace(/\s*\([^)]*\)/g, '') : "Chủ trọ TroNest"
             span.badge.badge-green(class="client-clean-041") Chủ trọ uy tín (Đã duyệt)
+
+            if room.landlordId && room.landlordId._id
+              a(
+                href=`/landlords/${room.landlordId._id}`
+                class="w-full mt-2.5 mb-2 py-2 px-3 rounded-xl border border-emerald-200 bg-emerald-50/80 hover:bg-emerald-100/90 text-[#16A34A] text-xs font-bold flex items-center justify-center gap-2 no-underline transition-all duration-200 shadow-2xs hover:shadow-xs cursor-pointer"
+                title="Xem hồ sơ và toàn bộ bài đăng của chủ trọ"
+              )
+                i.fa-solid.fa-user-tie
+                span Xem thông tin chi tiết chủ trọ
 
             if room.landlordId && room.landlordId.phone
               div(class="client-clean-042")
@@ -138,6 +156,11 @@ block main
                 div
                   i.fa-solid.fa-location-dot(class="client-clean-049")
                   span= room.landlordId.address
+              if room.landlordId && room.landlordId.facebook
+                div
+                  i.fa-brands.fa-facebook(class="client-clean-049 text-[#1877F2]")
+                  a(href=(room.landlordId.facebook.startsWith('http') ? room.landlordId.facebook : `https://facebook.com/${room.landlordId.facebook}`) target="_blank" rel="noopener noreferrer" class="text-xs text-slate-600 hover:text-[#16A34A] no-underline hover:underline truncate")
+                    | Facebook cá nhân
 
           // Safe rental advice
           .advice-box(class="client-clean-050")

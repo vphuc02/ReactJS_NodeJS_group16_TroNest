@@ -117,7 +117,8 @@ module.exports.index = async (req, res) => {
     .skip(skip)
     .limit(limit)
     .populate('categoryId', 'title slug')
-    .populate('landlordId', 'fullName phone')
+    .populate('landlordId', 'fullName phone avatar status')
+    .populate('landlordId', 'fullName phone avatar status')
     .lean();
 
   const categories = await Category.find({ status: USER_STATUS.ACTIVE }).lean();
@@ -154,7 +155,8 @@ module.exports.detail = async (req, res) => {
     status: ROOM_STATUS.APPROVED
   })
     .populate('categoryId', 'title slug')
-    .populate('landlordId', 'fullName phone email address avatar createdAt');
+    .populate('landlordId', 'fullName phone avatar status')
+    .populate('landlordId', 'fullName phone email address avatar facebook status createdAt');
 
   if (!room) {
     throw new AppError(404, 'Phòng trọ này không tồn tại hoặc chưa được kiểm duyệt phê duyệt!');
@@ -182,6 +184,7 @@ module.exports.detail = async (req, res) => {
   })
     .limit(3)
     .populate('categoryId', 'title slug')
+    .populate('landlordId', 'fullName phone avatar status')
     .lean();
 
   res.render('client/pages/room-detail', {

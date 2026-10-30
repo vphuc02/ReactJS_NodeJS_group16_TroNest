@@ -12,7 +12,7 @@ module.exports.index = async (req, res) => {
     isFeatured: true
   })
     .populate('categoryId', 'title slug')
-    .populate('landlordId', 'fullName phone')
+    .populate('landlordId', 'fullName phone avatar status')
     .limit(6)
     .lean();
 
@@ -21,7 +21,7 @@ module.exports.index = async (req, res) => {
   })
     .sort({ createdAt: -1 })
     .populate('categoryId', 'title slug')
-    .populate('landlordId', 'fullName phone')
+    .populate('landlordId', 'fullName phone avatar status')
     .limit(8)
     .lean();
 

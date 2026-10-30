@@ -7,6 +7,7 @@ const authRoutes = require('./auth.route');
 const favoriteRoutes = require('./favorite.route');
 const profileRoutes = require('./profile.route');
 const accountRoutes = require('./account.route');
+const landlordRoutes = require('./landlord.route');
 
 router.use('/', authRoutes);
 router.use('/', homeRoutes);
@@ -16,5 +17,8 @@ router.use('/profile', profileRoutes);
 router.use('/user/profile', profileRoutes);
 router.use('/account', profileRoutes);
 router.use('/customer/profile', profileRoutes);
+router.use('/landlords', landlordRoutes);
+router.use('/chu-tro', landlordRoutes);
+router.use('/landlord-detail', landlordRoutes);
 
 module.exports = router;

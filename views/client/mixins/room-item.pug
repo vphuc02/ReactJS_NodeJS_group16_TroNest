@@ -1,6 +1,7 @@
 mixin roomItem(room, favoriteRoomIds)
   - const isFav = favoriteRoomIds && favoriteRoomIds.includes(room._id.toString());
   - const imgCount = (room.images && room.images.length > 0) ? room.images.length : (room.thumbnail ? 1 : 1);
+  - const landlordId = room.landlordId ? (room.landlordId._id || (typeof room.landlordId === 'string' ? room.landlordId : null)) : null;
   - const landlordName = room.landlordId ? (room.landlordId.fullName || '').replace(/\s*\([^)]*\)/g, '') : 'Chủ trọ';
   - const landlordAvatar = (room.landlordId && room.landlordId.avatar) || '';
   - const isVerified = room.status === 'APPROVED' || (room.landlordId && room.landlordId.status === 'APPROVED');
@@ -100,21 +101,43 @@ mixin roomItem(room, favoriteRoomIds)
 
       //- 3. Footer card: Người đăng + Nút hành động
       .inner-footer(class="mt-auto flex items-center justify-between pt-1")
-        div(class="flex items-center gap-2")
-          if landlordAvatar && !landlordAvatar.includes('avatar.jpg')
-            img(
-              src=landlordAvatar
-              alt=landlordName
-              class="h-7 w-7 rounded-full object-cover border border-slate-200"
-            )
-          else
-            div(class="flex h-7 w-7 items-center justify-center rounded-full bg-slate-100 text-xs font-semibold text-slate-600 border border-slate-200")
-              = (landlordName.charAt(0) || 'C').toUpperCase()
-          span(class="text-xs font-medium text-slate-600 truncate max-w-[110px]")
-            = landlordName
-          if isVerified
-            svg(class="w-3.5 h-3.5 text-emerald-500 shrink-0" fill="currentColor" viewBox="0 0 20 20")
-              path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd")
+        if landlordId
+          a(
+            href=`/landlords/${landlordId}`
+            title=`Xem hồ sơ chủ trọ: ${landlordName}`
+            onclick="event.stopPropagation();"
+            class="relative z-10 flex items-center gap-2 no-underline hover:opacity-85 transition-all group/author cursor-pointer"
+          )
+            if landlordAvatar && !landlordAvatar.includes('avatar.jpg')
+              img(
+                src=landlordAvatar
+                alt=landlordName
+                class="h-7 w-7 rounded-full object-cover border border-slate-200 group-hover/author:border-emerald-400 transition-colors"
+              )
+            else
+              div(class="flex h-7 w-7 items-center justify-center rounded-full bg-slate-100 text-xs font-semibold text-slate-600 border border-slate-200 group-hover/author:border-emerald-400 group-hover/author:bg-emerald-50 transition-colors")
+                = (landlordName.charAt(0) || 'C').toUpperCase()
+            span(class="text-xs font-medium text-slate-600 group-hover/author:text-[#16A34A] transition-colors truncate max-w-[110px]")
+              = landlordName
+            if isVerified
+              svg(class="w-3.5 h-3.5 text-emerald-500 shrink-0" fill="currentColor" viewBox="0 0 20 20" title="Chủ trọ đã xác thực")
+                path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd")
+        else
+          div(class="flex items-center gap-2")
+            if landlordAvatar && !landlordAvatar.includes('avatar.jpg')
+              img(
+                src=landlordAvatar
+                alt=landlordName
+                class="h-7 w-7 rounded-full object-cover border border-slate-200"
+              )
+            else
+              div(class="flex h-7 w-7 items-center justify-center rounded-full bg-slate-100 text-xs font-semibold text-slate-600 border border-slate-200")
+                = (landlordName.charAt(0) || 'C').toUpperCase()
+            span(class="text-xs font-medium text-slate-600 truncate max-w-[110px]")
+              = landlordName
+            if isVerified
+              svg(class="w-3.5 h-3.5 text-emerald-500 shrink-0" fill="currentColor" viewBox="0 0 20 20")
+                path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd")
 
         button(
           type="button"

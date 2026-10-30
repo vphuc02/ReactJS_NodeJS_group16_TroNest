@@ -220,6 +220,7 @@ block main
           const catTitle = room.categoryId ? (room.categoryId.title || 'Phòng trọ') : 'Phòng trọ';
           const landlord = room.landlordId ? (room.landlordId.fullName || '').replace(/\s*\([^)]*\)/g, '') : 'Chủ trọ';
           const landlordAvatar = (room.landlordId && room.landlordId.avatar) || '';
+          const landlordId = room.landlordId ? (room.landlordId._id || room.landlordId) : '';
           const address  = room.address || [room.ward, room.district, room.province].filter(Boolean).join(', ') || 'Đang cập nhật';
           const price    = (room.price || 0).toLocaleString('vi-VN') + ' đ';
           const imgCount = (room.images && room.images.length > 0) ? room.images.length : 1;
@@ -294,11 +295,18 @@ block main
                   <span class="truncate">${amenity2}</span>
                 </div>
                 <div class="inner-footer mt-auto flex items-center justify-between pt-1">
-                  <div class="flex items-center gap-2">
-                    ${avatarHtml}
-                    <span class="text-xs font-medium text-slate-600 truncate max-w-[110px]">${landlord}</span>
-                    <svg class="w-3.5 h-3.5 text-emerald-500 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>
-                  </div>
+                  ${landlordId
+                    ? `<a href="/landlords/${landlordId}" title="Xem hồ sơ chủ trọ: ${landlord}" onclick="event.stopPropagation();" class="relative z-10 flex items-center gap-2 no-underline hover:opacity-85 transition-all group/author cursor-pointer">
+                        ${avatarHtml}
+                        <span class="text-xs font-medium text-slate-600 group-hover/author:text-[#16A34A] transition-colors truncate max-w-[110px]">${landlord}</span>
+                        <svg class="w-3.5 h-3.5 text-emerald-500 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>
+                      </a>`
+                    : `<div class="flex items-center gap-2">
+                        ${avatarHtml}
+                        <span class="text-xs font-medium text-slate-600 truncate max-w-[110px]">${landlord}</span>
+                        <svg class="w-3.5 h-3.5 text-emerald-500 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>
+                      </div>`
+                  }
                   <button type="button" class="flex items-center gap-1.5 rounded-full bg-emerald-50 hover:bg-[#16A34A] text-[#16A34A] hover:text-white px-3.5 py-1.5 text-xs font-bold transition-all border border-emerald-200 hover:border-[#16A34A] cursor-pointer shadow-2xs">
                     <span>Xem phòng</span>
                     <svg class="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
