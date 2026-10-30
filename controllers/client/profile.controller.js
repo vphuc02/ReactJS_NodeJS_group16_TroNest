@@ -1,6 +1,8 @@
 const bcrypt = require('bcryptjs');
 const User = require('../../models/user.model');
 const Favorite = require('../../models/favorite.model');
+const Room = require('../../models/room.model');
+const { ROLES } = require('../../configs/system.config');
 const { wantsJson } = require('../../helpers/http.helper');
 const { AppError } = require('../../helpers/error.helper');
 
@@ -12,20 +14,31 @@ module.exports.index = async (req, res) => {
     throw new AppError(404, 'Không tìm thấy thông tin người dùng!');
   }
 
+  // Nếu là tài khoản Chủ trọ xem trang HTML -> chuyển hướng đến trang cá nhân trên Kênh Chủ Trọ
+  if (user.role === ROLES.LANDLORD && !wantsJson(req)) {
+    return res.redirect('/landlord/profile');
+  }
+
   const favoriteCount = await Favorite.countDocuments({ userId: req.user._id });
+  let roomCount = 0;
+  if (user.role === ROLES.LANDLORD) {
+    roomCount = await Room.countDocuments({ landlordId: req.user._id });
+  }
 
   if (wantsJson(req)) {
     return res.json({
       code: 200,
       user,
-      favoriteCount
+      favoriteCount,
+      roomCount
     });
   }
 
   res.render('client/pages/profile', {
     title: 'Thông tin cá nhân - TroNest',
     user,
-    favoriteCount
+    favoriteCount,
+    roomCount
   });
 };
 

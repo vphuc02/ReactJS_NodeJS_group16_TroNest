@@ -1,0 +1,831 @@
+extends ../layouts/default.pug
+
+block title
+  title Thông tin cá nhân - Kênh Chủ Trọ TroNest
+
+block main
+  -
+    const formatFbUrl = (val) => {
+      if (!val) return '';
+      const s = String(val).trim();
+      if (s.startsWith('http://') || s.startsWith('https://')) return s;
+      if (s.startsWith('facebook.com') || s.startsWith('www.facebook.com') || s.startsWith('fb.com')) return 'https://' + s;
+      return 'https://facebook.com/' + s;
+    };
+
+  div(class="space-y-6 max-w-7xl mx-auto")
+    //- Breadcrumb
+    nav(class="flex items-center gap-2 text-xs text-slate-500 font-medium")
+      a(href="/landlord/dashboard" class="hover:text-[#16A34A] no-underline text-slate-500 flex items-center gap-1.5 transition-colors")
+        i.fa-solid.fa-house-chimney-user(class="text-xs text-[#16A34A]")
+        span Kênh chủ trọ
+      span /
+      span(class="text-slate-800 font-semibold") Thông tin cá nhân
+
+    //- Cảnh báo trạng thái tài khoản (nếu đang chờ duyệt hoặc bị từ chối)
+    if landlordStatus === USER_STATUS.PENDING
+      div(class="rounded-2xl border border-amber-200 bg-amber-50/80 p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs")
+        div(class="flex items-center gap-3")
+          div(class="w-9 h-9 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center shrink-0")
+            i.fa-solid.fa-clock(class="text-base")
+          div
+            p(class="text-xs font-bold text-amber-900 m-0") Tài khoản Chủ trọ của bạn đang trong trạng thái Chờ phê duyệt (PENDING)
+            p(class="text-[11px] text-amber-700 m-0 mt-0.5") Vui lòng cập nhật đầy đủ thông tin liên hệ để Quản trị viên duyệt hồ sơ nhanh chóng nhất.
+        span(class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white text-amber-700 border border-amber-300 shadow-2xs shrink-0")
+          span(class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse")
+          | Chờ duyệt
+    else if landlordStatus === USER_STATUS.REJECTED
+      div(class="rounded-2xl border border-rose-200 bg-rose-50/80 p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs")
+        div(class="flex items-center gap-3")
+          div(class="w-9 h-9 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center shrink-0")
+            i.fa-solid.fa-triangle-exclamation(class="text-base")
+          div
+            p(class="text-xs font-bold text-rose-900 m-0") Tài khoản Chủ trọ của bạn đã bị từ chối phê duyệt!
+            p(class="text-[11px] text-rose-700 m-0 mt-0.5") Lý do: #{rejectReason || 'Thông tin chưa hợp lệ. Vui lòng cập nhật lại hồ sơ.'}
+        span(class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white text-rose-700 border border-rose-300 shadow-2xs shrink-0")
+          span(class="w-1.5 h-1.5 rounded-full bg-rose-500")
+          | Bị từ chối
+
+    //- Hero Profile Header Card
+    .profile-hero(class="bg-white rounded-2xl p-5 sm:p-7 border border-slate-200/80 shadow-xs relative overflow-hidden")
+      div(class="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-emerald-100/35 rounded-full blur-3xl pointer-events-none")
+      div(class="absolute bottom-0 left-1/3 -mb-12 w-48 h-48 bg-emerald-50/40 rounded-full blur-2xl pointer-events-none")
+
+      div(class="relative z-10 flex flex-col sm:flex-row items-center sm:items-start gap-5 sm:gap-6")
+        //- Avatar Chủ trọ kèm nút đổi ảnh
+        .avatar-wrapper(class="relative group cursor-pointer shrink-0" id="avatar-click-zone" title="Nhấn vào ảnh để đổi avatar từ máy tính")
+          img#profile-avatar-display(
+            src=user.avatar || "/admin/assets/images/avatar.jpg" 
+            alt=user.fullName 
+            class="w-24 h-24 sm:w-28 sm:h-28 rounded-full object-cover border-4 border-white shadow-md ring-2 ring-emerald-300/80 bg-slate-100 transition-all duration-200 group-hover:brightness-90"
+          )
+          div(class="absolute inset-0 bg-black/45 rounded-full flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-white")
+            i.fa-solid.fa-camera(class="text-base sm:text-lg mb-0.5")
+            span(class="text-[10px] font-semibold tracking-wide") Đổi ảnh
+          span(class="absolute bottom-0 right-0 w-8 h-8 bg-[#16A34A] text-white border-2 border-white rounded-full flex items-center justify-center text-xs shadow-md group-hover:scale-105 transition-transform" title="Tải ảnh lên")
+            i.fa-solid.fa-camera
+          input#avatar-file-input(type="file" name="avatar" accept="image/jpeg,image/png,image/webp,image/gif" class="hidden")
+
+        //- Thông tin tóm tắt & Badges
+        div(class="flex-1 text-center sm:text-left min-w-0")
+          div(class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 justify-center sm:justify-start mb-2")
+            h1#profile-name-display(class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight m-0")= user.fullName
+            div(class="flex items-center gap-2 flex-wrap justify-center sm:justify-start")
+              span(class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200/80")
+                i.fa-solid.fa-house-user(class="text-[11px] text-[#16A34A]")
+                | Chủ trọ cho thuê
+              if user.status === USER_STATUS.APPROVED
+                span(class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/80")
+                  i.fa-solid.fa-circle-check(class="text-[11px] text-emerald-600")
+                  | Đã xác thực
+              else if user.status === USER_STATUS.PENDING
+                span(class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200/80")
+                  i.fa-solid.fa-clock(class="text-[11px] text-amber-500")
+                  | Chờ phê duyệt
+              else if user.status === USER_STATUS.REJECTED
+                span(class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200/80")
+                  i.fa-solid.fa-circle-xmark(class="text-[11px] text-rose-600")
+                  | Bị từ chối
+
+          div(class="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs sm:text-sm text-slate-500 justify-center sm:justify-start mt-2.5")
+            span(class="flex items-center gap-1.5")
+              i.fa-regular.fa-envelope(class="text-[#16A34A]")
+              span= user.email
+            span(class="flex items-center gap-1.5")
+              i.fa-regular.fa-calendar-check(class="text-[#16A34A]")
+              | Tham gia: #{new Date(user.createdAt).toLocaleDateString('vi-VN')}
+            if user.phone
+              span(class="flex items-center gap-1.5")
+                i.fa-solid.fa-phone(class="text-[#16A34A]")
+                span= user.phone
+            - const heroFbUrl = formatFbUrl(user.facebook)
+            a#hero-facebook-link(
+              href=heroFbUrl || '#' 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              class="flex items-center gap-1.5 text-blue-600 hover:text-blue-700 hover:underline no-underline font-medium " + (user.facebook ? '' : 'hidden')
+              title="Mở Facebook cá nhân"
+            )
+              i.fa-brands.fa-facebook(class="text-sm text-blue-600")
+              span#hero-facebook-text Facebook
+              i.fa-solid.fa-arrow-up-right-from-square(class="text-[10px] opacity-75")
+
+        //- Hành động nhanh bên phải
+        div(class="flex flex-row sm:flex-col gap-2.5 sm:self-center w-full sm:w-auto shrink-0")
+          a(
+            href="/landlord/rooms" 
+            class="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100/80 text-emerald-700 text-xs sm:text-sm font-semibold transition-all border border-emerald-200/70 no-underline shadow-xs"
+          )
+            i.fa-solid.fa-list-check(class="text-xs text-[#16A34A]")
+            span Quản lý bài đăng
+            span(class="bg-[#16A34A] text-white text-[11px] font-bold px-2 py-0.5 rounded-full")= roomCount || 0
+          
+          button#btn-trigger-edit(
+            type="button" 
+            class="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#16A34A] hover:bg-[#15803D] text-white text-xs sm:text-sm font-semibold transition-all shadow-sm active:scale-95 border-none cursor-pointer"
+          )
+            i.fa-solid.fa-user-pen(class="text-xs")
+            span Cập nhật hồ sơ
+
+    //- Main Grid: Sider điều hướng + Nội dung Tabs
+    div(class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start")
+      //- Cột trái: Tab selector & Thống kê bài đăng
+      div(class="lg:col-span-4 space-y-5")
+        //- Menu Tabs
+        div(class="bg-white rounded-2xl p-2.5 sm:p-3 border border-slate-200/80 shadow-xs")
+          ul(class="space-y-1 list-none p-0 m-0")
+            li
+              button.profile-tab-btn(
+                type="button" 
+                data-target="#tab-overview" 
+                class="active w-full flex items-center justify-between px-3.5 py-3 rounded-xl text-left font-semibold text-sm transition-all border-none cursor-pointer bg-[#F0FDF4] text-[#16A34A]"
+              )
+                span(class="flex items-center gap-3")
+                  i.fa-solid.fa-id-card(class="text-base w-5 text-center")
+                  span Thông tin chi tiết
+                i.fa-solid.fa-chevron-right(class="text-xs opacity-60")
+            li
+              button.profile-tab-btn(
+                type="button" 
+                data-target="#tab-edit" 
+                class="w-full flex items-center justify-between px-3.5 py-3 rounded-xl text-left font-semibold text-sm transition-all border-none cursor-pointer bg-transparent text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+              )
+                span(class="flex items-center gap-3")
+                  i.fa-solid.fa-user-gear(class="text-base w-5 text-center")
+                  span Chỉnh sửa thông tin
+                i.fa-solid.fa-chevron-right(class="text-xs opacity-60")
+            li
+              button.profile-tab-btn(
+                type="button" 
+                data-target="#tab-password" 
+                class="w-full flex items-center justify-between px-3.5 py-3 rounded-xl text-left font-semibold text-sm transition-all border-none cursor-pointer bg-transparent text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+              )
+                span(class="flex items-center gap-3")
+                  i.fa-solid.fa-shield-halved(class="text-base w-5 text-center")
+                  span Đổi mật khẩu
+                i.fa-solid.fa-chevron-right(class="text-xs opacity-60")
+
+        //- Tiện ích & Lối tắt
+        div(class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs space-y-3.5")
+          h3(class="text-xs font-bold text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-2")
+            i.fa-solid.fa-chart-pie(class="text-[#16A34A]")
+            | Quản lý & Hoạt động
+
+          div(class="p-3.5 rounded-xl bg-emerald-50/50 border border-emerald-100 flex items-center justify-between")
+            div(class="flex items-center gap-3")
+              div(class="w-9 h-9 rounded-xl bg-white flex items-center justify-center text-[#16A34A] shadow-xs")
+                i.fa-solid.fa-house-chimney(class="text-xs")
+              div
+                div(class="text-xs text-slate-500") Phòng trọ đang quản lý
+                div(class="text-base font-bold text-slate-800")
+                  span= roomCount || 0
+                  span(class="text-xs font-normal text-slate-500 ml-1") bài đăng
+            a(href="/landlord/rooms" class="text-xs font-semibold text-[#16A34A] hover:underline no-underline") Quản lý &rarr;
+
+          div(class="p-3.5 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between")
+            div(class="flex items-center gap-3")
+              div(class="w-9 h-9 rounded-xl bg-white flex items-center justify-center text-[#16A34A] shadow-xs")
+                i.fa-solid.fa-circle-plus(class="text-xs")
+              div
+                div(class="text-xs text-slate-500") Đăng phòng trọ mới
+                div(class="text-xs font-bold text-slate-800") Tiếp cận người thuê
+            a(href="/landlord/rooms/create" class="text-xs font-semibold text-[#16A34A] hover:underline no-underline") Đăng bài &rarr;
+
+          div(class="pt-2 border-t border-slate-100")
+            a(href="/logout" data-logout-url="/logout" class="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl border border-rose-200 text-rose-600 hover:bg-rose-50 text-xs font-semibold transition-colors no-underline")
+              i.fa-solid.fa-arrow-right-from-bracket
+              | Đăng xuất tài khoản
+
+      //- Cột phải: Các nội dung Tabs
+      div(class="lg:col-span-8")
+        //- Tab 1: Thông tin chi tiết
+        #tab-overview.profile-tab-content(class="bg-white rounded-2xl p-5 sm:p-7 border border-slate-200/80 shadow-xs space-y-5 sm:space-y-6")
+          div(class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100")
+            div
+              h2(class="text-lg sm:text-xl font-bold text-slate-900 m-0") Hồ sơ chủ trọ
+              p(class="text-slate-500 text-xs sm:text-sm mt-1 m-0") Thông tin cá nhân & liên hệ của bạn được hiển thị an toàn trên hệ thống TroNest.
+            button(type="button" onclick="document.querySelector('[data-target=\"#tab-edit\"]').click()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 text-slate-700 hover:text-[#16A34A] hover:border-emerald-300 text-xs font-medium transition-colors cursor-pointer bg-white")
+              i.fa-solid.fa-pen-to-square
+              | Chỉnh sửa
+
+          //- Grid thông tin chi tiết
+          div(class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4")
+            //- Họ và tên
+            .info-card(class="p-4 rounded-xl bg-slate-50/70 border border-slate-200/60")
+              span(class="text-xs font-semibold text-slate-400 block mb-1.5 flex items-center gap-1.5")
+                i.fa-solid.fa-user(class="text-slate-400 text-[11px]")
+                | Họ và tên đầy đủ
+              p#profile-fullname-text(class="text-sm sm:text-base font-semibold text-slate-800 m-0")= user.fullName
+
+            //- Email
+            .info-card(class="p-4 rounded-xl bg-slate-50/70 border border-slate-200/60")
+              span(class="text-xs font-semibold text-slate-400 block mb-1.5 flex items-center gap-1.5")
+                i.fa-solid.fa-envelope(class="text-slate-400 text-[11px]")
+                | Địa chỉ Email
+              div(class="flex items-center gap-2")
+                p(class="text-sm sm:text-base font-semibold text-slate-800 m-0 truncate" title=user.email)= user.email
+                span(class="px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-600 text-[10px] font-bold border border-emerald-200 shrink-0") Xác thực
+
+            //- Số điện thoại
+            .info-card(class="p-4 rounded-xl bg-slate-50/70 border border-slate-200/60")
+              span(class="text-xs font-semibold text-slate-400 block mb-1.5 flex items-center gap-1.5")
+                i.fa-solid.fa-phone(class="text-slate-400 text-[11px]")
+                | Số điện thoại liên hệ
+              if user.phone
+                p#profile-phone-text(class="text-sm sm:text-base font-semibold text-slate-800 m-0")= user.phone
+              else
+                p#profile-phone-text(class="text-sm text-slate-400 italic m-0") Chưa cập nhật
+
+            //- Địa chỉ liên hệ
+            .info-card(class="p-4 rounded-xl bg-slate-50/70 border border-slate-200/60")
+              span(class="text-xs font-semibold text-slate-400 block mb-1.5 flex items-center gap-1.5")
+                i.fa-solid.fa-location-dot(class="text-slate-400 text-[11px]")
+                | Địa chỉ liên hệ
+              if user.address
+                p#profile-address-text(class="text-sm sm:text-base font-semibold text-slate-800 m-0")= user.address
+              else
+                p#profile-address-text(class="text-sm text-slate-400 italic m-0") Chưa cập nhật
+
+            //- Facebook cá nhân
+            .info-card(class="p-4 rounded-xl bg-slate-50/70 border border-slate-200/60 sm:col-span-2")
+              span(class="text-xs font-semibold text-slate-400 block mb-1.5 flex items-center gap-1.5")
+                i.fa-brands.fa-facebook(class="text-blue-600 text-[12px]")
+                | Liên kết Facebook
+              - const fbUrl = formatFbUrl(user.facebook)
+              a#profile-facebook-link(
+                href=fbUrl || '#' 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                class="inline-flex items-center gap-1.5 text-sm sm:text-base font-semibold text-blue-600 hover:text-blue-700 hover:underline no-underline " + (user.facebook ? '' : 'hidden')
+                title="Bấm để truy cập Facebook cá nhân"
+              )
+                span#profile-facebook-text= user.facebook || ''
+                i.fa-solid.fa-arrow-up-right-from-square(class="text-xs opacity-75")
+              p#profile-facebook-empty(class="text-sm text-slate-400 italic m-0 " + (user.facebook ? 'hidden' : '')) Chưa cập nhật
+
+            //- Vai trò & Quyền hạn
+            .info-card(class="p-4 rounded-xl bg-slate-50/70 border border-slate-200/60")
+              span(class="text-xs font-semibold text-slate-400 block mb-1.5 flex items-center gap-1.5")
+                i.fa-solid.fa-id-badge(class="text-slate-400 text-[11px]")
+                | Vai trò tài khoản
+              div(class="flex items-center gap-2")
+                span(class="text-sm sm:text-base font-semibold text-slate-800") Chủ trọ cho thuê
+                span(class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800") LANDLORD
+
+            //- Trạng thái phê duyệt
+            .info-card(class="p-4 rounded-xl bg-slate-50/70 border border-slate-200/60")
+              span(class="text-xs font-semibold text-slate-400 block mb-1.5 flex items-center gap-1.5")
+                i.fa-solid.fa-shield-halved(class="text-slate-400 text-[11px]")
+                | Trạng thái duyệt hồ sơ
+              div(class="flex items-center gap-2")
+                if user.status === USER_STATUS.APPROVED
+                  span(class="inline-flex items-center gap-1 text-xs sm:text-sm font-semibold text-emerald-700")
+                    i.fa-solid.fa-circle-check(class="text-emerald-600")
+                    | Đã được duyệt xác thực
+                else if user.status === USER_STATUS.PENDING
+                  span(class="inline-flex items-center gap-1 text-xs sm:text-sm font-semibold text-amber-700")
+                    i.fa-solid.fa-clock(class="text-amber-500")
+                    | Đang chờ phê duyệt
+                else if user.status === USER_STATUS.REJECTED
+                  span(class="inline-flex items-center gap-1 text-xs sm:text-sm font-semibold text-rose-700")
+                    i.fa-solid.fa-circle-xmark(class="text-rose-600")
+                    | Bị từ chối
+
+            //- Ngày tham gia
+            .info-card(class="p-4 rounded-xl bg-slate-50/70 border border-slate-200/60")
+              span(class="text-xs font-semibold text-slate-400 block mb-1.5 flex items-center gap-1.5")
+                i.fa-solid.fa-calendar-plus(class="text-slate-400 text-[11px]")
+                | Ngày khởi tạo tài khoản
+              p(class="text-sm sm:text-base font-medium text-slate-700 m-0")
+                | #{new Date(user.createdAt).toLocaleDateString('vi-VN')} #{new Date(user.createdAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
+
+            //- Cập nhật lần cuối
+            .info-card(class="p-4 rounded-xl bg-slate-50/70 border border-slate-200/60")
+              span(class="text-xs font-semibold text-slate-400 block mb-1.5 flex items-center gap-1.5")
+                i.fa-solid.fa-clock-rotate-left(class="text-slate-400 text-[11px]")
+                | Lần cập nhật gần nhất
+              p#profile-updated-at(class="text-sm sm:text-base font-medium text-slate-700 m-0")
+                | #{new Date(user.updatedAt || user.createdAt).toLocaleDateString('vi-VN')} #{new Date(user.updatedAt || user.createdAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
+
+          //- Mẹo dành cho chủ trọ
+          div(class="rounded-xl bg-emerald-50/70 border border-emerald-200/70 p-4 flex items-start gap-3 text-xs sm:text-sm text-emerald-900")
+            i.fa-solid.fa-lightbulb(class="text-[#16A34A] mt-0.5 text-base shrink-0")
+            div
+              strong(class="font-semibold block mb-0.5") Mẹo dành cho Chủ trọ:
+              | Cập nhật số điện thoại chính xác và liên kết Facebook cá nhân sẽ giúp người tìm trọ dễ dàng liên lạc trao đổi trực tiếp, gia tăng tỷ lệ chốt phòng thành công!
+
+        //- Tab 2: Chỉnh sửa thông tin
+        #tab-edit.profile-tab-content(class="hidden bg-white rounded-2xl p-5 sm:p-7 border border-slate-200/80 shadow-xs space-y-5 sm:space-y-6")
+          div(class="pb-4 border-b border-slate-100")
+            h2(class="text-lg sm:text-xl font-bold text-slate-900 m-0") Cập nhật thông tin chủ trọ
+            p(class="text-slate-500 text-xs sm:text-sm mt-1 m-0") Điền các thông tin bạn muốn cập nhật. Nhấn Lưu thay đổi để hoàn tất.
+
+          //- Khu vực tải ảnh đại diện từ máy tính
+          div(class="p-4 sm:p-5 rounded-2xl bg-emerald-50/40 border border-emerald-100 flex flex-col sm:flex-row items-center sm:items-start gap-4")
+            div(class="relative group cursor-pointer shrink-0" onclick="document.getElementById('avatar-file-input').click()")
+              img#edit-avatar-preview(
+                src=user.avatar || "/admin/assets/images/avatar.jpg" 
+                alt=user.fullName 
+                class="w-20 h-20 rounded-full object-cover border-2 border-white shadow-md ring-2 ring-emerald-300 transition-all group-hover:brightness-90"
+              )
+              div(class="absolute inset-0 bg-black/40 rounded-full flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-white text-xs")
+                i.fa-solid.fa-camera(class="mb-0.5")
+                span(class="text-[9px] font-semibold") Chọn ảnh
+            div(class="flex-1 text-center sm:text-left")
+              div(class="text-sm font-bold text-slate-900") Ảnh đại diện chủ trọ
+              p(class="text-xs text-slate-500 m-0 mt-1") Nhấn vào ảnh hoặc nút bên dưới để chọn ảnh từ máy tính (Tối đa 5 MB, định dạng JPG, PNG, WebP).
+              div(class="mt-2.5 flex items-center justify-center sm:justify-start gap-2")
+                button(
+                  type="button" 
+                  onclick="document.getElementById('avatar-file-input').click()" 
+                  class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-emerald-300 bg-white hover:bg-emerald-50 text-emerald-700 text-xs font-semibold transition-all cursor-pointer shadow-2xs"
+                )
+                  i.fa-solid.fa-upload(class="text-xs")
+                  span Chọn ảnh mới
+                span#avatar-upload-status(class="text-xs text-slate-400 italic hidden")
+
+          //- Form cập nhật thông tin
+          form#form-update-profile(class="space-y-4 sm:space-y-5")
+            div
+              label(for="fullName" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2")
+                | Họ và tên đầy đủ 
+                span(class="text-rose-500") *
+              input#fullName(
+                type="text" 
+                name="fullName" 
+                value=user.fullName 
+                required 
+                maxlength="100"
+                placeholder="Nhập họ và tên đầy đủ của bạn"
+                class="w-full px-4 py-2.5 sm:py-3 rounded-xl border border-slate-200 hover:border-slate-300 focus:outline-none focus:border-[#16A34A] focus:ring-2 focus:ring-emerald-100 transition-all text-sm text-slate-800"
+              )
+
+            div
+              label(for="email" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2")
+                | Địa chỉ Email
+              div(class="relative")
+                input#email(
+                  type="email" 
+                  value=user.email 
+                  disabled 
+                  class="w-full px-4 py-2.5 sm:py-3 rounded-xl border border-slate-200 bg-slate-100/70 text-slate-500 text-sm cursor-not-allowed"
+                )
+                span(class="absolute right-3.5 top-1/2 -translate-y-1/2 text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200")
+                  i.fa-solid.fa-lock(class="text-[10px] mr-1")
+                  | Cố định
+
+            div(class="grid grid-cols-1 sm:grid-cols-2 gap-4")
+              div
+                label(for="phone" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2")
+                  | Số điện thoại liên hệ
+                input#phone(
+                  type="tel" 
+                  name="phone" 
+                  value=user.phone || ''
+                  placeholder="Ví dụ: 0912345678"
+                  pattern="[0-9]{10}"
+                  class="w-full px-4 py-2.5 sm:py-3 rounded-xl border border-slate-200 hover:border-slate-300 focus:outline-none focus:border-[#16A34A] focus:ring-2 focus:ring-emerald-100 transition-all text-sm text-slate-800"
+                )
+                span(class="text-[11px] text-slate-400 mt-1.5 block") Số điện thoại 10 chữ số để người thuê tiện liên lạc.
+
+              div
+                label(for="address" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2")
+                  | Địa chỉ liên hệ
+                input#address(
+                  type="text" 
+                  name="address" 
+                  value=user.address || ''
+                  maxlength="200"
+                  placeholder="Ví dụ: Quận Cầu Giấy, Hà Nội"
+                  class="w-full px-4 py-2.5 sm:py-3 rounded-xl border border-slate-200 hover:border-slate-300 focus:outline-none focus:border-[#16A34A] focus:ring-2 focus:ring-emerald-100 transition-all text-sm text-slate-800"
+                )
+
+            div
+              label(for="facebook" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2")
+                | Liên kết Facebook cá nhân
+              div(class="relative")
+                span(class="absolute left-3.5 top-1/2 -translate-y-1/2 text-blue-600")
+                  i.fa-brands.fa-facebook(class="text-base")
+                input#facebook(
+                  type="text" 
+                  name="facebook" 
+                  value=user.facebook || ''
+                  maxlength="200"
+                  placeholder="Nhập username hoặc link Facebook cá nhân"
+                  class="w-full pl-10 pr-4 py-2.5 sm:py-3 rounded-xl border border-slate-200 hover:border-slate-300 focus:outline-none focus:border-[#16A34A] focus:ring-2 focus:ring-emerald-100 transition-all text-sm text-slate-800"
+                )
+              span(class="text-[11px] text-slate-400 mt-1.5 block") Có thể điền dạng username (ví dụ: `chutro.tronest`) hoặc đường dẫn đầy đủ.
+
+            div(class="pt-4 border-t border-slate-100 flex items-center justify-end gap-3 mt-6")
+              button(
+                type="reset" 
+                class="px-5 py-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 text-sm font-semibold transition-all cursor-pointer bg-white"
+              ) Hủy thay đổi
+              button#btn-save-profile(
+                type="submit" 
+                class="px-6 py-2.5 rounded-xl bg-[#16A34A] hover:bg-[#15803D] text-white text-sm font-semibold transition-all shadow-sm active:scale-95 border-none cursor-pointer flex items-center gap-2"
+              )
+                i.fa-solid.fa-check
+                span Lưu thay đổi
+
+        //- Tab 3: Đổi mật khẩu
+        #tab-password.profile-tab-content(class="hidden bg-white rounded-2xl p-5 sm:p-7 border border-slate-200/80 shadow-xs space-y-5 sm:space-y-6")
+          div(class="pb-4 border-b border-slate-100")
+            h2(class="text-lg sm:text-xl font-bold text-slate-900 m-0") Đổi mật khẩu tài khoản
+            p(class="text-slate-500 text-xs sm:text-sm mt-1 m-0") Để bảo mật tài khoản, vui lòng không chia sẻ mật khẩu của bạn cho bất kỳ ai.
+
+          form#form-change-password(class="space-y-4 sm:space-y-5")
+            div
+              label(for="oldPassword" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2")
+                | Mật khẩu hiện tại 
+                span(class="text-rose-500") *
+              input#oldPassword(
+                type="password" 
+                name="oldPassword" 
+                required 
+                placeholder="Nhập mật khẩu hiện tại"
+                class="w-full px-4 py-2.5 sm:py-3 rounded-xl border border-slate-200 hover:border-slate-300 focus:outline-none focus:border-[#16A34A] focus:ring-2 focus:ring-emerald-100 transition-all text-sm text-slate-800"
+              )
+
+            div
+              label(for="newPassword" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2")
+                | Mật khẩu mới 
+                span(class="text-rose-500") *
+              input#newPassword(
+                type="password" 
+                name="newPassword" 
+                required 
+                minlength="6"
+                placeholder="Tối thiểu 6 ký tự"
+                class="w-full px-4 py-2.5 sm:py-3 rounded-xl border border-slate-200 hover:border-slate-300 focus:outline-none focus:border-[#16A34A] focus:ring-2 focus:ring-emerald-100 transition-all text-sm text-slate-800"
+              )
+              span(class="text-[11px] text-slate-400 mt-1.5 block") Nên kết hợp chữ cái, chữ số và ký tự đặc biệt để an toàn nhất.
+
+            div
+              label(for="confirmPassword" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2")
+                | Xác nhận mật khẩu mới 
+                span(class="text-rose-500") *
+              input#confirmPassword(
+                type="password" 
+                name="confirmPassword" 
+                required 
+                minlength="6"
+                placeholder="Nhập lại mật khẩu mới"
+                class="w-full px-4 py-2.5 sm:py-3 rounded-xl border border-slate-200 hover:border-slate-300 focus:outline-none focus:border-[#16A34A] focus:ring-2 focus:ring-emerald-100 transition-all text-sm text-slate-800"
+              )
+
+            div(class="pt-4 border-t border-slate-100 flex items-center justify-end gap-3 mt-6")
+              button(
+                type="reset" 
+                class="px-5 py-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 text-sm font-semibold transition-all cursor-pointer bg-white"
+              ) Đặt lại
+              button#btn-save-password(
+                type="submit" 
+                class="px-6 py-2.5 rounded-xl bg-[#16A34A] hover:bg-[#15803D] text-white text-sm font-semibold transition-all shadow-sm active:scale-95 border-none cursor-pointer flex items-center gap-2"
+              )
+                i.fa-solid.fa-key
+                span Đổi mật khẩu
+
+block scripts
+  script.
+    document.addEventListener("DOMContentLoaded", function () {
+      // 1. Chuyển đổi Tabs
+      const tabButtons = document.querySelectorAll(".profile-tab-btn");
+      const tabContents = document.querySelectorAll(".profile-tab-content");
+      const btnTriggerEdit = document.getElementById("btn-trigger-edit");
+
+      function switchTab(targetSelector) {
+        tabButtons.forEach(function (btn) {
+          if (btn.getAttribute("data-target") === targetSelector) {
+            btn.classList.add("active", "bg-[#F0FDF4]", "text-[#16A34A]");
+            btn.classList.remove("bg-transparent", "text-slate-600");
+          } else {
+            btn.classList.remove("active", "bg-[#F0FDF4]", "text-[#16A34A]");
+            btn.classList.add("bg-transparent", "text-slate-600");
+          }
+        });
+
+        tabContents.forEach(function (content) {
+          if ("#" + content.id === targetSelector) {
+            content.classList.remove("hidden");
+          } else {
+            content.classList.add("hidden");
+          }
+        });
+      }
+
+      tabButtons.forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          const target = this.getAttribute("data-target");
+          switchTab(target);
+        });
+      });
+
+      if (btnTriggerEdit) {
+        btnTriggerEdit.addEventListener("click", function () {
+          switchTab("#tab-edit");
+        });
+      }
+
+      function formatFbUrlClient(val) {
+        if (!val) return "";
+        const s = String(val).trim();
+        if (s.startsWith("http://") || s.startsWith("https://")) return s;
+        if (s.startsWith("facebook.com") || s.startsWith("www.facebook.com") || s.startsWith("fb.com")) {
+          return "https://" + s;
+        }
+        return "https://facebook.com/" + s;
+      }
+
+      // 2. Upload avatar từ thiết bị
+      const avatarFileInput = document.getElementById("avatar-file-input");
+      const avatarClickZone = document.getElementById("avatar-click-zone");
+      const profileAvatarDisplay = document.getElementById("profile-avatar-display");
+      const editAvatarPreview = document.getElementById("edit-avatar-preview");
+      const avatarUploadStatus = document.getElementById("avatar-upload-status");
+
+      if (avatarClickZone && avatarFileInput) {
+        avatarClickZone.addEventListener("click", function (e) {
+          if (e.target !== avatarFileInput) {
+            avatarFileInput.click();
+          }
+        });
+      }
+
+      if (avatarFileInput) {
+        avatarFileInput.addEventListener("change", async function () {
+          const file = this.files && this.files[0];
+          if (!file) return;
+
+          if (!file.type.match(/^image\/(jpeg|png|webp|gif)$/i)) {
+            if (window.notyf) {
+              window.notyf.error("Vui lòng chọn tệp ảnh có định dạng JPG, PNG, WEBP hoặc GIF!");
+            }
+            this.value = "";
+            return;
+          }
+
+          if (file.size > 5 * 1024 * 1024) {
+            if (window.notyf) {
+              window.notyf.error("Kích thước ảnh không được vượt quá 5 MB!");
+            }
+            this.value = "";
+            return;
+          }
+
+          const previewUrl = URL.createObjectURL(file);
+          if (editAvatarPreview) editAvatarPreview.src = previewUrl;
+          if (profileAvatarDisplay) profileAvatarDisplay.src = previewUrl;
+
+          const formData = new FormData();
+          formData.append("avatar", file);
+
+          if (avatarUploadStatus) {
+            avatarUploadStatus.textContent = "Đang tải ảnh lên...";
+            avatarUploadStatus.classList.remove("hidden");
+          }
+          if (profileAvatarDisplay) profileAvatarDisplay.style.opacity = "0.6";
+
+          try {
+            const response = await fetch("/landlord/profile/avatar", {
+              method: "POST",
+              headers: {
+                "Accept": "application/json"
+              },
+              body: formData
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.code === 200) {
+              const newAvatarUrl = data.avatar || previewUrl;
+              if (profileAvatarDisplay) profileAvatarDisplay.src = newAvatarUrl;
+              if (editAvatarPreview) editAvatarPreview.src = newAvatarUrl;
+
+              // Đồng bộ avatar trên thanh header
+              document.querySelectorAll("header img").forEach(function (img) {
+                if (img.classList.contains("rounded-full")) {
+                  img.src = newAvatarUrl;
+                }
+              });
+
+              if (window.notyf) {
+                window.notyf.success(data.message || "Tải lên ảnh đại diện thành công!");
+              }
+            } else {
+              if (window.notyf) {
+                window.notyf.error(data.message || "Tải lên ảnh thất bại, vui lòng thử lại!");
+              }
+            }
+          } catch (err) {
+            console.error("Lỗi tải avatar:", err);
+            if (window.notyf) {
+              window.notyf.error("Có lỗi xảy ra khi kết nối máy chủ!");
+            }
+          } finally {
+            if (profileAvatarDisplay) profileAvatarDisplay.style.opacity = "1";
+            if (avatarUploadStatus) avatarUploadStatus.classList.add("hidden");
+            avatarFileInput.value = "";
+          }
+        });
+      }
+
+      // 3. Cập nhật thông tin chủ trọ
+      const formUpdateProfile = document.getElementById("form-update-profile");
+      const btnSaveProfile = document.getElementById("btn-save-profile");
+
+      if (formUpdateProfile) {
+        formUpdateProfile.addEventListener("submit", async function (e) {
+          e.preventDefault();
+
+          const fullName = document.getElementById("fullName").value.trim();
+          const phone = document.getElementById("phone").value.trim();
+          const address = document.getElementById("address").value.trim();
+          const facebook = document.getElementById("facebook").value.trim();
+
+          if (!fullName) {
+            if (window.notyf) window.notyf.error("Họ và tên không được để trống!");
+            return;
+          }
+
+          if (phone && !/^[0-9]{10}$/.test(phone)) {
+            if (window.notyf) window.notyf.error("Số điện thoại không hợp lệ (cần đúng 10 chữ số)!");
+            return;
+          }
+
+          if (btnSaveProfile) {
+            btnSaveProfile.disabled = true;
+            btnSaveProfile.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Đang lưu...</span>';
+          }
+
+          try {
+            const response = await fetch("/landlord/profile/edit", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+              },
+              body: JSON.stringify({ fullName, phone, address, facebook })
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.code === 200) {
+              const updatedUser = data.user || {};
+              const nameDisplay = document.getElementById("profile-name-display");
+              const fullnameText = document.getElementById("profile-fullname-text");
+              const phoneText = document.getElementById("profile-phone-text");
+              const addressText = document.getElementById("profile-address-text");
+              const facebookLink = document.getElementById("profile-facebook-link");
+              const facebookText = document.getElementById("profile-facebook-text");
+              const facebookEmpty = document.getElementById("profile-facebook-empty");
+              const heroFbLink = document.getElementById("hero-facebook-link");
+              const heroFbText = document.getElementById("hero-facebook-text");
+              const updatedAtEl = document.getElementById("profile-updated-at");
+
+              if (nameDisplay) nameDisplay.textContent = updatedUser.fullName || fullName;
+              if (fullnameText) fullnameText.textContent = updatedUser.fullName || fullName;
+
+              if (phoneText) {
+                if (updatedUser.phone) {
+                  phoneText.textContent = updatedUser.phone;
+                  phoneText.className = "text-sm sm:text-base font-semibold text-slate-800 m-0";
+                } else {
+                  phoneText.textContent = "Chưa cập nhật";
+                  phoneText.className = "text-sm text-slate-400 italic m-0";
+                }
+              }
+
+              if (addressText) {
+                if (updatedUser.address) {
+                  addressText.textContent = updatedUser.address;
+                  addressText.className = "text-sm sm:text-base font-semibold text-slate-800 m-0";
+                } else {
+                  addressText.textContent = "Chưa cập nhật";
+                  addressText.className = "text-sm text-slate-400 italic m-0";
+                }
+              }
+
+              const fbHref = formatFbUrlClient(updatedUser.facebook || facebook);
+              if (updatedUser.facebook || facebook) {
+                if (facebookText) facebookText.textContent = updatedUser.facebook || facebook;
+                if (facebookLink) {
+                  facebookLink.href = fbHref;
+                  facebookLink.classList.remove("hidden");
+                }
+                if (facebookEmpty) facebookEmpty.classList.add("hidden");
+
+                if (heroFbLink) {
+                  heroFbLink.href = fbHref;
+                  heroFbLink.classList.remove("hidden");
+                }
+                if (heroFbText) heroFbText.textContent = "Facebook";
+              } else {
+                if (facebookLink) facebookLink.classList.add("hidden");
+                if (facebookEmpty) facebookEmpty.classList.remove("hidden");
+                if (heroFbLink) heroFbLink.classList.add("hidden");
+              }
+
+              if (updatedAtEl) {
+                const now = new Date();
+                updatedAtEl.textContent = now.toLocaleDateString("vi-VN") + " " + now.toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" });
+              }
+
+              if (window.notyf) {
+                window.notyf.success(data.message || "Cập nhật thông tin thành công!");
+              }
+
+              setTimeout(function () {
+                switchTab("#tab-overview");
+              }, 400);
+            } else {
+              if (window.notyf) {
+                window.notyf.error(data.message || "Cập nhật thất bại, vui lòng kiểm tra lại dữ liệu!");
+              }
+            }
+          } catch (err) {
+            console.error("Lỗi cập nhật hồ sơ:", err);
+            if (window.notyf) {
+              window.notyf.error("Có lỗi xảy ra khi kết nối máy chủ!");
+            }
+          } finally {
+            if (btnSaveProfile) {
+              btnSaveProfile.disabled = false;
+              btnSaveProfile.innerHTML = '<i class="fa-solid fa-check"></i> <span>Lưu thay đổi</span>';
+            }
+          }
+        });
+      }
+
+      // 4. Đổi mật khẩu
+      const formChangePassword = document.getElementById("form-change-password");
+      const btnSavePassword = document.getElementById("btn-save-password");
+
+      if (formChangePassword) {
+        formChangePassword.addEventListener("submit", async function (e) {
+          e.preventDefault();
+
+          const oldPassword = document.getElementById("oldPassword").value;
+          const newPassword = document.getElementById("newPassword").value;
+          const confirmPassword = document.getElementById("confirmPassword").value;
+
+          if (!oldPassword || !newPassword || !confirmPassword) {
+            if (window.notyf) window.notyf.error("Vui lòng điền đầy đủ các trường mật khẩu!");
+            return;
+          }
+
+          if (newPassword.length < 6) {
+            if (window.notyf) window.notyf.error("Mật khẩu mới phải có ít nhất 6 ký tự!");
+            return;
+          }
+
+          if (newPassword !== confirmPassword) {
+            if (window.notyf) window.notyf.error("Xác nhận mật khẩu mới không trùng khớp!");
+            return;
+          }
+
+          if (btnSavePassword) {
+            btnSavePassword.disabled = true;
+            btnSavePassword.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Đang xử lý...</span>';
+          }
+
+          try {
+            const response = await fetch("/landlord/profile/change-password", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+              },
+              body: JSON.stringify({ oldPassword, newPassword, confirmPassword })
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.code === 200) {
+              if (window.notyf) {
+                window.notyf.success(data.message || "Đổi mật khẩu thành công!");
+              }
+              formChangePassword.reset();
+              setTimeout(function () {
+                switchTab("#tab-overview");
+              }, 400);
+            } else {
+              if (window.notyf) {
+                window.notyf.error(data.message || "Đổi mật khẩu thất bại!");
+              }
+            }
+          } catch (err) {
+            console.error("Lỗi đổi mật khẩu:", err);
+            if (window.notyf) {
+              window.notyf.error("Có lỗi xảy ra khi kết nối máy chủ!");
+            }
+          } finally {
+            if (btnSavePassword) {
+              btnSavePassword.disabled = false;
+              btnSavePassword.innerHTML = '<i class="fa-solid fa-key"></i> <span>Đổi mật khẩu</span>';
+            }
+          }
+        });
+      }
+    });
+

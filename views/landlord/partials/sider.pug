@@ -11,9 +11,10 @@ nav.sider(class="bg-white border-r border-slate-200 flex flex-col justify-betwee
           span(class="text-[11px] font-semibold text-[#16A34A]") Kênh Chủ Trọ
 
     //- Navigation Menu
+    - const isProfilePage = currentPath === '/profile' || (currentPath && currentPath.startsWith('/landlord/profile'));
     - const isRoomsPage = currentPath && currentPath.startsWith('/landlord/rooms') && currentPath !== '/landlord/rooms/create';
     - const isCreatePage = currentPath === '/landlord/rooms/create';
-    - const isDashboardPage = !isRoomsPage && !isCreatePage;
+    - const isDashboardPage = !isRoomsPage && !isCreatePage && !isProfilePage;
     ul.inner-menu(class="p-4 space-y-1.5 list-none m-0")
       li
         a(
@@ -39,6 +40,14 @@ nav.sider(class="bg-white border-r border-slate-200 flex flex-col justify-betwee
           i.fa-solid.fa-circle-plus(class="w-5 text-base " + (isCreatePage ? 'text-[#16A34A]' : 'text-slate-400'))
           span Đăng phòng mới
 
+      li
+        a(
+          href="/landlord/profile"
+          class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all duration-200 no-underline " + (isProfilePage ? 'active bg-[#F0FDF4] text-[#16A34A] font-semibold border-l-4 border-[#16A34A]' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium')
+        )
+          i.fa-solid.fa-user-gear(class="w-5 text-base " + (isProfilePage ? 'text-[#16A34A]' : 'text-slate-400'))
+          span Thông tin cá nhân
+
   //- Bottom sidebar
   .sider-bottom(class="p-4 border-t border-slate-100 space-y-1.5")
     a(
@@ -58,4 +67,3 @@ nav.sider(class="bg-white border-r border-slate-200 flex flex-col justify-betwee
       span Đăng xuất
 
 .sider-overlay
-

@@ -111,30 +111,6 @@ block main
             td(colspan="6" class="admin-clean-088")
               | Không có bài đăng nào trong danh mục này.
 
-                      if room.status === ROOM_STATUS.PENDING
-                        button(
-                          type="button"
-                          data-admin-action="reject-room"
-                          data-id=room._id
-                          class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white border border-rose-200 hover:border-rose-600 text-xs font-semibold transition-colors cursor-pointer"
-                          title="Từ chối bài đăng"
-                        )
-                          i.fa-solid.fa-xmark(class="text-[11px]")
-                          span Từ chối
-
-                      button(
-                        type="button"
-                        data-admin-action="delete-room"
-                        data-id=room._id
-                        class="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors bg-transparent border-0 cursor-pointer"
-                        title="Xóa vĩnh viễn"
-                      )
-                        i.fa-solid.fa-trash-can(class="text-xs")
-            else
-              tr
-                td(colspan="5" class="py-12 text-center text-slate-400 text-xs")
-                  | Không có bài đăng nào trong danh mục này.
-
       if paging && paging.totalPages > 1
         div(class="p-4 border-t border-slate-100 flex items-center justify-center sm:justify-between text-xs text-slate-500")
           span(class="hidden sm:inline") Trang #{paging.currentPage} / #{paging.totalPages} (Tổng #{paging.total} bài đăng)

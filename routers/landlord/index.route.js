@@ -3,6 +3,7 @@ const router = express.Router();
 
 const dashboardRoutes = require('./dashboard.route');
 const roomRoutes = require('./room.route');
+const profileRoutes = require('./profile.route');
 const { requireAuth } = require('../../middlewares/auth.middleware');
 const { ROLES } = require('../../configs/system.config');
 
@@ -20,5 +21,6 @@ router.get('/', (req, res) => {
 
 router.use('/dashboard', dashboardRoutes);
 router.use('/rooms', roomRoutes);
+router.use('/profile', profileRoutes);
 
 module.exports = router;

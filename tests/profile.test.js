@@ -5,6 +5,8 @@ const bcrypt = require('bcryptjs');
 const { startTestServer, stopTestServer, clearTestData } = require('./helpers/test-setup');
 const { TestClient } = require('./helpers/test-client');
 const User = require('../models/user.model');
+const Room = require('../models/room.model');
+const Category = require('../models/category.model');
 const { ROLES, USER_STATUS } = require('../configs/system.config');
 
 const sharp = require('sharp');
@@ -292,5 +294,123 @@ describe('Xem & Quản Lý Thông Tin Cá Nhân Khách Hàng (Client Profile)', 
       password: 'newPassword123'
     });
     assert.equal(newLoginRes.status, 200);
+  });
+
+  test('Chủ trọ (LANDLORD) đăng nhập và xem thông tin cá nhân thành công (HTML & JSON) kèm số phòng quản lý', async () => {
+    const passwordHash = await bcrypt.hash('password123', 10);
+    const landlord = await User.create({
+      fullName: 'Trần Văn Chủ Trọ',
+      email: 'chutro@profile-test.tronest.com',
+      password: passwordHash,
+      phone: '0933333333',
+      address: 'Thanh Xuân, Hà Nội',
+      role: ROLES.LANDLORD,
+      status: USER_STATUS.APPROVED
+    });
+
+    const category = await Category.create({
+      title: '[PROFILE-TEST] Phòng Trọ Landlord',
+      slug: 'profile-test-phong-tro-landlord',
+      status: USER_STATUS.ACTIVE
+    });
+
+    await Room.create({
+      title: '[PROFILE-TEST] Phòng trọ 1',
+      categoryId: category._id,
+      landlordId: landlord._id,
+      price: 3500000,
+      area: 25,
+      address: 'Số 10 Thanh Xuân, Hà Nội'
+    });
+
+    await Room.create({
+      title: '[PROFILE-TEST] Phòng trọ 2',
+      categoryId: category._id,
+      landlordId: landlord._id,
+      price: 4500000,
+      area: 30,
+      address: 'Số 12 Thanh Xuân, Hà Nội'
+    });
+
+    const client = new TestClient(baseUrl);
+    const loginRes = await client.post('/login', {
+      email: landlord.email,
+      password: 'password123'
+    });
+    assert.equal(loginRes.status, 200);
+
+    // 1. Kiểm tra HTML trên kênh chủ trọ (/landlord/profile)
+    const htmlRes = await client.get('/landlord/profile', { wantsJson: false });
+    assert.equal(htmlRes.status, 200);
+    assert.match(htmlRes.body, /Trần Văn Chủ Trọ/);
+    assert.match(htmlRes.body, /chutro@profile-test\.tronest\.com/);
+    assert.match(htmlRes.body, /Chủ trọ cho thuê/);
+    assert.match(htmlRes.body, /Hồ sơ chủ trọ/);
+    assert.match(htmlRes.body, /Kênh Chủ Trọ/i);
+
+    // 2. Kiểm tra JSON trên kênh chủ trọ (/landlord/profile)
+    const jsonRes = await client.get('/landlord/profile', { wantsJson: true });
+    assert.equal(jsonRes.status, 200);
+    assert.equal(jsonRes.body.code, 200);
+    assert.equal(jsonRes.body.user.fullName, 'Trần Văn Chủ Trọ');
+    assert.equal(jsonRes.body.user.role, ROLES.LANDLORD);
+    assert.equal(jsonRes.body.roomCount, 2);
+  });
+
+  test('Chủ trọ truy cập /profile dạng HTML tự động chuyển hướng sang /landlord/profile', async () => {
+    const passwordHash = await bcrypt.hash('password123', 10);
+    const landlord = await User.create({
+      fullName: 'Chủ Trọ Redirect',
+      email: 'redirect@profile-test.tronest.com',
+      password: passwordHash,
+      role: ROLES.LANDLORD,
+      status: USER_STATUS.APPROVED
+    });
+
+    const client = new TestClient(baseUrl);
+    await client.post('/login', {
+      email: landlord.email,
+      password: 'password123'
+    });
+
+    const res = await client.get('/profile', { wantsJson: false });
+    assert.equal(res.status, 302);
+    assert.match(res.headers.get('location'), /\/landlord\/profile/);
+  });
+
+  test('Chủ trọ (LANDLORD) cập nhật thông tin cá nhân và link Facebook thành công (POST /landlord/profile/edit)', async () => {
+    const passwordHash = await bcrypt.hash('password123', 10);
+    const landlord = await User.create({
+      fullName: 'Chủ Trọ Ban Đầu',
+      email: 'chutroedit@profile-test.tronest.com',
+      password: passwordHash,
+      phone: '0944444444',
+      role: ROLES.LANDLORD,
+      status: USER_STATUS.APPROVED
+    });
+
+    const client = new TestClient(baseUrl);
+    await client.post('/login', {
+      email: landlord.email,
+      password: 'password123'
+    });
+
+    const editRes = await client.post('/landlord/profile/edit', {
+      fullName: 'Chủ Trọ Đã Đổi Tên',
+      phone: '0955555555',
+      address: 'Số 8 Hoàng Cầu, Hà Nội',
+      facebook: 'chutro.facebook.profile'
+    });
+
+    assert.equal(editRes.status, 200);
+    assert.equal(editRes.body.code, 200);
+    assert.equal(editRes.body.user.fullName, 'Chủ Trọ Đã Đổi Tên');
+    assert.equal(editRes.body.user.phone, '0955555555');
+    assert.equal(editRes.body.user.address, 'Số 8 Hoàng Cầu, Hà Nội');
+    assert.equal(editRes.body.user.facebook, 'chutro.facebook.profile');
+
+    const updatedUser = await User.findById(landlord._id);
+    assert.equal(updatedUser.fullName, 'Chủ Trọ Đã Đổi Tên');
+    assert.equal(updatedUser.facebook, 'chutro.facebook.profile');
   });
 });

@@ -14,99 +14,99 @@ block main
         p(class="text-xs text-slate-500 m-0 mt-1")
           | Kiểm tra thông tin các đối tác Chủ trọ và quyết định cấp quyền đăng tin phòng
 
-  // Filter Tabs
-  .filter-tabs(class="admin-clean-070")
-    a.btn(href="/admin/landlords" + (keyword ? '?keyword=' + encodeURIComponent(keyword) : '') class=!statusFilter ? 'btn-primary' : 'btn-secondary')
-      | Tất cả (#{counts.all})
-    a.btn(href="/admin/landlords?status=" + USER_STATUS.PENDING + (keyword ? '&keyword=' + encodeURIComponent(keyword) : '') class=statusFilter === USER_STATUS.PENDING ? 'btn-primary' : 'btn-secondary')
-      i.fa-solid.fa-clock(class="admin-clean-071")
-      | Chờ duyệt (#{counts.pending})
-    a.btn(href="/admin/landlords?status=" + USER_STATUS.APPROVED + (keyword ? '&keyword=' + encodeURIComponent(keyword) : '') class=statusFilter === USER_STATUS.APPROVED ? 'btn-primary' : 'btn-secondary')
-      i.fa-solid.fa-circle-check(class="admin-clean-072")
-      | Đã duyệt (#{counts.approved})
-    a.btn(href="/admin/landlords?status=" + USER_STATUS.REJECTED + (keyword ? '&keyword=' + encodeURIComponent(keyword) : '') class=statusFilter === USER_STATUS.REJECTED ? 'btn-primary' : 'btn-secondary')
-      i.fa-solid.fa-circle-xmark(class="admin-clean-073")
-      | Bị từ chối (#{counts.rejected})
+    //- 2. Filter Tabs & Search
+    .filter-tabs(class="admin-clean-070")
+      a.btn(href="/admin/landlords" + (keyword ? '?keyword=' + encodeURIComponent(keyword) : '') class=!statusFilter ? 'btn-primary' : 'btn-secondary')
+        | Tất cả (#{counts.all})
+      a.btn(href="/admin/landlords?status=" + USER_STATUS.PENDING + (keyword ? '&keyword=' + encodeURIComponent(keyword) : '') class=statusFilter === USER_STATUS.PENDING ? 'btn-primary' : 'btn-secondary')
+        i.fa-solid.fa-clock(class="admin-clean-071")
+        | Chờ duyệt (#{counts.pending})
+      a.btn(href="/admin/landlords?status=" + USER_STATUS.APPROVED + (keyword ? '&keyword=' + encodeURIComponent(keyword) : '') class=statusFilter === USER_STATUS.APPROVED ? 'btn-primary' : 'btn-secondary')
+        i.fa-solid.fa-circle-check(class="admin-clean-072")
+        | Đã duyệt (#{counts.approved})
+      a.btn(href="/admin/landlords?status=" + USER_STATUS.REJECTED + (keyword ? '&keyword=' + encodeURIComponent(keyword) : '') class=statusFilter === USER_STATUS.REJECTED ? 'btn-primary' : 'btn-secondary')
+        i.fa-solid.fa-circle-xmark(class="admin-clean-073")
+        | Bị từ chối (#{counts.rejected})
 
-        form(action="/admin/landlords" method="GET" class="flex items-center gap-2 w-full md:w-80 shrink-0 m-0")
-          if statusFilter
-            input(type="hidden" name="status" value=statusFilter)
-          div(class="relative flex-1")
-            input(
-              type="text"
-              name="keyword"
-              value=keyword
-              placeholder="Tìm tên, email, SĐT..."
-              class="w-full pl-8 pr-3 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:border-[#16A34A] focus:ring-1 focus:ring-[#16A34A] bg-slate-50/50"
-            )
-            span(class="absolute left-2.5 top-2.5 text-slate-400 text-xs pointer-events-none")
-              i.fa-solid.fa-magnifying-glass
-          button(
-            type="submit"
-            class="px-4 py-2 rounded-xl bg-[#16A34A] hover:bg-[#15803D] text-white text-xs font-semibold transition-all cursor-pointer border-0 shrink-0"
-          ) Tìm kiếm
+      form(action="/admin/landlords" method="GET" class="flex items-center gap-2 w-full md:w-80 shrink-0 m-0")
+        if statusFilter
+          input(type="hidden" name="status" value=statusFilter)
+        div(class="relative flex-1")
+          input(
+            type="text"
+            name="keyword"
+            value=keyword
+            placeholder="Tìm tên, email, SĐT..."
+            class="w-full pl-8 pr-3 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:border-[#16A34A] focus:ring-1 focus:ring-[#16A34A] bg-slate-50/50"
+          )
+          span(class="absolute left-2.5 top-2.5 text-slate-400 text-xs pointer-events-none")
+            i.fa-solid.fa-magnifying-glass
+        button(
+          type="submit"
+          class="px-4 py-2 rounded-xl bg-[#16A34A] hover:bg-[#15803D] text-white text-xs font-semibold transition-all cursor-pointer border-0 shrink-0"
+        ) Tìm kiếm
 
-  // Table
-  .table-2(class="admin-clean-024")
-    table
-      thead
-        tr
-          th Họ tên
-          th Liên hệ
-          th Địa chỉ
-          th Số bài trọ
-          th Trạng thái
-          th Thao tác
-      tbody
-        if landlords && landlords.length > 0
-          each l in landlords
-            tr
-              td
-                div(class="admin-clean-098")
-                  img(src=l.avatar || "/admin/assets/images/avatar.jpg" class="admin-clean-099")
-                  div
-                    b(class="admin-clean-100")= l.fullName
-                    span(class="admin-clean-035") Tham gia: #{new Date(l.createdAt).toLocaleDateString('vi-VN')}
-              td
-                div(class="admin-clean-101")= l.email
-                div(class="admin-clean-102")= l.phone || '-'
-              td= l.address || '-'
-              td(class="admin-clean-103")
-                if l.roomCount > 0
-                  a.badge.badge-blue(href=`/admin/rooms?keyword=${encodeURIComponent(l.email)}` title="Xem các phòng của chủ trọ này")= `${l.roomCount} phòng`
-                else
-                  span.badge.badge-gray 0 phòng
-              td
-                if l.isBlocked || l.status === USER_STATUS.INACTIVE
-                  span.badge.badge-red Đã bị khóa
-                else if l.status === USER_STATUS.APPROVED
-                  span.badge.badge-green Đã duyệt (APPROVED)
-                else if l.status === USER_STATUS.PENDING
-                  span.badge.badge-yellow Chờ duyệt (PENDING)
-                else if l.status === USER_STATUS.REJECTED
-                  span.badge.badge-red Bị từ chối (REJECTED)
-                  if l.rejectReason
-                    div(class="admin-clean-104")
-                      | #{l.rejectReason}
-              td
-                div(class="admin-clean-027")
-                  if l.status !== USER_STATUS.APPROVED
-                    button.btn.btn-success(data-admin-action="approve-landlord" data-id=l._id class="admin-clean-028" title="Phê duyệt tài khoản")
-                      i.fa-solid.fa-check
-                      | Duyệt
-                  if l.status !== USER_STATUS.REJECTED
-                    button.btn.btn-danger(data-admin-action="reject-landlord" data-id=l._id class="admin-clean-028" title="Từ chối tài khoản")
-                      i.fa-solid.fa-xmark
-                      | Từ chối
-                  button.btn(data-admin-action="toggle-user-status" data-id=l._id class=l.isBlocked ? 'btn-success' : 'btn-secondary' title=l.isBlocked ? 'Mở khóa tài khoản' : 'Khóa tài khoản')
-                    i.fa-solid(class=l.isBlocked ? 'fa-lock-open' : 'fa-lock')
-
-        else
+    //- 3. Table
+    .table-2(class="admin-clean-024")
+      table
+        thead
           tr
-            td(colspan="6" class="admin-clean-088")
-              | Không tìm thấy tài khoản Chủ trọ nào phù hợp.
+            th Họ tên
+            th Liên hệ
+            th Địa chỉ
+            th Số bài trọ
+            th Trạng thái
+            th Thao tác
+        tbody
+          if landlords && landlords.length > 0
+            each l in landlords
+              tr
+                td
+                  div(class="admin-clean-098")
+                    img(src=l.avatar || "/admin/assets/images/avatar.jpg" class="admin-clean-099")
+                    div
+                      b(class="admin-clean-100")= l.fullName
+                      span(class="admin-clean-035") Tham gia: #{new Date(l.createdAt).toLocaleDateString('vi-VN')}
+                td
+                  div(class="admin-clean-101")= l.email
+                  div(class="admin-clean-102")= l.phone || '-'
+                td= l.address || '-'
+                td(class="admin-clean-103")
+                  if l.roomCount > 0
+                    a.badge.badge-blue(href=`/admin/rooms?keyword=${encodeURIComponent(l.email)}` title="Xem các phòng của chủ trọ này")= `${l.roomCount} phòng`
+                  else
+                    span.badge.badge-gray 0 phòng
+                td
+                  if l.isBlocked || l.status === USER_STATUS.INACTIVE
+                    span.badge.badge-red Đã bị khóa
+                  else if l.status === USER_STATUS.APPROVED
+                    span.badge.badge-green Đã duyệt (APPROVED)
+                  else if l.status === USER_STATUS.PENDING
+                    span.badge.badge-yellow Chờ duyệt (PENDING)
+                  else if l.status === USER_STATUS.REJECTED
+                    span.badge.badge-red Bị từ chối (REJECTED)
+                    if l.rejectReason
+                      div(class="admin-clean-104")
+                        | #{l.rejectReason}
+                td
+                  div(class="admin-clean-027")
+                    if l.status !== USER_STATUS.APPROVED
+                      button.btn.btn-success(data-admin-action="approve-landlord" data-id=l._id class="admin-clean-028" title="Phê duyệt tài khoản")
+                        i.fa-solid.fa-check
+                        | Duyệt
+                    if l.status !== USER_STATUS.REJECTED
+                      button.btn.btn-danger(data-admin-action="reject-landlord" data-id=l._id class="admin-clean-028" title="Từ chối tài khoản")
+                        i.fa-solid.fa-xmark
+                        | Từ chối
+                    button.btn(data-admin-action="toggle-user-status" data-id=l._id class=l.isBlocked ? 'btn-success' : 'btn-secondary' title=l.isBlocked ? 'Mở khóa tài khoản' : 'Khóa tài khoản')
+                      i.fa-solid(class=l.isBlocked ? 'fa-lock-open' : 'fa-lock')
 
-      if paging && paging.totalPages > 1
-        div(class="p-4 border-t border-slate-100 flex items-center justify-center sm:justify-between text-xs text-slate-500")
-          span(class="hidden sm:inline") Trang #{paging.currentPage} / #{paging.totalPages} (Tổng #{paging.total} chủ trọ)
-          +pagination(paging, query, '/admin/landlords')
+          else
+            tr
+              td(colspan="6" class="admin-clean-088")
+                | Không tìm thấy tài khoản Chủ trọ nào phù hợp.
+
+        if paging && paging.totalPages > 1
+          div(class="p-4 border-t border-slate-100 flex items-center justify-center sm:justify-between text-xs text-slate-500")
+            span(class="hidden sm:inline") Trang #{paging.currentPage} / #{paging.totalPages} (Tổng #{paging.total} chủ trọ)
+            +pagination(paging, query, '/admin/landlords')

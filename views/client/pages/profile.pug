@@ -21,6 +21,11 @@ block main
         a(href="/" class="hover:text-[#EA580C] transition-colors no-underline text-neutral-500 flex items-center gap-1.5")
           i.fa-solid.fa-house(class="text-xs")
           span Trang chủ
+        if user && user.role === 'LANDLORD'
+          span /
+          a(href="/landlord/dashboard" class="hover:text-[#16A34A] transition-colors no-underline text-neutral-500 flex items-center gap-1.5")
+            i.fa-solid.fa-house-chimney-user(class="text-xs")
+            span Kênh chủ trọ
         span /
         span(class="text-neutral-800 font-semibold") Thông tin cá nhân
 
@@ -90,10 +95,16 @@ block main
 
           //- Hành động nhanh
           div(class="flex flex-row sm:flex-col gap-2.5 sm:self-center w-full sm:w-auto shrink-0")
-            a(href="/favorites" class="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-full bg-orange-50 hover:bg-orange-100/80 text-[#EA580C] text-xs sm:text-sm font-semibold transition-all border border-orange-200/70 no-underline shadow-sm")
-              i.fa-solid.fa-heart(class="text-xs text-red-500")
-              span Phòng yêu thích
-              span(class="bg-[#EA580C] text-white text-[11px] font-bold px-2 py-0.5 rounded-full")= favoriteCount || 0
+            if user.role === 'LANDLORD'
+              a(href="/landlord/dashboard" class="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-full bg-emerald-50 hover:bg-emerald-100/80 text-emerald-700 text-xs sm:text-sm font-semibold transition-all border border-emerald-200/70 no-underline shadow-sm")
+                i.fa-solid.fa-house-chimney-user(class="text-xs text-emerald-600")
+                span Kênh chủ trọ
+                span(class="bg-emerald-600 text-white text-[11px] font-bold px-2 py-0.5 rounded-full")= roomCount || 0
+            else
+              a(href="/favorites" class="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-full bg-orange-50 hover:bg-orange-100/80 text-[#EA580C] text-xs sm:text-sm font-semibold transition-all border border-orange-200/70 no-underline shadow-sm")
+                i.fa-solid.fa-heart(class="text-xs text-red-500")
+                span Phòng yêu thích
+                span(class="bg-[#EA580C] text-white text-[11px] font-bold px-2 py-0.5 rounded-full")= favoriteCount || 0
             
             button#btn-trigger-edit(type="button" class="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-full bg-[#EA580C] hover:bg-[#C2410C] text-white text-xs sm:text-sm font-semibold transition-all shadow-md shadow-orange-500/20 active:scale-95 border-none cursor-pointer")
               i.fa-solid.fa-user-pen(class="text-xs")
@@ -143,27 +154,48 @@ block main
           div(class="bg-white rounded-2xl p-5 border border-neutral-200/70 shadow-[0_2px_12px_rgba(0,0,0,0.03)] space-y-3.5")
             h3(class="text-xs font-bold text-neutral-700 uppercase tracking-wider mb-2 flex items-center gap-2")
               i.fa-solid.fa-chart-pie(class="text-[#EA580C]")
-              | Hoạt động & Sở thích
+              = user.role === 'LANDLORD' ? 'Quản lý phòng trọ' : 'Hoạt động & Sở thích'
             
-            div(class="p-3.5 rounded-xl bg-orange-50/50 border border-orange-100/70 flex items-center justify-between")
-              div(class="flex items-center gap-3")
-                div(class="w-9 h-9 rounded-full bg-white flex items-center justify-center text-red-500 shadow-sm")
-                  i.fa-solid.fa-heart(class="text-xs")
-                div
-                  div(class="text-xs text-neutral-500") Phòng đã lưu yêu thích
-                  div(class="text-base font-bold text-neutral-800")
-                    span= favoriteCount || 0
-                    span(class="text-xs font-normal text-neutral-500 ml-1") phòng
-              a(href="/favorites" class="text-xs font-semibold text-[#EA580C] hover:underline no-underline") Xem tất cả &rarr;
+            if user.role === 'LANDLORD'
+              div(class="p-3.5 rounded-xl bg-emerald-50/50 border border-emerald-100/70 flex items-center justify-between")
+                div(class="flex items-center gap-3")
+                  div(class="w-9 h-9 rounded-full bg-white flex items-center justify-center text-[#16A34A] shadow-sm")
+                    i.fa-solid.fa-house-user(class="text-xs")
+                  div
+                    div(class="text-xs text-neutral-500") Phòng trọ đang quản lý
+                    div(class="text-base font-bold text-neutral-800")
+                      span= roomCount || 0
+                      span(class="text-xs font-normal text-neutral-500 ml-1") phòng
+                a(href="/landlord/rooms" class="text-xs font-semibold text-[#16A34A] hover:underline no-underline") Quản lý &rarr;
 
-            div(class="p-3.5 rounded-xl bg-neutral-50 border border-neutral-100 flex items-center justify-between")
-              div(class="flex items-center gap-3")
-                div(class="w-9 h-9 rounded-full bg-white flex items-center justify-center text-[#EA580C] shadow-sm")
-                  i.fa-solid.fa-magnifying-glass-location(class="text-xs")
-                div
-                  div(class="text-xs text-neutral-500") Khám phá phòng trọ
-                  div(class="text-sm font-bold text-neutral-800") Hàng ngàn phòng mới
-              a(href="/rooms" class="text-xs font-semibold text-[#EA580C] hover:underline no-underline") Tìm phòng &rarr;
+              div(class="p-3.5 rounded-xl bg-neutral-50 border border-neutral-100 flex items-center justify-between")
+                div(class="flex items-center gap-3")
+                  div(class="w-9 h-9 rounded-full bg-white flex items-center justify-center text-[#16A34A] shadow-sm")
+                    i.fa-solid.fa-circle-plus(class="text-xs")
+                  div
+                    div(class="text-xs text-neutral-500") Đăng phòng trọ mới
+                    div(class="text-sm font-bold text-neutral-800") Tiếp cận người thuê
+                a(href="/landlord/rooms/create" class="text-xs font-semibold text-[#16A34A] hover:underline no-underline") Đăng tin &rarr;
+            else
+              div(class="p-3.5 rounded-xl bg-orange-50/50 border border-orange-100/70 flex items-center justify-between")
+                div(class="flex items-center gap-3")
+                  div(class="w-9 h-9 rounded-full bg-white flex items-center justify-center text-red-500 shadow-sm")
+                    i.fa-solid.fa-heart(class="text-xs")
+                  div
+                    div(class="text-xs text-neutral-500") Phòng đã lưu yêu thích
+                    div(class="text-base font-bold text-neutral-800")
+                      span= favoriteCount || 0
+                      span(class="text-xs font-normal text-neutral-500 ml-1") phòng
+                a(href="/favorites" class="text-xs font-semibold text-[#EA580C] hover:underline no-underline") Xem tất cả &rarr;
+
+              div(class="p-3.5 rounded-xl bg-neutral-50 border border-neutral-100 flex items-center justify-between")
+                div(class="flex items-center gap-3")
+                  div(class="w-9 h-9 rounded-full bg-white flex items-center justify-center text-[#EA580C] shadow-sm")
+                    i.fa-solid.fa-magnifying-glass-location(class="text-xs")
+                  div
+                    div(class="text-xs text-neutral-500") Khám phá phòng trọ
+                    div(class="text-sm font-bold text-neutral-800") Hàng ngàn phòng mới
+                a(href="/rooms" class="text-xs font-semibold text-[#EA580C] hover:underline no-underline") Tìm phòng &rarr;
 
             div(class="pt-2 border-t border-neutral-100")
               a(href="/logout" data-logout-url="/logout" class="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl border border-red-200 text-red-600 hover:bg-red-50 text-xs font-semibold transition-colors no-underline")
@@ -177,8 +209,8 @@ block main
           #tab-overview.profile-tab-content(class="bg-white rounded-2xl p-5 sm:p-7 border border-neutral-200/70 shadow-[0_2px_12px_rgba(0,0,0,0.03)] space-y-5 sm:space-y-6")
             div(class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-neutral-100")
               div
-                h2(class="text-lg sm:text-xl font-bold text-neutral-800 m-0") Hồ sơ khách hàng
-                p(class="text-neutral-500 text-xs sm:text-sm mt-1 m-0") Thông tin chi tiết được lưu trữ an toàn trong tài khoản của bạn.
+                h2(class="text-lg sm:text-xl font-bold text-neutral-800 m-0")= user.role === 'LANDLORD' ? 'Hồ sơ chủ trọ' : (user.role === 'ADMIN' ? 'Hồ sơ quản trị viên' : 'Hồ sơ khách hàng')
+                p(class="text-neutral-500 text-xs sm:text-sm mt-1 m-0")= user.role === 'LANDLORD' ? 'Thông tin cá nhân & liên hệ của chủ trọ được hiển thị an toàn trên hệ thống.' : 'Thông tin chi tiết được lưu trữ an toàn trong tài khoản của bạn.'
               button(type="button" onclick="document.querySelector('[data-target=\"#tab-edit\"]').click()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-neutral-200 text-neutral-700 hover:text-[#EA580C] hover:border-orange-300 text-xs font-medium transition-colors cursor-pointer bg-white")
                 i.fa-solid.fa-pen-to-square
                 | Chỉnh sửa
@@ -282,8 +314,12 @@ block main
             div(class="rounded-xl bg-amber-50/70 border border-amber-200/70 p-4 flex items-start gap-3 text-xs sm:text-sm text-amber-800")
               i.fa-solid.fa-lightbulb(class="text-amber-500 mt-0.5 text-base shrink-0")
               div
-                strong(class="font-semibold block mb-0.5") Mẹo dành cho Khách thuê:
-                | Cập nhật đầy đủ số điện thoại, địa chỉ và Facebook cá nhân sẽ giúp chủ trọ dễ dàng xác minh và liên hệ hẹn xem phòng trọ nhanh nhất!
+                if user.role === 'LANDLORD'
+                  strong(class="font-semibold block mb-0.5") Mẹo dành cho Chủ trọ:
+                  | Cập nhật đầy đủ số điện thoại, địa chỉ và liên kết Facebook sẽ giúp khách tìm thuê phòng dễ dàng liên hệ trao đổi và nâng cao độ tin cậy của tin đăng!
+                else
+                  strong(class="font-semibold block mb-0.5") Mẹo dành cho Khách thuê:
+                  | Cập nhật đầy đủ số điện thoại, địa chỉ và Facebook cá nhân sẽ giúp chủ trọ dễ dàng xác minh và liên hệ hẹn xem phòng trọ nhanh nhất!
 
           //- Tab 2: Chỉnh sửa thông tin cá nhân
           #tab-edit.profile-tab-content(class="hidden bg-white rounded-2xl p-5 sm:p-7 border border-neutral-200/70 shadow-[0_2px_12px_rgba(0,0,0,0.03)] space-y-5 sm:space-y-6")
