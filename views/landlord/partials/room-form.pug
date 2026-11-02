@@ -2,7 +2,6 @@ mixin roomForm(options)
   - const isEdit = options.mode === 'edit';
   - const roomData = options.room || {};
   - const formId = isEdit ? 'form-edit-room' : 'form-create-room';
-  - const districts = ROOM_DISTRICTS;
   - const amenitiesList = ['Điều hòa', 'Nóng lạnh', 'Wifi', 'Tủ lạnh', 'Máy giặt', 'Ban công', 'Thang máy', 'Tự do giờ giấc', 'Bảo vệ 24/7'];
   - const sampleImgs = [{ url: '/client/assets/images/product-1.jpg', name: 'Hiện đại 1' }, { url: '/client/assets/images/product-2.jpg', name: 'Studio 2' }, { url: '/client/assets/images/product-3.jpg', name: 'Chung cư 3' }, { url: '/client/assets/images/banner-1.png', name: 'Sleepbox' }, { url: '/client/assets/images/banner-2.png', name: 'Phòng đơn' }, { url: '/client/assets/images/banner-3.png', name: 'Gác lửng' }];
 
@@ -102,44 +101,62 @@ mixin roomForm(options)
         div(class="flex items-center gap-2 pb-2.5 border-b border-slate-100")
           span(class="w-7 h-7 rounded-lg bg-emerald-50 text-[#16A34A] flex items-center justify-center text-xs")
             i.fa-solid.fa-location-dot
-          h2(class="text-sm font-bold text-slate-800 m-0") Khu vực & Địa chỉ phòng
+          div
+            h2(class="text-sm font-bold text-slate-800 m-0") Khu vực & Địa chỉ phòng
+            p(class="text-[11px] text-slate-400 m-0") Chọn chính xác địa chỉ để người thuê dễ dàng tìm kiếm phòng trọ
 
-        div.room-form-grid-2(class="grid grid-cols-1 sm:grid-cols-2 gap-4 m-0")
+        //- 2 Cột chọn: Tỉnh / Thành phố - Phường / Xã
+        div(class="grid grid-cols-1 sm:grid-cols-2 gap-4 m-0")
           .form-group
-            label.room-form-label(for="district" class="block text-xs font-bold text-slate-700 mb-1.5")
-              | Quận / Huyện 
+            label.room-form-label(for="province" class="block text-xs font-bold text-slate-700 mb-1.5")
+              | Tỉnh / Thành phố 
               span.room-form-required(class="text-rose-500") *
-            select#district.room-form-control(
-              name="district"
+            select#province.room-form-control(
+              name="province"
               required
               class="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#16A34A] focus:ring-2 focus:ring-[#16A34A]/15 transition-all"
             )
-              each district in districts
-                option(value=district selected=(isEdit && roomData.district === district) || (!isEdit && district === ROOM_DEFAULTS.district))= district
+              each p in VN_PROVINCES
+                option(
+                  value=p.shortName
+                  data-code=p.code
+                  selected=(isEdit && (roomData.province === p.shortName || roomData.province === p.name)) || (!isEdit && (p.shortName === 'Hà Nội' || p.code === '01'))
+                )= p.name
 
           .form-group
             label.room-form-label(for="ward" class="block text-xs font-bold text-slate-700 mb-1.5")
-              | Phường / Xã
-            input#ward.room-form-control(
-              type="text"
+              | Phường / Xã 
+              span.room-form-required(class="text-rose-500") *
+            select#ward.room-form-control(
               name="ward"
-              value=isEdit ? roomData.ward : undefined
-              placeholder=isEdit ? undefined : "VD: Dịch Vọng Hậu"
+              required
+              data-selected=isEdit ? roomData.ward : ROOM_DEFAULTS.ward
               class="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#16A34A] focus:ring-2 focus:ring-[#16A34A]/15 transition-all"
             )
+              option(value="") -- Đang tải phường/xã... --
 
+        //- Ô Địa chỉ chi tiết
         .form-group.room-form-group(class="m-0")
-          label.room-form-label(for="address" class="block text-xs font-bold text-slate-700 mb-1.5")
-            | Địa chỉ chi tiết 
-            span.room-form-required(class="text-rose-500") *
+          div(class="flex items-center justify-between mb-1.5")
+            label.room-form-label(for="address" class="block text-xs font-bold text-slate-700 m-0")
+              | Số nhà, tên ngõ/ngách, tên đường 
+              span.room-form-required(class="text-rose-500") *
+            span(class="text-[11px] text-slate-400 italic") Không cần gõ lại tên phường/xã, tỉnh/thành phố
           input#address.room-form-control(
             type="text"
             name="address"
             value=isEdit ? roomData.address : undefined
-            placeholder=isEdit ? undefined : "VD: Số 18, Ngõ 175 Xuân Thủy, Cầu Giấy, Hà Nội"
+            placeholder="VD: Số 18, Ngõ 175 đường Xuân Thủy"
             required
             class="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#16A34A] focus:ring-2 focus:ring-[#16A34A]/15 transition-all"
           )
+
+        //- Hộp Xem trước địa chỉ hiển thị
+        div#address-preview-box(class="p-3 rounded-xl bg-slate-50 border border-slate-200/80 flex items-start gap-2.5 text-xs text-slate-600")
+          i.fa-solid.fa-map-pin(class="text-[#16A34A] mt-0.5 shrink-0")
+          div
+            span(class="font-semibold text-slate-700") Địa chỉ đầy đủ: 
+            span#address-preview-text(class="text-slate-900 font-medium") -
 
       //- 3. Hình ảnh phòng trọ
       .form-group.room-form-upload-box(class="m-0 rounded-2xl border border-slate-200/90 bg-slate-50/40 p-4 sm:p-5 space-y-4")
