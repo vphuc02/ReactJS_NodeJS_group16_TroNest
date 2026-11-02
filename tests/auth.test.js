@@ -345,3 +345,124 @@ describe('Bảo Vệ Endpoint & Phân Quyền (RBAC)', () => {
     assert.equal(res.status, 200);
   });
 });
+
+describe('Luồng Quên Mật Khẩu & Đặt Lại Mật Khẩu Bằng OTP (Forgot Password)', () => {
+  beforeEach(async () => {
+    const hash = await bcrypt.hash('oldpassword123', 10);
+    await User.create([
+      {
+        fullName: 'Khách Quên Mật Khẩu',
+        email: 'forgot.user@auth-test.tronest.com',
+        password: hash,
+        role: ROLES.CUSTOMER,
+        status: USER_STATUS.ACTIVE
+      },
+      {
+        fullName: 'Khách Bị Khóa',
+        email: 'forgot.blocked@auth-test.tronest.com',
+        password: hash,
+        role: ROLES.CUSTOMER,
+        status: USER_STATUS.ACTIVE,
+        isBlocked: true
+      }
+    ]);
+  });
+
+  test('Hiển thị trang Quên mật khẩu (GET /forgot-password)', async () => {
+    const client = new TestClient(baseUrl);
+    const res = await client.get('/forgot-password', { wantsJson: false });
+    assert.equal(res.status, 200);
+    assert.match(res.body, /Khôi phục mật khẩu/i);
+  });
+
+  test('Báo lỗi 404 khi yêu cầu OTP cho email chưa đăng ký', async () => {
+    const client = new TestClient(baseUrl);
+    const res = await client.post('/forgot-password', {
+      email: 'notfound@auth-test.tronest.com'
+    });
+
+    assert.equal(res.status, 404);
+    assert.match(res.body.message, /Không tìm thấy tài khoản/i);
+  });
+
+  test('Chặn yêu cầu OTP cho tài khoản đã bị khóa (Mã 403)', async () => {
+    const client = new TestClient(baseUrl);
+    const res = await client.post('/forgot-password', {
+      email: 'forgot.blocked@auth-test.tronest.com'
+    });
+
+    assert.equal(res.status, 403);
+    assert.match(res.body.message, /đã bị khóa/i);
+  });
+
+  test('Chặn brute-force OTP sau 5 lần nhập sai liên tiếp', async () => {
+    const client = new TestClient(baseUrl);
+    const reqRes = await client.post('/forgot-password', {
+      email: 'forgot.user@auth-test.tronest.com'
+    });
+    assert.equal(reqRes.status, 200);
+
+    for (let i = 1; i <= 5; i++) {
+      const wrongRes = await client.post('/forgot-password/verify-otp', {
+        email: 'forgot.user@auth-test.tronest.com',
+        otp: '000000'
+      });
+      assert.equal(wrongRes.status, 400);
+    }
+
+    // Lần thứ 6 kể cả nhập đúng OTP cũ cũng bị từ chối vì bản ghi OTP đã bị hủy
+    const afterLockRes = await client.post('/forgot-password/verify-otp', {
+      email: 'forgot.user@auth-test.tronest.com',
+      otp: reqRes.body.devOtp
+    });
+    assert.equal(afterLockRes.status, 400);
+    assert.match(afterLockRes.body.message, /hết hạn hoặc không tồn tại/i);
+  });
+
+  test('Hoàn tất luồng 3 bước: Nhận OTP -> Xác thực OTP -> Đặt mật khẩu mới và Đăng nhập thành công', async () => {
+    const client = new TestClient(baseUrl);
+
+    // Bước 1: Gửi yêu cầu OTP
+    const step1 = await client.post('/forgot-password', {
+      email: 'forgot.user@auth-test.tronest.com'
+    });
+    assert.equal(step1.status, 200);
+    assert.equal(step1.body.code, 200);
+    assert.match(step1.body.devOtp, /^[0-9]{6}$/);
+
+    // Bước 2: Xác thực OTP
+    const step2 = await client.post('/forgot-password/verify-otp', {
+      email: 'forgot.user@auth-test.tronest.com',
+      otp: step1.body.devOtp
+    });
+    assert.equal(step2.status, 200);
+    assert.equal(step2.body.code, 200);
+    assert.ok(step2.body.resetToken);
+
+    // Bước 3: Đặt mật khẩu mới
+    const step3 = await client.post('/forgot-password/reset-password', {
+      email: 'forgot.user@auth-test.tronest.com',
+      resetToken: step2.body.resetToken,
+      password: 'newpassword999',
+      confirmPassword: 'newpassword999'
+    });
+    assert.equal(step3.status, 200);
+    assert.equal(step3.body.code, 200);
+    assert.equal(step3.body.redirectUrl, '/login');
+
+    // Kiểm tra đăng nhập bằng mật khẩu cũ phải thất bại
+    const oldLogin = await client.post('/login', {
+      email: 'forgot.user@auth-test.tronest.com',
+      password: 'oldpassword123'
+    });
+    assert.equal(oldLogin.status, 400);
+
+    // Kiểm tra đăng nhập bằng mật khẩu mới thành công
+    const newLogin = await client.post('/login', {
+      email: 'forgot.user@auth-test.tronest.com',
+      password: 'newpassword999'
+    });
+    assert.equal(newLogin.status, 200);
+    assert.ok(client.cookies.get('token'));
+  });
+});

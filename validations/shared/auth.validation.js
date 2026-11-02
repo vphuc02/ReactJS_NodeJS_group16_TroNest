@@ -41,6 +41,46 @@ const registerSchema = Joi.object({
   address: Joi.string().allow('', null).optional()
 });
 
+const forgotPasswordSchema = Joi.object({
+  email: Joi.string().email().required().messages({
+    'string.empty': 'Vui lòng nhập địa chỉ email!',
+    'string.email': 'Email không đúng định dạng!',
+    'any.required': 'Vui lòng nhập địa chỉ email!'
+  })
+});
+
+const verifyOtpSchema = Joi.object({
+  email: Joi.string().email().required().messages({
+    'string.empty': 'Vui lòng nhập địa chỉ email!',
+    'string.email': 'Email không đúng định dạng!',
+    'any.required': 'Vui lòng nhập địa chỉ email!'
+  }),
+  otp: Joi.string().pattern(/^[0-9]{6}$/).required().messages({
+    'string.empty': 'Vui lòng nhập mã xác thực OTP!',
+    'string.pattern.base': 'Mã OTP phải gồm đúng 6 chữ số!',
+    'any.required': 'Vui lòng nhập mã xác thực OTP!'
+  })
+});
+
+const resetPasswordSchema = Joi.object({
+  email: Joi.string().email().required().messages({
+    'string.empty': 'Thiếu thông tin email khôi phục!',
+    'string.email': 'Email không đúng định dạng!',
+    'any.required': 'Thiếu thông tin email khôi phục!'
+  }),
+  resetToken: Joi.string().allow('', null).optional(),
+  password: Joi.string().min(6).required().messages({
+    'string.empty': 'Vui lòng nhập mật khẩu mới!',
+    'string.min': 'Mật khẩu mới phải có ít nhất 6 ký tự!',
+    'any.required': 'Vui lòng nhập mật khẩu mới!'
+  }),
+  confirmPassword: Joi.string().valid(Joi.ref('password')).required().messages({
+    'any.only': 'Mật khẩu xác nhận không khớp!',
+    'string.empty': 'Vui lòng nhập lại mật khẩu xác nhận!',
+    'any.required': 'Vui lòng nhập lại mật khẩu xác nhận!'
+  })
+});
+
 const validateJson = (schema) => {
   return (req, res, next) => {
     const { error, value } = schema.required().validate(req.body, { abortEarly: true, allowUnknown: true });
@@ -60,6 +100,12 @@ const validateJson = (schema) => {
 module.exports = {
   loginPost: validateJson(loginSchema),
   registerPost: validateJson(registerSchema),
+  forgotPasswordPost: validateJson(forgotPasswordSchema),
+  verifyOtpPost: validateJson(verifyOtpSchema),
+  resetPasswordPost: validateJson(resetPasswordSchema),
   loginSchema,
-  registerSchema
+  registerSchema,
+  forgotPasswordSchema,
+  verifyOtpSchema,
+  resetPasswordSchema
 };

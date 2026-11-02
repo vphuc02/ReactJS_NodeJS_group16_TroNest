@@ -7,6 +7,7 @@ const User = require('../../models/user.model');
 const Room = require('../../models/room.model');
 const Category = require('../../models/category.model');
 const Favorite = require('../../models/favorite.model');
+const ForgotPassword = require('../../models/forgot-password.model');
 
 let server;
 let baseUrl;
@@ -30,6 +31,7 @@ const stopTestServer = async () => {
 const clearTestData = async (prefix = 'test') => {
   await Promise.all([
     User.deleteMany({ email: { $regex: new RegExp(`@${prefix}\\.tronest\\.com$`, 'i') } }),
+    ForgotPassword.deleteMany({ email: { $regex: new RegExp(`@${prefix}\\.tronest\\.com$`, 'i') } }),
     Room.deleteMany({ title: { $regex: new RegExp(`^\\[${prefix.toUpperCase()}\\]`) } }),
     Category.deleteMany({ slug: { $regex: new RegExp(`^${prefix}-`) } }),
     Favorite.deleteMany({})
