@@ -2600,6 +2600,208 @@ input, button, textarea {
 .auth-inline-31 { margin-bottom: 22px; }
 .auth-submit-landlord { background: linear-gradient(135deg, #22C55E 0%, #16A34A 100%) !important; box-shadow: 0 4px 12px rgba(22, 163, 74, 0.25) !important; }
 
+/* Forgot Password 3-Step Flow (Clean & Content-First) */
+.forgot-stepper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  padding: 10px 14px;
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+}
+
+.forgot-step {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #64748B;
+}
+
+.forgot-step .step-num {
+  width: 22px;
+  height: 22px;
+  border-radius: 9999px;
+  background: #E2E8F0;
+  color: #475569;
+  font-size: 11px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.forgot-step.is-active {
+  color: #0F172A;
+}
+
+.forgot-step.is-active .step-num {
+  background: #0F172A;
+  color: #FFFFFF;
+}
+
+.forgot-step.is-done {
+  color: #16A34A;
+}
+
+.forgot-step.is-done .step-num {
+  background: #16A34A;
+  color: #FFFFFF;
+}
+
+.forgot-step-line {
+  flex: 1;
+  height: 1px;
+  background: #CBD5E1;
+  margin: 0 10px;
+}
+
+.forgot-info-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 14px;
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 10px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: #334155;
+}
+
+.forgot-info-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.forgot-timer-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  font-size: 12px;
+  font-weight: 700;
+  color: #0F172A;
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+
+.forgot-dev-otp {
+  background: #F0FDF4;
+  border: 1px dashed #86EFAC;
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 18px;
+}
+
+.forgot-dev-otp .dev-otp-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.forgot-dev-otp .dev-otp-tag {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #15803D;
+}
+
+.forgot-dev-otp .btn-fill-otp {
+  background: #FFFFFF;
+  border: 1px solid #BBF7D0;
+  color: #16A34A;
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  cursor: pointer;
+}
+
+.forgot-dev-otp .btn-fill-otp:hover {
+  background: #16A34A;
+  color: #FFFFFF;
+  border-color: #16A34A;
+}
+
+.forgot-dev-otp .dev-otp-body {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #166534;
+}
+
+.forgot-dev-otp .dev-otp-body strong {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 4px;
+  color: #0F172A;
+  font-variant-numeric: tabular-nums;
+}
+
+.forgot-otp-input {
+  text-align: center !important;
+  font-size: 22px !important;
+  font-weight: 800 !important;
+  letter-spacing: 8px !important;
+  font-variant-numeric: tabular-nums !important;
+  color: #0F172A !important;
+}
+
+.forgot-secondary-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 16px;
+  gap: 12px;
+}
+
+.btn-link-muted,
+.btn-link-accent {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  padding: 4px 0;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-link-muted {
+  color: #64748B;
+}
+
+.btn-link-muted:hover {
+  color: #0F172A;
+}
+
+.btn-link-accent {
+  color: #16A34A;
+}
+
+.btn-link-accent:hover {
+  color: #15803D;
+  text-decoration: underline;
+}
+.btn-link-accent:disabled {
+  color: #94A3B8;
+  cursor: not-allowed;
+  text-decoration: none;
+}
+
 .layout-room-list > *,
 .room-detail-layout > *,
 .footer .inner-col,

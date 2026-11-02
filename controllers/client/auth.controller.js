@@ -1,9 +1,16 @@
+const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../../models/user.model');
+const ForgotPassword = require('../../models/forgot-password.model');
 const { JWT_SECRET, ROLES, USER_STATUS } = require('../../configs/system.config');
 const { cookieOptions } = require('../../helpers/http.helper');
 const { getSafeRedirect } = require('../../helpers/security.helper');
+const { sendOtpEmail } = require('../../helpers/mail.helper');
+
+const hashToken = (raw) => {
+  return crypto.createHash('sha256').update(String(raw)).digest('hex');
+};
 
 // [GET] /login
 module.exports.loginGet = (req, res) => {
@@ -141,6 +148,194 @@ module.exports.logoutPost = (req, res) => {
   return res.json({
     code: 200,
     message: 'Đăng xuất thành công!',
+    redirectUrl: '/login'
+  });
+};
+
+// [GET] /forgot-password
+module.exports.forgotPasswordGet = (req, res) => {
+  if (req.user) {
+    if (req.user.role === ROLES.LANDLORD) return res.redirect('/landlord/dashboard');
+    return res.redirect('/');
+  }
+
+  res.render('client/pages/forgot-password', {
+    title: 'Quên mật khẩu - TroNest'
+  });
+};
+
+// [POST] /forgot-password (Bước 1: Nhập email & nhận mã OTP 6 số)
+module.exports.forgotPasswordPost = async (req, res) => {
+  const email = (req.body.email || '').toLowerCase().trim();
+
+  if (!email) {
+    return res.status(400).json({
+      code: 400,
+      message: 'Vui lòng nhập địa chỉ email!'
+    });
+  }
+
+  const user = await User.findOne({ email });
+  if (!user || user.role === ROLES.ADMIN) {
+    return res.status(404).json({
+      code: 404,
+      message: 'Không tìm thấy tài khoản nào được đăng ký với địa chỉ Email này!'
+    });
+  }
+
+  if (user.isBlocked || user.status === USER_STATUS.INACTIVE) {
+    return res.status(403).json({
+      code: 403,
+      message: 'Tài khoản của bạn đã bị khóa bởi Quản trị viên!'
+    });
+  }
+
+  // Tạo mã OTP 6 chữ số ngẫu nhiên (100000 -> 999999)
+  const otp = String(crypto.randomInt(100000, 1000000));
+  const expiresInMinutes = 5;
+  const expireAt = new Date(Date.now() + expiresInMinutes * 60 * 1000);
+
+  await ForgotPassword.deleteMany({ email });
+  await ForgotPassword.create({
+    email,
+    otpHash: hashToken(otp),
+    attempts: 0,
+    verified: false,
+    resetTokenHash: '',
+    expireAt
+  });
+
+  const mailResult = await sendOtpEmail({
+    to: email,
+    fullName: user.fullName,
+    otp,
+    expiresInMinutes
+  });
+
+  const responsePayload = {
+    code: 200,
+    message: mailResult.delivered
+      ? `Mã xác thực OTP đã được gửi tới email ${email}. Vui lòng kiểm tra hộp thư!`
+      : `Đã tạo mã xác thực OTP cho ${email} (hiệu lực ${expiresInMinutes} phút).`,
+    email,
+    expiresIn: expiresInMinutes * 60,
+    deliveryMode: mailResult.mode
+  };
+
+  if (mailResult.devOtp && process.env.NODE_ENV === 'test') {
+    responsePayload.devOtp = mailResult.devOtp;
+  }
+
+  return res.json(responsePayload);
+};
+
+// [POST] /forgot-password/verify-otp (Bước 2: Xác thực mã OTP 6 số)
+module.exports.verifyOtpPost = async (req, res) => {
+  const email = (req.body.email || '').toLowerCase().trim();
+  const otp = String(req.body.otp || '').trim();
+
+  const record = await ForgotPassword.findOne({ email }).sort({ createdAt: -1 });
+  if (!record || record.expireAt <= new Date()) {
+    await ForgotPassword.deleteMany({ email });
+    return res.status(400).json({
+      code: 400,
+      message: 'Mã xác thực OTP đã hết hạn hoặc không tồn tại. Vui lòng yêu cầu gửi lại mã mới!'
+    });
+  }
+
+  if (record.attempts >= 5) {
+    await ForgotPassword.deleteMany({ email });
+    return res.status(400).json({
+      code: 400,
+      message: 'Bạn đã nhập sai mã OTP quá 5 lần. Vui lòng yêu cầu gửi lại mã mới!'
+    });
+  }
+
+  const inputOtpHash = hashToken(otp);
+  if (inputOtpHash !== record.otpHash) {
+    record.attempts += 1;
+    await record.save();
+    const remaining = Math.max(0, 5 - record.attempts);
+
+    if (remaining === 0) {
+      await ForgotPassword.deleteMany({ email });
+      return res.status(400).json({
+        code: 400,
+        message: 'Bạn đã nhập sai mã OTP quá 5 lần. Mã đã bị hủy, vui lòng gửi lại mã mới!'
+      });
+    }
+
+    return res.status(400).json({
+      code: 400,
+      message: `Mã xác thực OTP không chính xác! (Còn ${remaining} lần thử)`
+    });
+  }
+
+  const resetToken = crypto.randomBytes(32).toString('hex');
+  record.verified = true;
+  record.resetTokenHash = hashToken(resetToken);
+  record.expireAt = new Date(Date.now() + 10 * 60 * 1000);
+  await record.save();
+
+  res.cookie('reset_token', resetToken, cookieOptions(10 * 60 * 1000));
+
+  return res.json({
+    code: 200,
+    message: 'Xác thực OTP thành công! Vui lòng thiết lập mật khẩu mới.',
+    email,
+    resetToken
+  });
+};
+
+// [POST] /forgot-password/reset-password (Bước 3: Đặt lại mật khẩu mới)
+module.exports.resetPasswordPost = async (req, res) => {
+  const email = (req.body.email || '').toLowerCase().trim();
+  const password = req.body.password;
+  const rawResetToken = req.body.resetToken || req.cookies?.reset_token || '';
+
+  if (!rawResetToken) {
+    return res.status(400).json({
+      code: 400,
+      message: 'Phiên đặt lại mật khẩu không hợp lệ hoặc đã hết hạn. Vui lòng thực hiện lại!'
+    });
+  }
+
+  const record = await ForgotPassword.findOne({ email, verified: true }).sort({ createdAt: -1 });
+  if (!record || record.expireAt <= new Date() || !record.resetTokenHash) {
+    await ForgotPassword.deleteMany({ email });
+    res.clearCookie('reset_token');
+    return res.status(400).json({
+      code: 400,
+      message: 'Phiên đặt lại mật khẩu đã hết hạn. Vui lòng thực hiện lại từ đầu!'
+    });
+  }
+
+  if (hashToken(rawResetToken) !== record.resetTokenHash) {
+    return res.status(400).json({
+      code: 400,
+      message: 'Mã phiên khôi phục mật khẩu không hợp lệ!'
+    });
+  }
+
+  const user = await User.findOne({ email });
+  if (!user || user.role === ROLES.ADMIN) {
+    await ForgotPassword.deleteMany({ email });
+    res.clearCookie('reset_token');
+    return res.status(404).json({
+      code: 404,
+      message: 'Tài khoản không tồn tại!'
+    });
+  }
+
+  user.password = await bcrypt.hash(password, 10);
+  await user.save();
+
+  await ForgotPassword.deleteMany({ email });
+  res.clearCookie('reset_token');
+
+  return res.json({
+    code: 200,
+    message: 'Đặt lại mật khẩu mới thành công! Vui lòng đăng nhập lại.',
     redirectUrl: '/login'
   });
 };
