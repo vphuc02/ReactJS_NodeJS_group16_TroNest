@@ -232,9 +232,10 @@
       deposit: form.deposit.value,
       area: form.area.value,
       capacity: form.capacity.value,
-      district: form.district.value,
-      ward: form.ward.value,
-      address: form.address.value,
+      province: form.province ? form.province.value : "",
+      district: "",
+      ward: form.ward ? form.ward.value : "",
+      address: form.address ? form.address.value.trim() : "",
       thumbnail: mainThumbnail || roomImages[0],
       images: roomImages,
       electricityPrice: form.electricityPrice.value,
@@ -284,5 +285,87 @@
   actions.draftButton.addEventListener("click", () => submitRoom(actions.draftStatus));
   actions.submitButton.addEventListener("click", () => submitRoom(actions.submitStatus));
 
+  // --- LOGIC CHỌN ĐỊA CHỈ 2 CẤP (TỈNH/THÀNH PHỐ -> PHƯỜNG/XÃ) ---
+  const provinceSelect = form.querySelector("#province");
+  const wardSelect = form.querySelector("#ward");
+  const addressInput = form.querySelector("#address");
+  const previewText = document.querySelector("#address-preview-text");
+
+  const wardCache = {};
+
+  const updatePreview = () => {
+    if (!previewText) return;
+    const parts = [
+      addressInput?.value?.trim(),
+      wardSelect?.value,
+      provinceSelect?.value
+    ].filter(Boolean);
+    previewText.textContent = parts.length > 0 ? parts.join(" - ") : "Chưa xác định";
+  };
+
+  const loadWardsForProvince = async (code, selectedWard) => {
+    if (!wardSelect) return;
+    if (!code) {
+      wardSelect.innerHTML = '<option value="">-- Vui lòng chọn Tỉnh/Thành phố trước --</option>';
+      return;
+    }
+
+    wardSelect.innerHTML = '<option value="">-- Đang tải danh sách phường/xã... --</option>';
+
+    try {
+      if (!wardCache[code]) {
+        const res = await fetch(`/api/geo/provinces/${encodeURIComponent(code)}/wards`);
+        if (!res.ok) throw new Error("Không tải được danh sách phường/xã");
+        wardCache[code] = await res.json();
+      }
+
+      const wards = wardCache[code];
+      wardSelect.innerHTML = '';
+
+      wards
+        .slice()
+        .sort((a, b) => a.name.localeCompare(b.name, "vi"))
+        .forEach((w) => {
+          const opt = document.createElement("option");
+          opt.value = w.name;
+          opt.textContent = w.name;
+          if (selectedWard && (w.name.toLowerCase() === selectedWard.toLowerCase())) {
+            opt.selected = true;
+          }
+          wardSelect.appendChild(opt);
+        });
+
+      if (!wardSelect.value && wards.length > 0) {
+        wardSelect.value = wards[0].name;
+      }
+    } catch (err) {
+      console.error(err);
+      wardSelect.innerHTML = '<option value="">-- Lỗi tải phường/xã --</option>';
+    }
+
+    updatePreview();
+  };
+
+  // --- Sự kiện thay đổi địa chỉ ---
+  if (provinceSelect) {
+    const onProvinceChange = () => {
+      const selectedOption = provinceSelect.options[provinceSelect.selectedIndex];
+      const code = selectedOption?.dataset?.code || "";
+      loadWardsForProvince(code, wardSelect?.dataset?.selected || "");
+      updatePreview();
+    };
+
+    provinceSelect.addEventListener("change", onProvinceChange);
+
+    // Initial load
+    const initialOption = provinceSelect.options[provinceSelect.selectedIndex];
+    const initialCode = initialOption?.dataset?.code || "01";
+    loadWardsForProvince(initialCode, wardSelect?.dataset?.selected || "");
+  }
+
+  wardSelect?.addEventListener("change", updatePreview);
+  addressInput?.addEventListener("input", updatePreview);
+
+  updatePreview();
   updatePreviewGrid();
 })();

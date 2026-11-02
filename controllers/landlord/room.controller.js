@@ -82,7 +82,7 @@ const buildRoomPayload = (body, currentRoom = null) => {
     area: Number(body.area),
     capacity: Number(body.capacity) || 2,
     province: body.province || currentRoom?.province || DEFAULT_ROOM_VALUES.province,
-    district: body.district || currentRoom?.district || DEFAULT_ROOM_VALUES.district,
+    district: body.district || currentRoom?.district || '',
     ward: body.ward || currentRoom?.ward || DEFAULT_ROOM_VALUES.ward,
     address: body.address.trim(),
     thumbnail: chosenThumb,
