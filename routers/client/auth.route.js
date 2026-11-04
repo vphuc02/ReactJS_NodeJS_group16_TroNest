@@ -45,4 +45,7 @@ router.post(
   authController.resetPasswordPost
 );
 
+router.get('/reset-password', authController.resetPasswordPageGet);
+router.post('/reset-password', forgotPasswordRateLimit, authController.resetPasswordFromLinkPost);
+
 module.exports = router;

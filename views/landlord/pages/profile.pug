@@ -435,60 +435,27 @@ block main
         //- Tab 3: Đổi mật khẩu
         #tab-password.profile-tab-content(class="hidden bg-white rounded-2xl p-5 sm:p-7 border border-slate-200/80 shadow-xs space-y-5 sm:space-y-6")
           div(class="pb-4 border-b border-slate-100")
-            h2(class="text-lg sm:text-xl font-bold text-slate-900 m-0") Đổi mật khẩu tài khoản
-            p(class="text-slate-500 text-xs sm:text-sm mt-1 m-0") Để bảo mật tài khoản, vui lòng không chia sẻ mật khẩu của bạn cho bất kỳ ai.
+            h2(class="text-lg sm:text-xl font-bold text-slate-900 m-0 flex items-center gap-2")
+              i.fa-solid.fa-shield-halved(class="text-[#16A34A]")
+              | Đổi mật khẩu tài khoản
+            p(class="text-slate-500 text-xs sm:text-sm mt-1 m-0") Để tăng cường bảo mật cho tài khoản chủ trọ, hệ thống sẽ gửi liên kết thay đổi mật khẩu trực tiếp đến email của bạn.
 
-          form#form-change-password(class="space-y-4 sm:space-y-5")
-            div
-              label(for="oldPassword" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2")
-                | Mật khẩu hiện tại 
-                span(class="text-rose-500") *
-              input#oldPassword(
-                type="password" 
-                name="oldPassword" 
-                required 
-                placeholder="Nhập mật khẩu hiện tại"
-                class="w-full px-4 py-2.5 sm:py-3 rounded-xl border border-slate-200 hover:border-slate-300 focus:outline-none focus:border-[#16A34A] focus:ring-2 focus:ring-emerald-100 transition-all text-sm text-slate-800"
-              )
+          div(class="max-w-xl space-y-5")
+            div(class="p-5 rounded-xl bg-emerald-50/70 border border-emerald-100/80 flex items-start gap-3.5")
+              div(class="w-10 h-10 rounded-xl bg-white text-[#16A34A] flex items-center justify-center shrink-0 shadow-xs border border-emerald-100 text-lg")
+                i.fa-solid.fa-envelope-circle-check
+              div(class="space-y-1")
+                div(class="text-xs font-bold uppercase tracking-wider text-emerald-800") Email nhận liên kết xác thực
+                div(class="text-sm font-semibold text-slate-800 break-all")= user.email
+                p(class="text-xs text-slate-500 m-0 pt-1 leading-relaxed") Khi bấm nút bên dưới, TroNest sẽ gửi tới hòm thư này một liên kết bảo mật có hiệu lực trong 15 phút. Bạn chỉ cần mở email và nhấn vào liên kết để tạo mật khẩu mới.
 
-            div
-              label(for="newPassword" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2")
-                | Mật khẩu mới 
-                span(class="text-rose-500") *
-              input#newPassword(
-                type="password" 
-                name="newPassword" 
-                required 
-                minlength="6"
-                placeholder="Tối thiểu 6 ký tự"
-                class="w-full px-4 py-2.5 sm:py-3 rounded-xl border border-slate-200 hover:border-slate-300 focus:outline-none focus:border-[#16A34A] focus:ring-2 focus:ring-emerald-100 transition-all text-sm text-slate-800"
+            div(class="pt-3 flex items-center gap-3")
+              button#btn-send-reset-mail(
+                type="button" 
+                class="px-6 py-3 rounded-xl bg-[#16A34A] hover:bg-[#15803D] text-white text-sm font-semibold transition-all shadow-sm active:scale-95 border-none cursor-pointer flex items-center gap-2"
               )
-              span(class="text-[11px] text-slate-400 mt-1.5 block") Nên kết hợp chữ cái, chữ số và ký tự đặc biệt để an toàn nhất.
-
-            div
-              label(for="confirmPassword" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2")
-                | Xác nhận mật khẩu mới 
-                span(class="text-rose-500") *
-              input#confirmPassword(
-                type="password" 
-                name="confirmPassword" 
-                required 
-                minlength="6"
-                placeholder="Nhập lại mật khẩu mới"
-                class="w-full px-4 py-2.5 sm:py-3 rounded-xl border border-slate-200 hover:border-slate-300 focus:outline-none focus:border-[#16A34A] focus:ring-2 focus:ring-emerald-100 transition-all text-sm text-slate-800"
-              )
-
-            div(class="pt-4 border-t border-slate-100 flex items-center justify-end gap-3 mt-6")
-              button(
-                type="reset" 
-                class="px-5 py-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 text-sm font-semibold transition-all cursor-pointer bg-white"
-              ) Đặt lại
-              button#btn-save-password(
-                type="submit" 
-                class="px-6 py-2.5 rounded-xl bg-[#16A34A] hover:bg-[#15803D] text-white text-sm font-semibold transition-all shadow-sm active:scale-95 border-none cursor-pointer flex items-center gap-2"
-              )
-                i.fa-solid.fa-key
-                span Đổi mật khẩu
+                i.fa-solid.fa-paper-plane
+                span Gửi liên kết đổi mật khẩu qua Email
 
 block scripts
   script.
@@ -761,73 +728,42 @@ block scripts
         });
       }
 
-      // 4. Đổi mật khẩu
-      const formChangePassword = document.getElementById("form-change-password");
-      const btnSavePassword = document.getElementById("btn-save-password");
+      // 4. Xử lý Gửi liên kết đổi mật khẩu qua Email
+      const btnSendResetMail = document.getElementById("btn-send-reset-mail");
 
-      if (formChangePassword) {
-        formChangePassword.addEventListener("submit", async function (e) {
-          e.preventDefault();
-
-          const oldPassword = document.getElementById("oldPassword").value;
-          const newPassword = document.getElementById("newPassword").value;
-          const confirmPassword = document.getElementById("confirmPassword").value;
-
-          if (!oldPassword || !newPassword || !confirmPassword) {
-            if (window.notyf) window.notyf.error("Vui lòng điền đầy đủ các trường mật khẩu!");
-            return;
-          }
-
-          if (newPassword.length < 6) {
-            if (window.notyf) window.notyf.error("Mật khẩu mới phải có ít nhất 6 ký tự!");
-            return;
-          }
-
-          if (newPassword !== confirmPassword) {
-            if (window.notyf) window.notyf.error("Xác nhận mật khẩu mới không trùng khớp!");
-            return;
-          }
-
-          if (btnSavePassword) {
-            btnSavePassword.disabled = true;
-            btnSavePassword.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Đang xử lý...</span>';
-          }
+      if (btnSendResetMail) {
+        btnSendResetMail.addEventListener("click", async function () {
+          btnSendResetMail.disabled = true;
+          btnSendResetMail.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Đang gửi email...</span>';
 
           try {
-            const response = await fetch("/landlord/profile/change-password", {
+            const response = await fetch("/landlord/profile/send-reset-password-email", {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
                 "Accept": "application/json"
-              },
-              body: JSON.stringify({ oldPassword, newPassword, confirmPassword })
+              }
             });
 
             const data = await response.json();
 
             if (response.ok && data.code === 200) {
               if (window.notyf) {
-                window.notyf.success(data.message || "Đổi mật khẩu thành công!");
+                window.notyf.success(data.message || "Đã gửi liên kết đổi mật khẩu qua email!");
               }
-              formChangePassword.reset();
-              setTimeout(function () {
-                switchTab("#tab-overview");
-              }, 400);
             } else {
               if (window.notyf) {
-                window.notyf.error(data.message || "Đổi mật khẩu thất bại!");
+                window.notyf.error(data.message || "Không thể gửi email, vui lòng thử lại sau!");
               }
             }
           } catch (err) {
-            console.error("Lỗi đổi mật khẩu:", err);
+            console.error("Lỗi gửi mail đổi mật khẩu:", err);
             if (window.notyf) {
               window.notyf.error("Có lỗi xảy ra khi kết nối máy chủ!");
             }
           } finally {
-            if (btnSavePassword) {
-              btnSavePassword.disabled = false;
-              btnSavePassword.innerHTML = '<i class="fa-solid fa-key"></i> <span>Đổi mật khẩu</span>';
-            }
+            btnSendResetMail.disabled = false;
+            btnSendResetMail.innerHTML = '<i class="fa-solid fa-paper-plane"></i> <span>Gửi liên kết đổi mật khẩu qua Email</span>';
           }
         });
       }

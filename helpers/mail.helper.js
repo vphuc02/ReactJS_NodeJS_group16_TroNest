@@ -86,8 +86,77 @@ const sendOtpEmail = async ({ to, fullName, otp, expiresInMinutes = 5 }) => {
   };
 };
 
+/**
+ * Gửi email chứa liên kết đặt lại mật khẩu.
+ */
+const sendResetPasswordEmail = async ({ to, fullName, resetUrl, expiresInMinutes = 15 }) => {
+  if (!hasSmtpConfig()) {
+    if (process.env.NODE_ENV !== 'test') {
+      console.info(
+        `[TroNest Mail Preview] Liên kết đặt lại mật khẩu cho ${to}: ${resetUrl} (hiệu lực ${expiresInMinutes} phút)`
+      );
+    }
+    return {
+      delivered: false,
+      mode: 'dev-preview',
+      devResetUrl: resetUrl
+    };
+  }
+
+  const transporter = createTransporter();
+  const fromAddress =
+    process.env.SMTP_FROM || `"TroNest" <${process.env.SMTP_USER}>`;
+
+  const html = `
+    <div style="font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f8fafc; padding: 32px 16px; color: #0f172a;">
+      <div style="max-width: 500px; margin: 0 auto; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 32px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+        <div style="font-size: 22px; font-weight: 800; color: #16a34a; margin-bottom: 16px;">
+          TroNest — Đặt lại mật khẩu
+        </div>
+        <p style="font-size: 15px; line-height: 1.6; color: #334155; margin: 0 0 16px;">
+          Xin chào <strong>${fullName || to}</strong>,
+        </p>
+        <p style="font-size: 14px; line-height: 1.6; color: #334155; margin: 0 0 24px;">
+          Chúng tôi nhận được yêu cầu đặt lại mật khẩu từ trang cá nhân của bạn. Nhấn vào nút bên dưới để tiến hành đổi mật khẩu:
+        </p>
+        <div style="text-align: center; margin-bottom: 24px;">
+          <a href="${resetUrl}" style="display: inline-block; background-color: #16a34a; color: #ffffff; font-weight: bold; font-size: 15px; text-decoration: none; padding: 14px 28px; border-radius: 9999px; box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);">
+            Đổi mật khẩu ngay
+          </a>
+        </div>
+        <p style="font-size: 13px; line-height: 1.5; color: #64748b; margin: 0 0 10px;">
+          Nếu bạn không bấm được vào nút trên, hãy copy và dán liên kết sau vào trình duyệt:
+        </p>
+        <p style="font-size: 12px; line-height: 1.5; word-break: break-all; color: #2563eb; margin: 0 0 20px;">
+          <a href="${resetUrl}" style="color: #2563eb;">${resetUrl}</a>
+        </p>
+        <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 20px 0;" />
+        <p style="font-size: 13px; line-height: 1.5; color: #64748b; margin: 0 0 8px;">
+          • Liên kết này có hiệu lực trong vòng <strong>${expiresInMinutes} phút</strong>.
+        </p>
+        <p style="font-size: 13px; line-height: 1.5; color: #64748b; margin: 0;">
+          • Nếu bạn không yêu cầu hành động này, vui lòng bỏ qua email và đảm bảo mật khẩu hiện tại vẫn an toàn.
+        </p>
+      </div>
+    </div>
+  `;
+
+  await transporter.sendMail({
+    from: fromAddress,
+    to,
+    subject: `[TroNest] Hướng dẫn đặt lại mật khẩu tài khoản`,
+    html
+  });
+
+  return {
+    delivered: true,
+    mode: 'smtp'
+  };
+};
+
 module.exports = {
   sendOtpEmail,
+  sendResetPasswordEmail,
   hasSmtpConfig
 };
 

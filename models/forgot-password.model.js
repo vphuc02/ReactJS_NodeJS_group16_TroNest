@@ -12,7 +12,7 @@ const forgotPasswordSchema = new Schema(
     },
     otpHash: {
       type: String,
-      required: true
+      default: ''
     },
     attempts: {
       type: Number,

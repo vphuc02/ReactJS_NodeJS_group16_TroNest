@@ -6,7 +6,7 @@ const ForgotPassword = require('../../models/forgot-password.model');
 const { JWT_SECRET, ROLES, USER_STATUS } = require('../../configs/system.config');
 const { cookieOptions } = require('../../helpers/http.helper');
 const { getSafeRedirect } = require('../../helpers/security.helper');
-const { sendOtpEmail } = require('../../helpers/mail.helper');
+const { sendOtpEmail, sendResetPasswordEmail } = require('../../helpers/mail.helper');
 const {
   buildGoogleAuthUrl,
   createOAuthState,
@@ -339,6 +339,105 @@ module.exports.resetPasswordPost = async (req, res) => {
 
   await ForgotPassword.deleteMany({ email });
   res.clearCookie('reset_token');
+
+  return res.json({
+    code: 200,
+    message: 'Đặt lại mật khẩu mới thành công! Vui lòng đăng nhập lại.',
+    redirectUrl: '/login'
+  });
+};
+
+// [GET] /reset-password (Mở link đặt lại mật khẩu từ email)
+module.exports.resetPasswordPageGet = async (req, res) => {
+  const token = String(req.query.token || '').trim();
+  const email = String(req.query.email || '').toLowerCase().trim();
+
+  if (!token || !email) {
+    return res.render('client/pages/reset-password', {
+      title: 'Đặt lại mật khẩu - TroNest',
+      error: 'Liên kết đặt lại mật khẩu không hợp lệ hoặc thiếu thông tin!'
+    });
+  }
+
+  const record = await ForgotPassword.findOne({ email, verified: true }).sort({ createdAt: -1 });
+  if (!record || record.expireAt <= new Date() || !record.resetTokenHash) {
+    return res.render('client/pages/reset-password', {
+      title: 'Đặt lại mật khẩu - TroNest',
+      error: 'Liên kết đặt lại mật khẩu đã hết hạn hoặc không tồn tại. Vui lòng yêu cầu link mới!'
+    });
+  }
+
+  if (hashToken(token) !== record.resetTokenHash) {
+    return res.render('client/pages/reset-password', {
+      title: 'Đặt lại mật khẩu - TroNest',
+      error: 'Mã token trong liên kết không chính xác hoặc đã bị vô hiệu hóa!'
+    });
+  }
+
+  return res.render('client/pages/reset-password', {
+    title: 'Đặt lại mật khẩu - TroNest',
+    token,
+    email,
+    error: null
+  });
+};
+
+// [POST] /reset-password (Xác nhận đổi mật khẩu mới từ link email)
+module.exports.resetPasswordFromLinkPost = async (req, res) => {
+  const email = (req.body.email || '').toLowerCase().trim();
+  const token = String(req.body.token || '').trim();
+  const { password, confirmPassword } = req.body;
+
+  if (!email || !token) {
+    return res.status(400).json({
+      code: 400,
+      message: 'Thiếu thông tin xác thực phiên đặt lại mật khẩu!'
+    });
+  }
+
+  if (!password || password.length < 6) {
+    return res.status(400).json({
+      code: 400,
+      message: 'Mật khẩu mới phải có ít nhất 6 ký tự!'
+    });
+  }
+
+  if (password !== confirmPassword) {
+    return res.status(400).json({
+      code: 400,
+      message: 'Mật khẩu xác nhận không khớp với mật khẩu mới!'
+    });
+  }
+
+  const record = await ForgotPassword.findOne({ email, verified: true }).sort({ createdAt: -1 });
+  if (!record || record.expireAt <= new Date() || !record.resetTokenHash) {
+    await ForgotPassword.deleteMany({ email });
+    return res.status(400).json({
+      code: 400,
+      message: 'Liên kết đổi mật khẩu đã hết hạn. Vui lòng gửi lại yêu cầu mới!'
+    });
+  }
+
+  if (hashToken(token) !== record.resetTokenHash) {
+    return res.status(400).json({
+      code: 400,
+      message: 'Token xác thực không hợp lệ!'
+    });
+  }
+
+  const user = await User.findOne({ email });
+  if (!user || user.role === ROLES.ADMIN) {
+    await ForgotPassword.deleteMany({ email });
+    return res.status(404).json({
+      code: 404,
+      message: 'Tài khoản không tồn tại!'
+    });
+  }
+
+  user.password = await bcrypt.hash(password, 10);
+  await user.save();
+
+  await ForgotPassword.deleteMany({ email });
 
   return res.json({
     code: 200,

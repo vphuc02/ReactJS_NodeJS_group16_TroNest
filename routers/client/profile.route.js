@@ -12,5 +12,6 @@ router.get('/', profileController.index);
 router.post('/avatar', uploadAvatar, profileController.uploadAvatarPost);
 router.post('/edit', uploadAvatar, profileValidation.updateProfile, profileController.editPost);
 router.post('/change-password', profileValidation.changePassword, profileController.changePasswordPost);
+router.post('/send-reset-password-email', profileController.sendResetPasswordEmailPost);
 
 module.exports = router;
