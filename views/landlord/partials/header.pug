@@ -79,6 +79,8 @@ header.header(class="h-16 bg-white border-b border-slate-200 px-4 sm:px-8 flex i
         img(
           src=user.avatar || "/admin/assets/images/avatar.jpg"
           alt=user.fullName
+          referrerpolicy="no-referrer"
+          onerror="this.onerror=null;this.src='/admin/assets/images/avatar.jpg';"
           class="w-8 h-8 rounded-full object-cover border border-slate-200 ring-2 ring-slate-100 shrink-0 group-hover:ring-[#16A34A] transition-all"
         )
         div(class="flex flex-col text-left pr-1.5 max-w-[140px]")

@@ -118,7 +118,6 @@ module.exports.index = async (req, res) => {
     .limit(limit)
     .populate('categoryId', 'title slug')
     .populate('landlordId', 'fullName phone avatar status')
-    .populate('landlordId', 'fullName phone avatar status')
     .lean();
 
   const categories = await Category.find({ status: USER_STATUS.ACTIVE }).lean();
@@ -155,7 +154,6 @@ module.exports.detail = async (req, res) => {
     status: ROOM_STATUS.APPROVED
   })
     .populate('categoryId', 'title slug')
-    .populate('landlordId', 'fullName phone avatar status')
     .populate('landlordId', 'fullName phone email address avatar facebook status createdAt');
 
   if (!room) {

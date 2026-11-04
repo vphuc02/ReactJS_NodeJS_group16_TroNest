@@ -22,7 +22,7 @@ block main
           div
             div(class="h-32 bg-gradient-to-r from-emerald-400 via-[#16A34A] to-teal-500")
             div(class="px-6 pb-6 -mt-16 flex flex-col items-center text-center")
-              img(src=profile.avatar || "/admin/assets/images/avatar.jpg" alt=displayName class="w-28 h-28 rounded-full object-cover border-4 border-white shadow-lg bg-white")
+              img(src=profile.avatar || "/admin/assets/images/avatar.jpg" alt=displayName referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='/admin/assets/images/avatar.jpg';" class="w-28 h-28 rounded-full object-cover border-4 border-white shadow-lg bg-white")
               h2(class="mt-4 mb-1 text-2xl font-bold text-neutral-800")= displayName
               span(class="text-xs px-3 py-1 rounded-full font-semibold bg-emerald-100 text-emerald-800") Khách thuê
 

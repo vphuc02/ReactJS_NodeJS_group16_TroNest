@@ -7,6 +7,12 @@ const { JWT_SECRET, ROLES, USER_STATUS } = require('../../configs/system.config'
 const { cookieOptions } = require('../../helpers/http.helper');
 const { getSafeRedirect } = require('../../helpers/security.helper');
 const { sendOtpEmail } = require('../../helpers/mail.helper');
+const {
+  buildGoogleAuthUrl,
+  createOAuthState,
+  parseOAuthState,
+  resolveGoogleProfile
+} = require('../../helpers/google-oauth.helper');
 
 const hashToken = (raw) => {
   return crypto.createHash('sha256').update(String(raw)).digest('hex');
@@ -21,7 +27,8 @@ module.exports.loginGet = (req, res) => {
 
   res.render('client/pages/login', {
     title: 'Đăng nhập - TroNest',
-    redirectUrl: getSafeRedirect(req.query.redirect, '')
+    redirectUrl: getSafeRedirect(req.query.redirect, ''),
+    oauthError: typeof req.query.error === 'string' ? req.query.error.trim() : ''
   });
 };
 
@@ -339,4 +346,146 @@ module.exports.resetPasswordPost = async (req, res) => {
     redirectUrl: '/login'
   });
 };
+
+// [GET] /auth/google
+module.exports.googleAuthGet = (req, res) => {
+  if (req.user) {
+    if (req.user.role === ROLES.LANDLORD) return res.redirect('/landlord/dashboard');
+    return res.redirect('/');
+  }
+
+  const role = req.query.role === ROLES.LANDLORD ? ROLES.LANDLORD : ROLES.CUSTOMER;
+  const redirectUrl = getSafeRedirect(req.query.redirect, '');
+  const state = createOAuthState({ role, redirectUrl });
+
+  res.cookie('google_oauth_state', state, cookieOptions(10 * 60 * 1000));
+
+  const authUrl = buildGoogleAuthUrl({ req, state });
+  return res.redirect(authUrl);
+};
+
+// [GET] /auth/google/callback
+module.exports.googleAuthCallbackGet = async (req, res) => {
+  const redirectWithError = (msg) => {
+    res.clearCookie('google_oauth_state');
+    return res.redirect(`/login?error=${encodeURIComponent(msg)}`);
+  };
+
+  if (req.query.error) {
+    return redirectWithError('Bạn đã hủy hoặc từ chối đăng nhập bằng tài khoản Google!');
+  }
+
+  const cookieState = req.cookies?.google_oauth_state || '';
+  const queryState = String(req.query.state || '');
+  res.clearCookie('google_oauth_state');
+
+  if (!cookieState || !queryState || cookieState !== queryState) {
+    return redirectWithError(
+      'Phiên xác thực Google không hợp lệ hoặc đã hết hạn (CSRF state mismatch). Vui lòng thử lại!'
+    );
+  }
+
+  const statePayload = parseOAuthState(queryState);
+  if (!statePayload) {
+    return redirectWithError('Trạng thái xác thực Google không hợp lệ. Vui lòng thử lại!');
+  }
+
+  const code = String(req.query.code || '').trim();
+  if (!code) {
+    return redirectWithError('Không nhận được mã xác thực từ Google. Vui lòng thử lại!');
+  }
+
+  try {
+    const profile = await resolveGoogleProfile({ code, req });
+    const email = String(profile?.email || '').toLowerCase().trim();
+    const googleId = String(profile?.sub || profile?.id || '').trim();
+    const fullName = String(
+      profile?.name || (email ? email.split('@')[0] : '') || 'Người dùng Google'
+    ).trim();
+    const picture = String(profile?.picture || '').trim();
+    const emailVerified = profile?.email_verified !== false;
+
+    if (!email || !googleId || !emailVerified) {
+      return redirectWithError(
+        'Tài khoản Google chưa xác thực địa chỉ email hoặc thiếu thông tin định danh!'
+      );
+    }
+
+    let user = await User.findOne({
+      $or: [{ googleId }, { email }]
+    });
+
+    if (user) {
+      if (user.role === ROLES.ADMIN) {
+        return redirectWithError(
+          'Tài khoản Quản trị viên không được phép đăng nhập tại cổng Khách hàng!'
+        );
+      }
+
+      if (user.isBlocked || user.status === USER_STATUS.INACTIVE) {
+        return redirectWithError('Tài khoản của bạn đã bị khóa bởi Quản trị viên!');
+      }
+
+      let updated = false;
+      if (!user.googleId) {
+        user.googleId = googleId;
+        updated = true;
+      }
+      if (
+        picture &&
+        (!user.avatar || user.avatar === '/admin/assets/images/avatar.jpg')
+      ) {
+        user.avatar = picture;
+        updated = true;
+      }
+      if (updated) {
+        await user.save();
+      }
+    } else {
+      const targetRole =
+        statePayload.role === ROLES.LANDLORD ? ROLES.LANDLORD : ROLES.CUSTOMER;
+      const initialStatus =
+        targetRole === ROLES.LANDLORD ? USER_STATUS.PENDING : USER_STATUS.ACTIVE;
+      const randomPasswordHash = await bcrypt.hash(
+        crypto.randomBytes(32).toString('hex'),
+        10
+      );
+
+      user = await User.create({
+        fullName,
+        email,
+        password: randomPasswordHash,
+        phone: '',
+        address: '',
+        avatar: picture || '/admin/assets/images/avatar.jpg',
+        role: targetRole,
+        status: initialStatus,
+        authProvider: 'google',
+        googleId
+      });
+    }
+
+    const token = jwt.sign(
+      {
+        id: user._id,
+        email: user.email,
+        role: user.role
+      },
+      JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+
+    res.cookie('token', token, cookieOptions(7 * 24 * 60 * 60 * 1000));
+
+    const defaultRedirect =
+      user.role === ROLES.LANDLORD ? '/landlord/dashboard' : '/';
+    const finalRedirect = getSafeRedirect(statePayload.redirectUrl, defaultRedirect);
+    return res.redirect(finalRedirect);
+  } catch (err) {
+    return redirectWithError(
+      err?.message || 'Đăng nhập bằng Google thất bại. Vui lòng thử lại!'
+    );
+  }
+};
+
 

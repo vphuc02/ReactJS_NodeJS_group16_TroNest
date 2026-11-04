@@ -58,6 +58,16 @@ const userSchema = new Schema(
     rejectReason: {
       type: String,
       default: ''
+    },
+    authProvider: {
+      type: String,
+      enum: ['local', 'google'],
+      default: 'local'
+    },
+    googleId: {
+      type: String,
+      default: '',
+      index: true
     }
   },
   {

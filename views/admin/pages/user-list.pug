@@ -73,6 +73,8 @@ block main
                       img(
                         src=u.avatar || "/admin/assets/images/avatar.jpg"
                         alt=u.fullName
+                        referrerpolicy="no-referrer"
+                        onerror="this.onerror=null;this.src='/admin/assets/images/avatar.jpg';"
                         class="w-9 h-9 rounded-full object-cover border border-slate-200 shrink-0"
                       )
                       b(class="font-semibold text-slate-900")= u.fullName
