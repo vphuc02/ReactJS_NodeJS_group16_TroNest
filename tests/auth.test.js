@@ -6,6 +6,7 @@ const { startTestServer, stopTestServer, clearTestData } = require('./helpers/te
 const { TestClient } = require('./helpers/test-client');
 const User = require('../models/user.model');
 const { ROLES, USER_STATUS } = require('../configs/system.config');
+const { setMockGoogleProfileResolver } = require('../helpers/google-oauth.helper');
 
 let baseUrl;
 
@@ -464,5 +465,101 @@ describe('Luồng Quên Mật Khẩu & Đặt Lại Mật Khẩu Bằng OTP (For
     });
     assert.equal(newLogin.status, 200);
     assert.ok(client.cookies.get('token'));
+  });
+});
+
+describe('Luồng Đăng Nhập & Đăng Ký Bằng Google OAuth 2.0 (/auth/google)', () => {
+  after(() => {
+    setMockGoogleProfileResolver(null);
+  });
+
+  test('Khởi tạo Google OAuth (GET /auth/google) -> cấp cookie state và redirect sang Google', async () => {
+    setMockGoogleProfileResolver(async () => ({}));
+    const client = new TestClient(baseUrl);
+    const res = await client.get('/auth/google', { wantsJson: false });
+
+    assert.equal(res.status, 302);
+    const location = res.headers.get('location') || '';
+    assert.match(location, /^https:\/\/accounts\.google\.com\/o\/oauth2\/v2\/auth/);
+    assert.ok(client.cookies.get('google_oauth_state'), 'Thiếu cookie google_oauth_state');
+  });
+
+  test('Chặn callback khi CSRF state không khớp', async () => {
+    setMockGoogleProfileResolver(async () => ({
+      sub: 'google-123',
+      email: 'csrf.google@auth-test.tronest.com',
+      email_verified: true,
+      name: 'CSRF Google'
+    }));
+
+    const client = new TestClient(baseUrl);
+    await client.get('/auth/google', { wantsJson: false });
+
+    const cbRes = await client.get('/auth/google/callback?code=fake-code&state=wrong-state', {
+      wantsJson: false
+    });
+    assert.equal(cbRes.status, 302);
+    assert.match(cbRes.headers.get('location') || '', /^\/login\?error=/);
+    assert.equal(client.cookies.has('token'), false);
+  });
+
+  test('Người dùng mới đăng nhập Google mặc định -> tạo tài khoản CUSTOMER (ACTIVE) và cấp token', async () => {
+    setMockGoogleProfileResolver(async () => ({
+      sub: 'google-sub-customer-001',
+      email: 'new.google.customer@auth-test.tronest.com',
+      email_verified: true,
+      name: 'Google Khách Thuê',
+      picture: 'https://lh3.googleusercontent.com/a/default-user'
+    }));
+
+    const client = new TestClient(baseUrl);
+    const startRes = await client.get('/auth/google', { wantsJson: false });
+    const redirectUrl = new URL(startRes.headers.get('location'));
+    const state = redirectUrl.searchParams.get('state');
+
+    const cbRes = await client.get(
+      `/auth/google/callback?code=valid-google-code&state=${encodeURIComponent(state)}`,
+      { wantsJson: false }
+    );
+
+    assert.equal(cbRes.status, 302);
+    assert.equal(cbRes.headers.get('location'), '/');
+    assert.ok(client.cookies.get('token'));
+
+    const createdUser = await User.findOne({ email: 'new.google.customer@auth-test.tronest.com' });
+    assert.ok(createdUser);
+    assert.equal(createdUser.role, ROLES.CUSTOMER);
+    assert.equal(createdUser.status, USER_STATUS.ACTIVE);
+    assert.equal(createdUser.authProvider, 'google');
+    assert.equal(createdUser.googleId, 'google-sub-customer-001');
+  });
+
+  test('Người dùng mới chọn tab Chủ trọ (/auth/google?role=LANDLORD) -> tạo tài khoản LANDLORD (PENDING)', async () => {
+    setMockGoogleProfileResolver(async () => ({
+      sub: 'google-sub-landlord-002',
+      email: 'new.google.landlord@auth-test.tronest.com',
+      email_verified: true,
+      name: 'Google Chủ Trọ'
+    }));
+
+    const client = new TestClient(baseUrl);
+    const startRes = await client.get('/auth/google?role=LANDLORD', { wantsJson: false });
+    const redirectUrl = new URL(startRes.headers.get('location'));
+    const state = redirectUrl.searchParams.get('state');
+
+    const cbRes = await client.get(
+      `/auth/google/callback?code=valid-landlord-code&state=${encodeURIComponent(state)}`,
+      { wantsJson: false }
+    );
+
+    assert.equal(cbRes.status, 302);
+    assert.equal(cbRes.headers.get('location'), '/landlord/dashboard');
+    assert.ok(client.cookies.get('token'));
+
+    const createdLandlord = await User.findOne({ email: 'new.google.landlord@auth-test.tronest.com' });
+    assert.ok(createdLandlord);
+    assert.equal(createdLandlord.role, ROLES.LANDLORD);
+    assert.equal(createdLandlord.status, USER_STATUS.PENDING);
+    assert.equal(createdLandlord.googleId, 'google-sub-landlord-002');
   });
 });

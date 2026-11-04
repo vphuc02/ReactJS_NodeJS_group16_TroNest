@@ -5,9 +5,73 @@
   --color-text: #111827;
 }
 
-* {
+*, *::before, *::after {
   box-sizing: border-box;
   font-family: "Lexend Deca", sans-serif;
+  border-width: 0;
+  border-style: solid;
+  border-color: #e5e7eb;
+}
+
+/* Chuẩn hóa toàn bộ khung nhập liệu (input, select, textarea) & nút trên toàn bộ cổng Chủ trọ */
+input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):not([type="range"]),
+select,
+textarea,
+#form-update-profile input,
+#form-change-password input,
+.room-form-control,
+.room-form-control-sm,
+.room-form-textarea,
+.room-form-url-input,
+#table-search-input {
+  box-sizing: border-box;
+  border: 1.5px solid #cbd5e1 !important;
+  border-radius: 12px !important;
+  background-color: #ffffff;
+  color: #0f172a;
+  outline: none;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):not([type="range"]):hover:not(:disabled),
+select:hover:not(:disabled),
+textarea:hover:not(:disabled),
+#form-update-profile input:hover:not(:disabled),
+#form-change-password input:hover:not(:disabled) {
+  border-color: #94a3b8 !important;
+}
+
+input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):not([type="range"]):focus:not(:disabled),
+select:focus:not(:disabled),
+textarea:focus:not(:disabled),
+#form-update-profile input:focus:not(:disabled),
+#form-change-password input:focus:not(:disabled),
+.room-form-control:focus,
+.room-form-control-sm:focus,
+.room-form-textarea:focus,
+.room-form-url-input:focus,
+#table-search-input:focus {
+  border-color: #16a34a !important;
+  background-color: #ffffff !important;
+  box-shadow: 0 0 0 3.5px rgba(22, 163, 74, 0.14) !important;
+}
+
+input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):not([type="range"]):disabled,
+select:disabled,
+textarea:disabled,
+#form-update-profile input:disabled {
+  background-color: #f1f5f9 !important;
+  border-color: #e2e8f0 !important;
+  color: #64748b !important;
+  cursor: not-allowed;
+}
+
+button,
+[type="button"],
+[type="reset"],
+[type="submit"] {
+  border-style: solid;
 }
 
 body {

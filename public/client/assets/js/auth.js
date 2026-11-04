@@ -13,6 +13,14 @@
     window.notyf?.success(message);
   };
 
+  const oauthErrorAlert = document.querySelector("#oauth-error-alert");
+  if (oauthErrorAlert) {
+    const errMsg = oauthErrorAlert.getAttribute("data-error");
+    if (errMsg) {
+      showError(errMsg);
+    }
+  }
+
   const loginForm = document.querySelector("#login-form");
   if (loginForm) {
     const button = document.querySelector("#btn-submit");
@@ -73,6 +81,19 @@
       if (button) {
         button.classList.toggle("auth-submit-landlord", isLandlord);
         button.innerText = isLandlord ? landlordText : customerText;
+      }
+
+      const googleRegisterBtn = document.querySelector("#btn-google-register");
+      const googleRegisterText = document.querySelector("#btn-google-register-text");
+      if (googleRegisterBtn) {
+        googleRegisterBtn.href = isLandlord
+          ? "/auth/google?role=LANDLORD"
+          : "/auth/google?role=CUSTOMER";
+      }
+      if (googleRegisterText) {
+        googleRegisterText.innerText = isLandlord
+          ? "Tiếp tục với Google (Chủ trọ)"
+          : "Tiếp tục với Google (Khách thuê)";
       }
     };
 

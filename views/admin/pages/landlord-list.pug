@@ -63,7 +63,7 @@ block main
               tr
                 td
                   div(class="admin-clean-098")
-                    img(src=l.avatar || "/admin/assets/images/avatar.jpg" class="admin-clean-099")
+                    img(src=l.avatar || "/admin/assets/images/avatar.jpg" alt=l.fullName referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='/admin/assets/images/avatar.jpg';" class="admin-clean-099")
                     div
                       b(class="admin-clean-100")= l.fullName
                       span(class="admin-clean-035") Tham gia: #{new Date(l.createdAt).toLocaleDateString('vi-VN')}

@@ -108,9 +108,9 @@ block main
             div(class="client-clean-037")
               if room.landlordId && room.landlordId._id
                 a(href=`/landlords/${room.landlordId._id}` title=`Xem thông tin chủ trọ: ${room.landlordId.fullName || ''}` class="block no-underline")
-                  img(src=(room.landlordId && room.landlordId.avatar) || "/admin/assets/images/avatar.jpg" alt=room.landlordId ? room.landlordId.fullName : "" class="client-clean-038 hover:opacity-90 hover:scale-105 transition-all duration-200")
+                  img(src=(room.landlordId && room.landlordId.avatar) || "/admin/assets/images/avatar.jpg" alt=room.landlordId ? room.landlordId.fullName : "" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='/admin/assets/images/avatar.jpg';" class="client-clean-038 hover:opacity-90 hover:scale-105 transition-all duration-200")
               else
-                img(src=(room.landlordId && room.landlordId.avatar) || "/admin/assets/images/avatar.jpg" alt=room.landlordId ? room.landlordId.fullName : "" class="client-clean-038")
+                img(src=(room.landlordId && room.landlordId.avatar) || "/admin/assets/images/avatar.jpg" alt=room.landlordId ? room.landlordId.fullName : "" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='/admin/assets/images/avatar.jpg';" class="client-clean-038")
               span(class="client-clean-039" title="Chủ trọ đã được duyệt xác thực")
                 i.fa-solid.fa-check
 

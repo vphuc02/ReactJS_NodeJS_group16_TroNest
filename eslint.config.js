@@ -1,6 +1,6 @@
 module.exports = [
   {
-    ignores: ['node_modules/**', 'public/uploads/**'],
+    ignores: ['node_modules/**', 'public/uploads/**', '.agents/**', '.taste-skill/**'],
     languageOptions: {
       ecmaVersion: 2022,
       sourceType: 'commonjs',
@@ -15,7 +15,12 @@ module.exports = [
         clearTimeout: 'readonly',
         setInterval: 'readonly',
         clearInterval: 'readonly',
-        URL: 'readonly'
+        URL: 'readonly',
+        URLSearchParams: 'readonly',
+        fetch: 'readonly',
+        AbortController: 'readonly',
+        FormData: 'readonly',
+        Blob: 'readonly'
       }
     },
     rules: {

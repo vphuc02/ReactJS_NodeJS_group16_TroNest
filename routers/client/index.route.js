@@ -6,7 +6,6 @@ const roomRoutes = require('./room.route');
 const authRoutes = require('./auth.route');
 const favoriteRoutes = require('./favorite.route');
 const profileRoutes = require('./profile.route');
-const accountRoutes = require('./account.route');
 const landlordRoutes = require('./landlord.route');
 
 router.use('/', authRoutes);

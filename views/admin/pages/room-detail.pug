@@ -121,7 +121,7 @@ block main
       h3(class="admin-clean-063") Thông tin Chủ trọ
       if room.landlordId
         div(class="admin-clean-064")
-          img(src=room.landlordId.avatar || "/admin/assets/images/avatar.jpg" class="admin-clean-065")
+          img(src=room.landlordId.avatar || "/admin/assets/images/avatar.jpg" alt=room.landlordId.fullName referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='/admin/assets/images/avatar.jpg';" class="admin-clean-065")
           h4(class="admin-clean-066")= room.landlordId.fullName
           span.badge.badge-green(class="admin-clean-067") Chủ trọ hệ thống
 

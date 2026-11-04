@@ -34,6 +34,9 @@ html {
 
 *, *::before, *::after {
   box-sizing: border-box;
+  border-width: 0;
+  border-style: solid;
+  border-color: #e5e7eb;
 }
 
 body {
@@ -63,8 +66,65 @@ a {
   text-decoration: none;
 }
 
-input, button, textarea {
+input, button, select, textarea {
   font-family: "Lexend Deca", sans-serif;
+}
+
+/* Chuẩn hóa toàn bộ khung nhập liệu (input, select, textarea) & nút có viền trên toàn bộ cổng Khách thuê */
+input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):not([type="range"]):not(.search-input-control),
+select:not(.search-select-control),
+textarea,
+#form-update-profile input,
+#form-change-password input,
+.auth-inline-11,
+.auth-inline-30,
+.client-clean-104 {
+  box-sizing: border-box;
+  border: 1.5px solid #cbd5e1 !important;
+  border-radius: 12px !important;
+  background-color: #ffffff;
+  color: #0f172a;
+  outline: none;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):not([type="range"]):not(.search-input-control):hover:not(:disabled),
+select:not(.search-select-control):hover:not(:disabled),
+textarea:hover:not(:disabled),
+#form-update-profile input:hover:not(:disabled),
+#form-change-password input:hover:not(:disabled) {
+  border-color: #94a3b8 !important;
+}
+
+input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):not([type="range"]):not(.search-input-control):focus:not(:disabled),
+select:not(.search-select-control):focus:not(:disabled),
+textarea:focus:not(:disabled),
+#form-update-profile input:focus:not(:disabled),
+#form-change-password input:focus:not(:disabled),
+.auth-inline-11:focus,
+.auth-inline-30:focus,
+.client-clean-104:focus {
+  border-color: #16a34a !important;
+  background-color: #ffffff !important;
+  box-shadow: 0 0 0 3.5px rgba(22, 163, 74, 0.14) !important;
+}
+
+input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):not([type="range"]):not(.search-input-control):disabled,
+select:not(.search-select-control):disabled,
+textarea:disabled,
+#form-update-profile input:disabled {
+  background-color: #f1f5f9 !important;
+  border-color: #e2e8f0 !important;
+  color: #64748b !important;
+  cursor: not-allowed;
+}
+
+button,
+[type="button"],
+[type="reset"],
+[type="submit"] {
+  border-style: solid;
 }
 
 /* Container */
@@ -2599,6 +2659,70 @@ input, button, textarea {
 .auth-inline-30:focus { border-color: #16A34A; background: #fff; box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.12); }
 .auth-inline-31 { margin-bottom: 22px; }
 .auth-submit-landlord { background: linear-gradient(135deg, #22C55E 0%, #16A34A 100%) !important; box-shadow: 0 4px 12px rgba(22, 163, 74, 0.25) !important; }
+
+/* Google OAuth Button & Divider (Clean & Content-First) */
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0 16px;
+  color: #94A3B8;
+  font-size: 12.5px;
+  font-weight: 500;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: #E2E8F0;
+}
+
+.btn-google-oauth {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: 1px solid #CBD5E1;
+  background: #FFFFFF;
+  color: #0F172A;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.btn-google-oauth:hover {
+  background: #F8FAFC;
+  border-color: #94A3B8;
+  color: #0F172A;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+}
+
+.auth-oauth-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  background: #FEF2F2;
+  border: 1px solid #FECACA;
+  color: #B91C1C;
+  padding: 11px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  line-height: 1.45;
+  margin-bottom: 18px;
+}
+
+.auth-oauth-error i {
+  margin-top: 2px;
+  flex-shrink: 0;
+}
 
 /* Forgot Password 3-Step Flow (Clean & Content-First) */
 .forgot-stepper {

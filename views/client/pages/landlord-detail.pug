@@ -52,6 +52,8 @@ block main
             img(
               src=landlord.avatar || "/admin/assets/images/avatar.jpg" 
               alt=cleanName 
+              referrerpolicy="no-referrer"
+              onerror="this.onerror=null;this.src='/admin/assets/images/avatar.jpg';"
               class="w-28 h-28 sm:w-32 sm:h-32 rounded-full object-cover border-4 border-white shadow-lg ring-2 ring-emerald-300/80 bg-slate-100"
             )
             if landlord.status === USER_STATUS.APPROVED

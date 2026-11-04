@@ -22,6 +22,9 @@ router.get('/register', authController.registerGet);
 router.post('/register', authValidation.registerPost, authController.registerPost);
 router.post('/logout', authController.logoutPost);
 
+router.get('/auth/google', authController.googleAuthGet);
+router.get('/auth/google/callback', authController.googleAuthCallbackGet);
+
 router.get('/forgot-password', authController.forgotPasswordGet);
 router.post(
   '/forgot-password',
