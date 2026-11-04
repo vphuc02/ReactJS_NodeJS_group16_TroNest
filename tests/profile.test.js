@@ -296,6 +296,58 @@ describe('Xem & Quản Lý Thông Tin Cá Nhân Khách Hàng (Client Profile)', 
     assert.equal(newLoginRes.status, 200);
   });
 
+  test('Gửi email đặt lại mật khẩu và đổi mật khẩu từ liên kết (POST /profile/send-reset-password-email & POST /reset-password)', async () => {
+    const passwordHash = await bcrypt.hash('passInitial123', 10);
+    const customer = await User.create({
+      fullName: 'Khách Đổi Mật Khẩu Qua Mail',
+      email: 'khachhang_mail@profile-test.tronest.com',
+      password: passwordHash,
+      role: ROLES.CUSTOMER,
+      status: USER_STATUS.ACTIVE
+    });
+
+    const client = new TestClient(baseUrl);
+    await client.post('/login', {
+      email: customer.email,
+      password: 'passInitial123'
+    });
+
+    // 1. Gửi yêu cầu link đổi mật khẩu qua email
+    const resMail = await client.post('/profile/send-reset-password-email', {});
+    assert.equal(resMail.status, 200);
+    assert.equal(resMail.body.code, 200);
+    assert.ok(resMail.body.devResetUrl);
+
+    const parsedUrl = new URL(resMail.body.devResetUrl);
+    const token = parsedUrl.searchParams.get('token');
+    const email = parsedUrl.searchParams.get('email');
+    assert.ok(token);
+    assert.equal(email, customer.email);
+
+    // 2. Truy cập trang reset-password qua token
+    const resPage = await client.get(`/reset-password?token=${token}&email=${encodeURIComponent(email)}`, { wantsJson: false });
+    assert.equal(resPage.status, 200);
+    assert.match(resPage.body, /Đặt lại mật khẩu/i);
+
+    // 3. Đổi mật khẩu với token hợp lệ
+    const resReset = await client.post('/reset-password', {
+      token,
+      email,
+      password: 'brandNewPassword123',
+      confirmPassword: 'brandNewPassword123'
+    });
+    assert.equal(resReset.status, 200);
+    assert.equal(resReset.body.code, 200);
+
+    // 4. Đăng nhập lại với mật khẩu mới
+    const newClient = new TestClient(baseUrl);
+    const loginRes = await newClient.post('/login', {
+      email: customer.email,
+      password: 'brandNewPassword123'
+    });
+    assert.equal(loginRes.status, 200);
+  });
+
   test('Chủ trọ (LANDLORD) đăng nhập và xem thông tin cá nhân thành công (HTML & JSON) kèm số phòng quản lý', async () => {
     const passwordHash = await bcrypt.hash('password123', 10);
     const landlord = await User.create({

@@ -1,10 +1,17 @@
+const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const User = require('../../models/user.model');
 const Favorite = require('../../models/favorite.model');
 const Room = require('../../models/room.model');
+const ForgotPassword = require('../../models/forgot-password.model');
 const { ROLES } = require('../../configs/system.config');
 const { wantsJson } = require('../../helpers/http.helper');
 const { AppError } = require('../../helpers/error.helper');
+const { sendResetPasswordEmail } = require('../../helpers/mail.helper');
+
+const hashToken = (raw) => {
+  return crypto.createHash('sha256').update(String(raw)).digest('hex');
+};
 
 // [GET] /profile
 module.exports.index = async (req, res) => {
@@ -120,4 +127,53 @@ module.exports.changePasswordPost = async (req, res) => {
     code: 200,
     message: 'Đổi mật khẩu thành công! Vui lòng ghi nhớ mật khẩu mới.'
   });
+};
+
+// [POST] /profile/send-reset-password-email (Gửi liên kết đổi mật khẩu qua email)
+module.exports.sendResetPasswordEmailPost = async (req, res) => {
+  const user = await User.findById(req.user._id);
+  if (!user) {
+    throw new AppError(404, 'Không tìm thấy người dùng!');
+  }
+
+  const email = user.email.toLowerCase().trim();
+  const resetToken = crypto.randomBytes(32).toString('hex');
+  const expiresInMinutes = 15;
+  const expireAt = new Date(Date.now() + expiresInMinutes * 60 * 1000);
+
+  await ForgotPassword.deleteMany({ email });
+  await ForgotPassword.create({
+    email,
+    otpHash: '',
+    attempts: 0,
+    verified: true,
+    resetTokenHash: hashToken(resetToken),
+    expireAt
+  });
+
+  const protocol = req.protocol;
+  const host = req.get('host');
+  const resetUrl = `${protocol}://${host}/reset-password?token=${resetToken}&email=${encodeURIComponent(email)}`;
+
+  const mailResult = await sendResetPasswordEmail({
+    to: email,
+    fullName: user.fullName,
+    resetUrl,
+    expiresInMinutes
+  });
+
+  const responsePayload = {
+    code: 200,
+    message: mailResult.delivered
+      ? `Liên kết đổi mật khẩu đã được gửi đến email ${email}. Vui lòng kiểm tra hộp thư!`
+      : `Đã tạo liên kết đổi mật khẩu cho ${email} (hiệu lực ${expiresInMinutes} phút).`,
+    email,
+    deliveryMode: mailResult.mode
+  };
+
+  if (mailResult.devResetUrl && process.env.NODE_ENV === 'test') {
+    responsePayload.devResetUrl = mailResult.devResetUrl;
+  }
+
+  return res.json(responsePayload);
 };

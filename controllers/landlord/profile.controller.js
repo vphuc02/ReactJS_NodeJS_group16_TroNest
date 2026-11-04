@@ -34,3 +34,4 @@ module.exports.index = async (req, res) => {
 module.exports.editPost = clientProfileController.editPost;
 module.exports.uploadAvatarPost = clientProfileController.uploadAvatarPost;
 module.exports.changePasswordPost = clientProfileController.changePasswordPost;
+module.exports.sendResetPasswordEmailPost = clientProfileController.sendResetPasswordEmailPost;

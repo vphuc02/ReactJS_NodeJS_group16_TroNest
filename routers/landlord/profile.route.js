@@ -13,5 +13,6 @@ router.post(
   profileValidation.changePassword,
   profileController.changePasswordPost
 );
+router.post('/send-reset-password-email', profileController.sendResetPasswordEmailPost);
 
 module.exports = router;
