@@ -5,7 +5,7 @@
   align-items: center;
   gap: 8px;
   margin: 12px 0;
-  font-family: "Lexend Deca", sans-serif;
+  font-family: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
 }
 
 .list-pagination a,
@@ -24,32 +24,32 @@
 }
 
 .list-pagination span {
-  color: #94A3B8;
+  color: #9A9389;
 }
 
 .list-pagination a {
-  border: 1px solid #E2E8F0;
-  color: #334155;
+  border: 1px solid #E6DFD3;
+  color: #3D3A35;
   background: #FFFFFF;
   text-decoration: none;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
 }
 
 .list-pagination a:hover {
-  border-color: #86EFAC;
-  background: #F0FDF4;
-  color: #16A34A;
+  border-color: #D4C2AA;
+  background: #F5EFE6;
+  color: #A67C52;
   transform: translateY(-1px);
 }
 
 .list-pagination a[aria-current="page"] {
-  background: #16A34A;
-  border-color: #16A34A;
+  background: #A67C52;
+  border-color: #A67C52;
   color: #FFFFFF;
-  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.25);
+  box-shadow: 0 4px 12px rgba(166, 124, 82, 0.25);
 }
 
 .list-pagination a:focus-visible {
-  outline: 2px solid #16A34A;
+  outline: 2px solid #A67C52;
   outline-offset: 2px;
 }

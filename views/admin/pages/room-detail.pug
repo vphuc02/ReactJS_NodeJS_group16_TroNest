@@ -85,7 +85,7 @@ block main
           div
             b Tọa độ GPS: 
             span #{room.location.coordinates[1].toFixed(5)}, #{room.location.coordinates[0].toFixed(5)} 
-            a(href=`https://maps.google.com/?q=${room.location.coordinates[1]},${room.location.coordinates[0]}` target="_blank" style="color: #2563eb; text-decoration: underline; margin-left: 6px") (Xem trên Google Maps)
+            a(href=`https://maps.google.com/?q=${room.location.coordinates[1]},${room.location.coordinates[0]}` target="_blank" style="color: #A67C52; text-decoration: underline; margin-left: 6px") (Xem trên Google Maps)
         div
           b Loại phòng: 
           span= room.categoryId ? room.categoryId.title : '-'
@@ -128,7 +128,7 @@ block main
         div(class="admin-clean-068")
           div
             span(class="block text-xs text-slate-500 mb-1") Giá thuê
-            b(class="text-base sm:text-lg font-extrabold text-[#16A34A]") #{room.price.toLocaleString('vi-VN')} đ/tháng
+            b(class="text-base sm:text-lg font-extrabold text-[#A67C52]") #{room.price.toLocaleString('vi-VN')} đ/tháng
           div
             span(class="block text-xs text-slate-500 mb-1") Diện tích
             b(class="text-base sm:text-lg font-bold text-slate-800") #{room.area} m²

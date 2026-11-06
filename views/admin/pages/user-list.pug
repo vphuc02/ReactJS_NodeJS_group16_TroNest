@@ -20,7 +20,7 @@ block main
       form(action="/admin/users" method="GET" class="p-4 sm:p-5 border-b border-slate-100 flex flex-wrap items-center gap-3 m-0")
         select(
           name="role"
-          class="px-3.5 py-2 text-xs rounded-xl border border-slate-200 bg-slate-50/50 text-slate-700 font-medium focus:outline-none focus:border-[#16A34A]"
+          class="px-3.5 py-2 text-xs rounded-xl border border-slate-200 bg-slate-50/50 text-slate-700 font-medium focus:outline-none focus:border-[#A67C52]"
         )
           option(value="") -- Tất cả vai trò --
           option(value=ROLES.CUSTOMER selected=roleFilter === ROLES.CUSTOMER) Khách hàng
@@ -29,7 +29,7 @@ block main
 
         select(
           name="status"
-          class="px-3.5 py-2 text-xs rounded-xl border border-slate-200 bg-slate-50/50 text-slate-700 font-medium focus:outline-none focus:border-[#16A34A]"
+          class="px-3.5 py-2 text-xs rounded-xl border border-slate-200 bg-slate-50/50 text-slate-700 font-medium focus:outline-none focus:border-[#A67C52]"
         )
           option(value="") -- Tất cả trạng thái --
           option(value=USER_STATUS.ACTIVE selected=statusFilter === USER_STATUS.ACTIVE) Đang hoạt động (ACTIVE)
@@ -43,14 +43,14 @@ block main
             name="keyword"
             value=keyword
             placeholder="Tìm theo tên, email, sđt..."
-            class="w-full pl-8 pr-3 py-2 text-xs rounded-xl border border-slate-200 bg-slate-50/50 focus:outline-none focus:border-[#16A34A] focus:ring-1 focus:ring-[#16A34A]"
+            class="w-full pl-8 pr-3 py-2 text-xs rounded-xl border border-slate-200 bg-slate-50/50 focus:outline-none focus:border-[#A67C52] focus:ring-1 focus:ring-[#A67C52]"
           )
           span(class="absolute left-2.5 top-2.5 text-slate-400 text-xs pointer-events-none")
             i.fa-solid.fa-magnifying-glass
 
         button(
           type="submit"
-          class="px-4 py-2 rounded-xl bg-[#16A34A] hover:bg-[#15803D] text-white text-xs font-semibold transition-all cursor-pointer border-0"
+          class="px-4 py-2 rounded-xl bg-[#A67C52] hover:bg-[#8C6239] text-white text-xs font-semibold transition-all cursor-pointer border-0"
         ) Lọc danh sách
 
       //- Table
@@ -79,22 +79,22 @@ block main
                       )
                       b(class="font-semibold text-slate-900")= u.fullName
                   td(class="py-3.5 px-4 text-slate-600")= u.email
-                  td(class="py-3.5 px-4 font-semibold text-[#16A34A]")= u.phone || '-'
+                  td(class="py-3.5 px-4 font-semibold text-[#A67C52]")= u.phone || '-'
                   td(class="py-3.5 px-4")
                     if u.role === ROLES.ADMIN
-                      span(class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-900 text-amber-300") Admin
+                      span(class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#1C1B19] text-amber-300") Admin
                     else if u.role === ROLES.LANDLORD
                       span(class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800") Chủ trọ
                     else
-                      span(class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800") Khách hàng
+                      span(class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#F5EFE6] text-[#8C6239]") Khách hàng
                   td(class="py-3.5 px-4")
                     if u.isBlocked || u.status === USER_STATUS.INACTIVE
                       span(class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200/60")
                         span(class="w-1.5 h-1.5 rounded-full bg-rose-500")
                         | Đã khóa
                     else if u.status === USER_STATUS.ACTIVE || u.status === USER_STATUS.APPROVED
-                      span(class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/60")
-                        span(class="w-1.5 h-1.5 rounded-full bg-emerald-500")
+                      span(class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-[#FAF7F2] text-[#8C6239] border border-[#E6DFD3]")
+                        span(class="w-1.5 h-1.5 rounded-full bg-[#A67C52]")
                         = u.status
                     else if u.status === USER_STATUS.PENDING
                       span(class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200/60")
@@ -108,7 +108,7 @@ block main
                         type="button"
                         data-admin-action="toggle-user-status"
                         data-id=u._id
-                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer " + (u.isBlocked || u.status === USER_STATUS.INACTIVE ? 'bg-[#16A34A] hover:bg-[#15803D] text-white border-0' : 'bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white border border-rose-200 hover:border-rose-600')
+                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer " + (u.isBlocked || u.status === USER_STATUS.INACTIVE ? 'bg-[#A67C52] hover:bg-[#8C6239] text-white border-0' : 'bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white border border-rose-200 hover:border-rose-600')
                       )
                         if u.isBlocked || u.status === USER_STATUS.INACTIVE
                           i.fa-solid.fa-lock-open(class="text-[11px]")

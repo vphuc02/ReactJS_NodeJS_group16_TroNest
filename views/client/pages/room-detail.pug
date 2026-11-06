@@ -114,11 +114,11 @@ block main
               span(class="client-clean-039" title="Chủ trọ đã được duyệt xác thực")
                 i.fa-solid.fa-check
 
-            h3(class="client-clean-040")
+            h3(class="client-clean-040 font-serif text-xl")
               if room.landlordId && room.landlordId._id
-                a(href=`/landlords/${room.landlordId._id}` class="text-inherit hover:text-[#16A34A] transition-colors no-underline inline-flex items-center justify-center gap-1.5" title="Xem thông tin chi tiết chủ trọ")
+                a(href=`/landlords/${room.landlordId._id}` class="text-inherit hover:text-[#A67C52] transition-colors no-underline inline-flex items-center justify-center gap-1.5" title="Xem thông tin chi tiết chủ trọ")
                   span= room.landlordId ? room.landlordId.fullName.replace(/\s*\([^)]*\)/g, '') : "Chủ trọ TroNest"
-                  i.fa-solid.fa-arrow-up-right-from-square(class="text-[11px] text-slate-400")
+                  i.fa-solid.fa-arrow-up-right-from-square(class="text-[11px] text-[#9A9389]")
               else
                 = room.landlordId ? room.landlordId.fullName.replace(/\s*\([^)]*\)/g, '') : "Chủ trọ TroNest"
             span.badge.badge-green(class="client-clean-041") Chủ trọ uy tín (Đã duyệt)
@@ -126,7 +126,7 @@ block main
             if room.landlordId && room.landlordId._id
               a(
                 href=`/landlords/${room.landlordId._id}`
-                class="w-full mt-2.5 mb-2 py-2 px-3 rounded-xl border border-emerald-200 bg-emerald-50/80 hover:bg-emerald-100/90 text-[#16A34A] text-xs font-bold flex items-center justify-center gap-2 no-underline transition-all duration-200 shadow-2xs hover:shadow-xs cursor-pointer"
+                class="w-full mt-2.5 mb-2 py-2 px-3 rounded-xl border border-[#E6DFD3] bg-[#FAF7F2] hover:bg-[#F5EFE6] text-[#8C6239] text-xs font-bold flex items-center justify-center gap-2 no-underline transition-all duration-200 shadow-2xs hover:shadow-xs cursor-pointer"
                 title="Xem hồ sơ và toàn bộ bài đăng của chủ trọ"
               )
                 i.fa-solid.fa-user-tie
@@ -158,8 +158,8 @@ block main
                   span= room.landlordId.address
               if room.landlordId && room.landlordId.facebook
                 div
-                  i.fa-brands.fa-facebook(class="client-clean-049 text-[#1877F2]")
-                  a(href=(room.landlordId.facebook.startsWith('http') ? room.landlordId.facebook : `https://facebook.com/${room.landlordId.facebook}`) target="_blank" rel="noopener noreferrer" class="text-xs text-slate-600 hover:text-[#16A34A] no-underline hover:underline truncate")
+                  i.fa-brands.fa-facebook(class="client-clean-049 text-[#A67C52]")
+                  a(href=(room.landlordId.facebook.startsWith('http') ? room.landlordId.facebook : `https://facebook.com/${room.landlordId.facebook}`) target="_blank" rel="noopener noreferrer" class="text-xs text-[#6E6A63] hover:text-[#A67C52] no-underline hover:underline truncate")
                     | Facebook cá nhân
 
           // Safe rental advice

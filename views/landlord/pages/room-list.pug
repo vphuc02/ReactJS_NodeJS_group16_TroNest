@@ -17,7 +17,7 @@ block main
         if landlordStatus === USER_STATUS.APPROVED
           a(
             href="/landlord/rooms/create"
-            class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#16A34A] text-white text-xs font-semibold shadow-sm hover:bg-[#15803D] transition-all hover:shadow no-underline"
+            class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#A67C52] text-white text-xs font-semibold shadow-sm hover:bg-[#8C6239] transition-all hover:shadow no-underline"
           )
             i.fa-solid.fa-plus(class="text-xs")
             span Đăng bài mới
@@ -39,31 +39,31 @@ block main
         div(class="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-1 md:pb-0 scrollbar-none")
           a(
             href="/landlord/rooms" + (keyword ? `?keyword=${encodeURIComponent(keyword)}` : '')
-            class="px-3 py-1.5 rounded-lg text-xs transition-colors no-underline whitespace-nowrap " + (!statusFilter ? 'font-semibold bg-slate-900 text-white' : 'font-medium text-slate-600 hover:bg-slate-100')
+            class="px-3 py-1.5 rounded-lg text-xs transition-colors no-underline whitespace-nowrap " + (!statusFilter ? 'font-semibold bg-[#1C1B19] text-white' : 'font-medium text-slate-600 hover:bg-slate-100')
           )
             | Tất cả bài đăng
 
           a(
             href="/landlord/rooms?status=" + ROOM_STATUS.APPROVED + (keyword ? `&keyword=${encodeURIComponent(keyword)}` : '')
-            class="px-3 py-1.5 rounded-lg text-xs transition-colors no-underline whitespace-nowrap " + (statusFilter === ROOM_STATUS.APPROVED ? 'font-semibold bg-slate-900 text-white' : 'font-medium text-slate-600 hover:bg-slate-100')
+            class="px-3 py-1.5 rounded-lg text-xs transition-colors no-underline whitespace-nowrap " + (statusFilter === ROOM_STATUS.APPROVED ? 'font-semibold bg-[#1C1B19] text-white' : 'font-medium text-slate-600 hover:bg-slate-100')
           )
             | Đang hiển thị
 
           a(
             href="/landlord/rooms?status=" + ROOM_STATUS.PENDING + (keyword ? `&keyword=${encodeURIComponent(keyword)}` : '')
-            class="px-3 py-1.5 rounded-lg text-xs transition-colors no-underline whitespace-nowrap " + (statusFilter === ROOM_STATUS.PENDING ? 'font-semibold bg-slate-900 text-white' : 'font-medium text-slate-600 hover:bg-slate-100')
+            class="px-3 py-1.5 rounded-lg text-xs transition-colors no-underline whitespace-nowrap " + (statusFilter === ROOM_STATUS.PENDING ? 'font-semibold bg-[#1C1B19] text-white' : 'font-medium text-slate-600 hover:bg-slate-100')
           )
             | Chờ duyệt
 
           a(
             href="/landlord/rooms?status=" + ROOM_STATUS.DRAFT + (keyword ? `&keyword=${encodeURIComponent(keyword)}` : '')
-            class="px-3 py-1.5 rounded-lg text-xs transition-colors no-underline whitespace-nowrap " + (statusFilter === ROOM_STATUS.DRAFT ? 'font-semibold bg-slate-900 text-white' : 'font-medium text-slate-600 hover:bg-slate-100')
+            class="px-3 py-1.5 rounded-lg text-xs transition-colors no-underline whitespace-nowrap " + (statusFilter === ROOM_STATUS.DRAFT ? 'font-semibold bg-[#1C1B19] text-white' : 'font-medium text-slate-600 hover:bg-slate-100')
           )
             | Bản nháp
 
           a(
             href="/landlord/rooms?status=" + ROOM_STATUS.REJECTED + (keyword ? `&keyword=${encodeURIComponent(keyword)}` : '')
-            class="px-3 py-1.5 rounded-lg text-xs transition-colors no-underline whitespace-nowrap " + (statusFilter === ROOM_STATUS.REJECTED ? 'font-semibold bg-slate-900 text-white' : 'font-medium text-slate-600 hover:bg-slate-100')
+            class="px-3 py-1.5 rounded-lg text-xs transition-colors no-underline whitespace-nowrap " + (statusFilter === ROOM_STATUS.REJECTED ? 'font-semibold bg-[#1C1B19] text-white' : 'font-medium text-slate-600 hover:bg-slate-100')
           )
             | Bị từ chối
 
@@ -76,7 +76,7 @@ block main
             name="keyword"
             value=keyword
             placeholder="Tìm theo tiêu đề phòng..."
-            class="w-full pl-8 pr-8 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:border-[#16A34A] focus:ring-1 focus:ring-[#16A34A] bg-slate-50/50"
+            class="w-full pl-8 pr-8 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:border-[#A67C52] focus:ring-1 focus:ring-[#A67C52] bg-slate-50/50"
           )
           span(class="absolute left-2.5 top-2.5 text-slate-400 text-xs pointer-events-none")
             i.fa-solid.fa-magnifying-glass
@@ -112,7 +112,7 @@ block main
                         class="w-14 h-11 rounded-lg object-cover border border-slate-200/90 shrink-0 bg-slate-100"
                       )
                       div(class="max-w-xs sm:max-w-sm")
-                        p(class="font-semibold text-slate-900 line-clamp-1 hover:text-[#16A34A] transition-colors m-0 text-xs")
+                        p(class="font-semibold text-slate-900 line-clamp-1 hover:text-[#A67C52] transition-colors m-0 text-xs")
                           = room.title
                         p(class="text-[11px] text-slate-400 truncate m-0 mt-1 flex items-center gap-1")
                           span 📍
@@ -123,7 +123,7 @@ block main
                     = room.categoryId ? room.categoryId.title : '-'
 
                   //- Giá thuê
-                  td(class="py-3.5 px-4 font-bold text-[#16A34A]")
+                  td(class="py-3.5 px-4 font-bold text-[#A67C52]")
                     | #{room.price.toLocaleString('vi-VN')} đ
 
                   //- Diện tích & Sức chứa
@@ -135,8 +135,8 @@ block main
                   //- Badge trạng thái thuần Việt & Thân thiện
                   td(class="py-3.5 px-4")
                     if room.status === ROOM_STATUS.APPROVED
-                      span(class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/60")
-                        span(class="w-1.5 h-1.5 rounded-full bg-emerald-500")
+                      span(class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-[#FAF7F2] text-[#8C6239] border border-[#E6DFD3]")
+                        span(class="w-1.5 h-1.5 rounded-full bg-[#A67C52]")
                         | Đang hiển thị
                     else if room.status === ROOM_STATUS.PENDING
                       span(class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200/60")
@@ -165,7 +165,7 @@ block main
                       //- Nút Sửa tin dạng pill bo tròn
                       a(
                         href=`/landlord/rooms/edit/${room._id}`
-                        class="px-3 py-1.5 rounded-full bg-slate-100 hover:bg-[#F0FDF4] hover:text-[#16A34A] text-slate-700 font-semibold text-xs transition-colors no-underline inline-flex items-center gap-1"
+                        class="px-3 py-1.5 rounded-full bg-slate-100 hover:bg-[#FAF7F2] hover:text-[#A67C52] text-slate-700 font-semibold text-xs transition-colors no-underline inline-flex items-center gap-1"
                         title="Chỉnh sửa bài đăng"
                       )
                         i.fa-solid.fa-pen-to-square(class="text-[11px]")
@@ -177,7 +177,7 @@ block main
                           type="button"
                           data-landlord-room-action="submit"
                           data-id=room._id
-                          class="p-1.5 rounded-lg text-blue-600 hover:text-blue-800 hover:bg-blue-50 transition-colors bg-transparent border-0 cursor-pointer"
+                          class="p-1.5 rounded-lg text-[#A67C52] hover:text-[#8C6239] hover:bg-[#FAF7F2] transition-colors bg-transparent border-0 cursor-pointer"
                           title="Gửi Admin phê duyệt"
                         )
                           i.fa-solid.fa-paper-plane(class="text-xs")
@@ -187,7 +187,7 @@ block main
                         a(
                           href=`/rooms/detail/${room._id}`
                           target="_blank"
-                          class="p-1.5 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-slate-100 transition-colors"
+                          class="p-1.5 rounded-lg text-slate-400 hover:text-[#A67C52] hover:bg-slate-100 transition-colors"
                           title="Xem thực tế trên web"
                         )
                           i.fa-solid.fa-eye(class="text-xs")
