@@ -23,16 +23,16 @@ mixin roomItem(room, favoriteRoomIds)
       }
     }
 
-  //- Component Card phòng trọ (Tông Cam Đất)
+  //- Component Card phòng trọ (Phong cách Hotelier Warm Champagne Bronze & Deep Charcoal)
   div.product-item.room-card-modern(
-    class="group relative flex flex-col overflow-hidden rounded-2xl border border-slate-200/90 bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-slate-300 cursor-pointer"
+    class="group relative flex flex-col overflow-hidden rounded-2xl border border-[#E6DFD3] bg-white transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_20px_38px_rgba(28,27,25,0.09)] hover:border-[#D4C2AA] cursor-pointer"
     onclick=`if(!event.target.closest('.btn-fav')) window.location.href='/rooms/detail/${room._id}'`
   )
     //- Link phủ toàn thẻ để click mở phòng
     a.room-card-overlay(href=`/rooms/detail/${room._id}` class="absolute inset-0 z-[2]" aria-label=room.title)
 
     //- 1. Phần ảnh & Badge (Tỉ lệ 4:3 chuẩn)
-    .inner-image(class="relative aspect-[4/3] w-full overflow-hidden bg-slate-100 flex-shrink-0")
+    .inner-image(class="relative aspect-[4/3] w-full overflow-hidden bg-[#F5EFE6] flex-shrink-0")
       img(
         src=room.thumbnail || "/client/assets/images/product-1.jpg"
         alt=room.title
@@ -42,10 +42,10 @@ mixin roomItem(room, favoriteRoomIds)
 
       //- Badge loại hình & Trạng thái
       div(class="absolute left-3 top-3 z-10 flex items-center gap-1.5 pointer-events-none")
-        span(class="rounded-full bg-black/60 px-2.5 py-1 text-[11px] font-medium text-white backdrop-blur-md")
+        span(class="rounded-full bg-[#1C1B19]/75 px-2.5 py-1 text-[11px] font-medium text-[#FAF7F2] backdrop-blur-md border border-white/15")
           = catTitle
         if isVerified
-          span(class="flex items-center gap-1 rounded-full bg-emerald-600/90 px-2 py-1 text-[11px] font-medium text-white backdrop-blur-md")
+          span(class="flex items-center gap-1 rounded-full bg-[#A67C52]/95 px-2.5 py-1 text-[11px] font-medium text-white backdrop-blur-md shadow-xs")
             svg(class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24")
               path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7")
             span Xác thực
@@ -53,7 +53,7 @@ mixin roomItem(room, favoriteRoomIds)
       //- Nút lưu yêu thích (Heart)
       button.btn-fav(
         type="button"
-        class=(isFav ? 'active ' : '') + "absolute right-3 top-3 z-20 flex h-8 w-8 items-center justify-center rounded-full bg-white/95 text-slate-600 shadow-sm backdrop-blur-md transition-all hover:bg-white hover:scale-110 active:scale-95 border-0 cursor-pointer pointer-events-auto"
+        class=(isFav ? 'active ' : '') + "absolute right-3 top-3 z-20 flex h-8 w-8 items-center justify-center rounded-full bg-white/95 text-[#6E6A63] shadow-sm backdrop-blur-md transition-all hover:bg-white hover:scale-110 active:scale-95 border-0 cursor-pointer pointer-events-auto"
         data-room-id=room._id.toString()
         title="Lưu vào danh sách yêu thích"
         aria-label="Lưu phòng"
@@ -66,37 +66,38 @@ mixin roomItem(room, favoriteRoomIds)
           path(stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z")
 
       //- Số lượng ảnh
-      span(class="absolute bottom-2.5 right-3 z-10 flex items-center gap-1 rounded-md bg-black/50 px-2 py-0.5 text-[11px] font-normal text-white backdrop-blur-sm pointer-events-none")
-        | 📷 #{imgCount}
+      span(class="absolute bottom-2.5 right-3 z-10 flex items-center gap-1 rounded-full bg-[#1C1B19]/65 px-2.5 py-0.5 text-[11px] font-normal text-[#FAF7F2] backdrop-blur-sm pointer-events-none")
+        i.fa-regular.fa-images(class="text-[10px] text-[#C59B6D]")
+        span #{imgCount}
 
     //- 2. Phần nội dung chi tiết
     .inner-content(class="flex flex-1 flex-col p-4 z-[3]")
-      //- Giá tiền nổi bật với màu Xanh Clover tươi sáng Homigo
+      //- Giá tiền nổi bật với màu Warm Bronze sang trọng
       div(class="mb-1.5 flex items-baseline gap-1")
-        span.price-main(class="text-xl font-extrabold tracking-tight text-[#16A34A]")
+        span.price-main(class="text-xl font-extrabold tracking-tight text-[#8C6239]")
           = (room.price || 0).toLocaleString('vi-VN') + ' đ'
-        span(class="text-xs font-medium text-slate-400") đ/tháng
+        span(class="text-xs font-medium text-[#6E6A63]") /tháng
         if room.isFeatured
-          span(class="ml-auto text-[10px] uppercase font-bold text-amber-700 bg-amber-50 border border-amber-200/90 px-2.5 py-0.5 rounded-full") Nổi bật
+          span(class="ml-auto text-[10px] uppercase font-bold text-[#8C6239] bg-[#F5EFE6] border border-[#E6DFD3] px-2.5 py-0.5 rounded-full") Nổi bật
 
       //- Tiêu đề phòng
-      h3.inner-title(class="line-clamp-2 text-[15px] font-bold leading-snug text-neutral-900 transition-colors group-hover:text-[#16A34A] m-0")
-        a(href=`/rooms/detail/${room._id}` class="text-neutral-900 group-hover:text-[#16A34A] no-underline")
+      h3.inner-title(class="line-clamp-2 font-serif text-[17px] font-semibold leading-snug text-[#1C1B19] transition-colors group-hover:text-[#A67C52] m-0")
+        a(href=`/rooms/detail/${room._id}` class="text-[#1C1B19] group-hover:text-[#A67C52] no-underline")
           = room.title
 
       //- Địa chỉ rút gọn
-      p.inner-address(class="mt-1.5 flex items-center gap-1 text-xs text-slate-500 mb-0")
-        svg(class="h-3.5 w-3.5 shrink-0 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24")
+      p.inner-address(class="mt-1.5 flex items-center gap-1 text-xs text-[#6E6A63] mb-0")
+        svg(class="h-3.5 w-3.5 shrink-0 text-[#A67C52]" fill="none" stroke="currentColor" viewBox="0 0 24 24")
           path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z")
           path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z")
         span.truncate(title=displayAddress)= displayAddress
 
       //- Thông số kỹ thuật & tiện ích
-      div(class="my-3 flex items-center gap-2.5 border-y border-slate-100 py-2.5 text-xs text-slate-600")
-        span(class="font-medium text-slate-700") #{room.area} m²
-        span(class="text-slate-300") •
+      div(class="my-3 flex items-center gap-2.5 border-y border-[#F3EFE6] py-2.5 text-xs text-[#6E6A63]")
+        span(class="font-semibold text-[#1C1B19]") #{room.area} m²
+        span(class="text-[#D4C2AA]") •
         span= amenity1
-        span(class="text-slate-300") •
+        span(class="text-[#D4C2AA]") •
         span.truncate= amenity2
 
       //- 3. Footer card: Người đăng + Nút hành động
@@ -114,15 +115,15 @@ mixin roomItem(room, favoriteRoomIds)
                 alt=landlordName
                 referrerpolicy="no-referrer"
                 onerror="this.onerror=null;this.src='/admin/assets/images/avatar.jpg';"
-                class="h-7 w-7 rounded-full object-cover border border-slate-200 group-hover/author:border-emerald-400 transition-colors"
+                class="h-7 w-7 rounded-full object-cover border border-[#E6DFD3] group-hover/author:border-[#A67C52] transition-colors"
               )
             else
-              div(class="flex h-7 w-7 items-center justify-center rounded-full bg-slate-100 text-xs font-semibold text-slate-600 border border-slate-200 group-hover/author:border-emerald-400 group-hover/author:bg-emerald-50 transition-colors")
+              div(class="flex h-7 w-7 items-center justify-center rounded-full bg-[#F5EFE6] text-xs font-semibold text-[#8C6239] border border-[#E6DFD3] group-hover/author:border-[#A67C52] transition-colors")
                 = (landlordName.charAt(0) || 'C').toUpperCase()
-            span(class="text-xs font-medium text-slate-600 group-hover/author:text-[#16A34A] transition-colors truncate max-w-[110px]")
+            span(class="text-xs font-medium text-[#6E6A63] group-hover/author:text-[#A67C52] transition-colors truncate max-w-[110px]")
               = landlordName
             if isVerified
-              svg(class="w-3.5 h-3.5 text-emerald-500 shrink-0" fill="currentColor" viewBox="0 0 20 20" title="Chủ trọ đã xác thực")
+              svg(class="w-3.5 h-3.5 text-[#A67C52] shrink-0" fill="currentColor" viewBox="0 0 20 20" title="Chủ trọ đã xác thực")
                 path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd")
         else
           div(class="flex items-center gap-2")
@@ -132,21 +133,22 @@ mixin roomItem(room, favoriteRoomIds)
                 alt=landlordName
                 referrerpolicy="no-referrer"
                 onerror="this.onerror=null;this.src='/admin/assets/images/avatar.jpg';"
-                class="h-7 w-7 rounded-full object-cover border border-slate-200"
+                class="h-7 w-7 rounded-full object-cover border border-[#E6DFD3]"
               )
             else
-              div(class="flex h-7 w-7 items-center justify-center rounded-full bg-slate-100 text-xs font-semibold text-slate-600 border border-slate-200")
+              div(class="flex h-7 w-7 items-center justify-center rounded-full bg-[#F5EFE6] text-xs font-semibold text-[#8C6239] border border-[#E6DFD3]")
                 = (landlordName.charAt(0) || 'C').toUpperCase()
-            span(class="text-xs font-medium text-slate-600 truncate max-w-[110px]")
+            span(class="text-xs font-medium text-[#6E6A63] truncate max-w-[110px]")
               = landlordName
             if isVerified
-              svg(class="w-3.5 h-3.5 text-emerald-500 shrink-0" fill="currentColor" viewBox="0 0 20 20")
+              svg(class="w-3.5 h-3.5 text-[#A67C52] shrink-0" fill="currentColor" viewBox="0 0 20 20")
                 path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd")
 
         button(
           type="button"
-          class="flex items-center gap-1.5 rounded-full bg-emerald-50 hover:bg-[#16A34A] text-[#16A34A] hover:text-white px-3.5 py-1.5 text-xs font-bold transition-all border border-emerald-200 hover:border-[#16A34A] cursor-pointer shadow-2xs"
+          class="flex items-center gap-1.5 rounded-full bg-[#F5EFE6] group-hover:bg-[#A67C52] text-[#8C6239] group-hover:text-white pl-3 pr-1.5 py-1 text-xs font-bold transition-all border border-[#E6DFD3] group-hover:border-[#A67C52] cursor-pointer shadow-2xs"
         )
-          span Xem phòng
-          svg(class="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24")
-            path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7")
+          span Chi tiết
+          span(class="w-5 h-5 rounded-full bg-white/90 text-[#1C1B19] flex items-center justify-center transition-transform group-hover:translate-x-0.5")
+            svg(class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24")
+              path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7")

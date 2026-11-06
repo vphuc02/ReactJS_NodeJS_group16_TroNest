@@ -74,9 +74,10 @@ block main
                 option(value="30-50" selected=query.areaRange === '30-50') 30 - 50 m²
                 option(value=">50" selected=query.areaRange === '>50') Trên 50 m²
 
-            button(type="submit" class="client-clean-105")
-              i.fa-solid.fa-filter
-              | Áp dụng bộ lọc
+            button(type="submit" class="btn-hotelier btn-hotelier-dark w-full justify-between")
+              span Áp dụng bộ lọc
+              span.btn-hotelier-icon
+                i.fa-solid.fa-filter(class="text-[11px]")
 
         // Rooms Grid & Sort
         section.room-content
@@ -100,6 +101,9 @@ block main
           else
             div(class="client-clean-111")
               i.fa-solid.fa-house-circle-xmark(class="client-clean-112")
-              h3(class="client-clean-113") Không tìm thấy phòng trọ phù hợp
+              h3(class="client-clean-113 font-serif text-2xl") Không tìm thấy phòng trọ phù hợp
               p(class="client-clean-114") Vui lòng thử tìm kiếm bằng từ khóa khác hoặc xóa bớt tiêu chí lọc
-              a(href="/rooms" class="client-clean-115") Xem tất cả phòng
+              a(href="/rooms" class="btn-hotelier btn-hotelier-bronze no-underline")
+                span Xem tất cả phòng
+                span.btn-hotelier-icon
+                  i.fa-solid.fa-arrow-right(class="text-xs")

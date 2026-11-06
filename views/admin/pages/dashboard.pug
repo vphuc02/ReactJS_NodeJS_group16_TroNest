@@ -21,7 +21,7 @@ block main
           span Duyệt Chủ trọ (#{pendingLandlordsCount})
         a(
           href="/admin/rooms?status=PENDING"
-          class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#16A34A] hover:bg-[#15803D] text-white text-xs font-semibold shadow-sm transition-all no-underline"
+          class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#A67C52] hover:bg-[#8C6239] text-white text-xs font-semibold shadow-sm transition-all no-underline"
         )
           i.fa-solid.fa-house-circle-check
           span Duyệt Phòng (#{pendingRoomsCount})
@@ -53,13 +53,13 @@ block main
       //- Phòng đang hiển thị
       a.stat-card(
         href="/admin/rooms?status=APPROVED"
-        class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-md hover:border-[#16A34A]/50 transition-all flex items-center gap-3.5 sm:gap-4 no-underline"
+        class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-md hover:border-[#A67C52]/50 transition-all flex items-center gap-3.5 sm:gap-4 no-underline"
       )
-        div(class="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-emerald-50 text-[#16A34A] flex items-center justify-center text-lg sm:text-xl shrink-0")
+        div(class="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-[#FAF7F2] text-[#A67C52] flex items-center justify-center text-lg sm:text-xl shrink-0")
           i.fa-solid.fa-circle-check
         div(class="min-w-0")
           span(class="block text-xs font-medium text-slate-500 truncate") Phòng đang hiển thị
-          h3(class="text-xl sm:text-2xl font-bold text-[#16A34A] m-0 mt-0.5")= approvedRoomsCount
+          h3(class="text-xl sm:text-2xl font-bold text-[#A67C52] m-0 mt-0.5")= approvedRoomsCount
 
       //- Tổng số chủ trọ
       a.stat-card(
@@ -95,7 +95,7 @@ block main
             span(class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200")
               span(class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse")
               | #{pendingLandlordsCount} chờ duyệt
-        a(href="/admin/landlords" class="text-xs font-semibold text-[#16A34A] hover:underline no-underline")
+        a(href="/admin/landlords" class="text-xs font-semibold text-[#A67C52] hover:underline no-underline")
           | Xem tất cả →
 
       div(class="overflow-x-auto")
@@ -114,7 +114,7 @@ block main
                 tr(class="hover:bg-slate-50/70 transition-colors")
                   td(class="py-3.5 px-5 font-semibold text-slate-900")= l.fullName
                   td(class="py-3.5 px-4 text-slate-600")= l.email
-                  td(class="py-3.5 px-4 font-semibold text-[#16A34A]")= l.phone || '-'
+                  td(class="py-3.5 px-4 font-semibold text-[#A67C52]")= l.phone || '-'
                   td(class="py-3.5 px-4 text-slate-600")= l.address || '-'
                   td(class="py-3.5 px-4 text-slate-500")= new Date(l.createdAt).toLocaleDateString('vi-VN')
                   td(class="py-3.5 px-5 text-right")
@@ -123,7 +123,7 @@ block main
                         type="button"
                         data-admin-action="approve-landlord"
                         data-id=l._id
-                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#16A34A] hover:bg-[#15803D] text-white text-xs font-semibold transition-all cursor-pointer border-0 shadow-2xs"
+                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#A67C52] hover:bg-[#8C6239] text-white text-xs font-semibold transition-all cursor-pointer border-0 shadow-2xs"
                         title="Phê duyệt cho phép đăng phòng"
                       )
                         i.fa-solid.fa-check(class="text-[11px]")
@@ -141,14 +141,14 @@ block main
               tr
                 td(colspan="6" class="py-10 text-center text-slate-400")
                   div(class="flex items-center justify-center gap-2 text-xs font-medium text-slate-500")
-                    i.fa-solid.fa-circle-check(class="text-[#16A34A] text-base")
+                    i.fa-solid.fa-circle-check(class="text-[#A67C52] text-base")
                     span Không có tài khoản Chủ trọ nào đang chờ duyệt!
 
     //- 4. BẢNG DUYỆT NHANH BÀI ĐĂNG PHÒNG TRỌ
     .section-pending-rooms(class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden")
       div(class="p-4 sm:p-5 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3")
         div(class="flex items-center gap-2.5")
-          span(class="w-8 h-8 rounded-xl bg-emerald-50 text-[#16A34A] flex items-center justify-center text-sm")
+          span(class="w-8 h-8 rounded-xl bg-[#FAF7F2] text-[#A67C52] flex items-center justify-center text-sm")
             i.fa-solid.fa-house-circle-check
           h2(class="text-sm sm:text-base font-bold text-slate-900 m-0")
             | Bài đăng phòng trọ mới đang chờ phê duyệt
@@ -156,7 +156,7 @@ block main
             span(class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200")
               span(class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse")
               | #{pendingRoomsCount} chờ duyệt
-        a(href="/admin/rooms" class="text-xs font-semibold text-[#16A34A] hover:underline no-underline")
+        a(href="/admin/rooms" class="text-xs font-semibold text-[#A67C52] hover:underline no-underline")
           | Xem tất cả bài →
 
       div(class="overflow-x-auto")
@@ -185,7 +185,7 @@ block main
                   td(class="py-3.5 px-4")
                     div(class="font-semibold text-slate-800")= r.landlordId ? r.landlordId.fullName : '-'
                     div(class="text-[11px] text-slate-400 mt-0.5")= r.landlordId ? r.landlordId.phone : ''
-                  td(class="py-3.5 px-4 font-bold text-[#16A34A]") #{r.price.toLocaleString('vi-VN')} đ
+                  td(class="py-3.5 px-4 font-bold text-[#A67C52]") #{r.price.toLocaleString('vi-VN')} đ
                   td(class="py-3.5 px-4 text-slate-600") #{r.area} m²
                   td(class="py-3.5 px-5 text-right")
                     div(class="inline-flex items-center gap-1.5 justify-end")
@@ -200,7 +200,7 @@ block main
                         type="button"
                         data-admin-action="approve-room"
                         data-id=r._id
-                        class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#16A34A] hover:bg-[#15803D] text-white text-xs font-semibold transition-colors cursor-pointer border-0"
+                        class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#A67C52] hover:bg-[#8C6239] text-white text-xs font-semibold transition-colors cursor-pointer border-0"
                         title="Duyệt xuất bản"
                       )
                         i.fa-solid.fa-check(class="text-[11px]")
@@ -218,5 +218,5 @@ block main
               tr
                 td(colspan="5" class="py-10 text-center text-slate-400")
                   div(class="flex items-center justify-center gap-2 text-xs font-medium text-slate-500")
-                    i.fa-solid.fa-circle-check(class="text-[#16A34A] text-base")
+                    i.fa-solid.fa-circle-check(class="text-[#A67C52] text-base")
                     span Không có bài đăng nào đang chờ duyệt! Tất cả đã được xử lý.

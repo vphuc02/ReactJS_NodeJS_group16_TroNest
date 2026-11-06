@@ -1,14 +1,14 @@
-//- Sidebar Quản Trị Viên TroNest (Đồng bộ phong cách Clover Green #16A34A)
+//- Sidebar Quản Trị Viên TroNest (Đồng bộ phong cách Hotelier Warm Bronze #A67C52)
 nav.sider(class="bg-white border-r border-slate-200 flex flex-col justify-between shrink-0 shadow-sm")
   div
     //- Logo Brand
     .sider-logo(class="h-16 flex items-center px-6 gap-2.5 border-b border-slate-100")
       a(href="/admin/dashboard" class="flex items-center gap-2.5 no-underline")
-        div(class="w-8 h-8 rounded-xl bg-[#16A34A] flex items-center justify-center text-white shadow-sm")
+        div(class="w-8 h-8 rounded-xl bg-[#A67C52] flex items-center justify-center text-white shadow-sm")
           i.fa-solid.fa-shield-halved(class="text-sm")
         div(class="flex flex-col")
           span(class="font-bold text-slate-800 text-base leading-tight tracking-tight") TroNest
-          span(class="text-[11px] font-semibold text-[#16A34A]") Cổng Quản Trị
+          span(class="text-[11px] font-semibold text-[#A67C52]") Cổng Quản Trị
 
     //- Navigation Menu
     - const isLandlordsPage = currentPath && currentPath.startsWith('/admin/landlords');
@@ -21,41 +21,41 @@ nav.sider(class="bg-white border-r border-slate-200 flex flex-col justify-betwee
       li
         a(
           href="/admin/dashboard"
-          class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all duration-200 no-underline " + (isDashboardPage ? 'active bg-[#F0FDF4] text-[#16A34A] font-semibold border-l-4 border-[#16A34A]' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium')
+          class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all duration-200 no-underline " + (isDashboardPage ? 'active bg-[#FAF7F2] text-[#A67C52] font-semibold border-l-4 border-[#A67C52]' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium')
         )
-          i.fa-solid.fa-gauge-high(class="w-5 text-base " + (isDashboardPage ? 'text-[#16A34A]' : 'text-slate-400'))
+          i.fa-solid.fa-gauge-high(class="w-5 text-base " + (isDashboardPage ? 'text-[#A67C52]' : 'text-slate-400'))
           span Tổng quan
 
       li
         a(
           href="/admin/landlords"
-          class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all duration-200 no-underline " + (isLandlordsPage ? 'active bg-[#F0FDF4] text-[#16A34A] font-semibold border-l-4 border-[#16A34A]' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium')
+          class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all duration-200 no-underline " + (isLandlordsPage ? 'active bg-[#FAF7F2] text-[#A67C52] font-semibold border-l-4 border-[#A67C52]' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium')
         )
-          i.fa-solid.fa-user-check(class="w-5 text-base " + (isLandlordsPage ? 'text-[#16A34A]' : 'text-slate-400'))
+          i.fa-solid.fa-user-check(class="w-5 text-base " + (isLandlordsPage ? 'text-[#A67C52]' : 'text-slate-400'))
           span Duyệt Chủ trọ
 
       li
         a(
           href="/admin/rooms"
-          class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all duration-200 no-underline " + (isRoomsPage ? 'active bg-[#F0FDF4] text-[#16A34A] font-semibold border-l-4 border-[#16A34A]' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium')
+          class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all duration-200 no-underline " + (isRoomsPage ? 'active bg-[#FAF7F2] text-[#A67C52] font-semibold border-l-4 border-[#A67C52]' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium')
         )
-          i.fa-solid.fa-house-circle-check(class="w-5 text-base " + (isRoomsPage ? 'text-[#16A34A]' : 'text-slate-400'))
+          i.fa-solid.fa-house-circle-check(class="w-5 text-base " + (isRoomsPage ? 'text-[#A67C52]' : 'text-slate-400'))
           span Duyệt bài đăng phòng
 
       li
         a(
           href="/admin/users"
-          class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all duration-200 no-underline " + (isUsersPage ? 'active bg-[#F0FDF4] text-[#16A34A] font-semibold border-l-4 border-[#16A34A]' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium')
+          class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all duration-200 no-underline " + (isUsersPage ? 'active bg-[#FAF7F2] text-[#A67C52] font-semibold border-l-4 border-[#A67C52]' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium')
         )
-          i.fa-solid.fa-users(class="w-5 text-base " + (isUsersPage ? 'text-[#16A34A]' : 'text-slate-400'))
+          i.fa-solid.fa-users(class="w-5 text-base " + (isUsersPage ? 'text-[#A67C52]' : 'text-slate-400'))
           span Quản lý người dùng
 
       li
         a(
           href="/admin/categories"
-          class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all duration-200 no-underline " + (isCategoriesPage ? 'active bg-[#F0FDF4] text-[#16A34A] font-semibold border-l-4 border-[#16A34A]' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium')
+          class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all duration-200 no-underline " + (isCategoriesPage ? 'active bg-[#FAF7F2] text-[#A67C52] font-semibold border-l-4 border-[#A67C52]' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium')
         )
-          i.fa-solid.fa-table-cells-large(class="w-5 text-base " + (isCategoriesPage ? 'text-[#16A34A]' : 'text-slate-400'))
+          i.fa-solid.fa-table-cells-large(class="w-5 text-base " + (isCategoriesPage ? 'text-[#A67C52]' : 'text-slate-400'))
           span Loại phòng trọ
 
   //- Bottom sidebar
@@ -63,7 +63,7 @@ nav.sider(class="bg-white border-r border-slate-200 flex flex-col justify-betwee
     a(
       href="/"
       target="_blank"
-      class="flex items-center gap-2.5 px-3.5 py-2 text-xs font-medium text-slate-500 hover:text-[#16A34A] hover:bg-emerald-50/50 rounded-lg transition-colors no-underline"
+      class="flex items-center gap-2.5 px-3.5 py-2 text-xs font-medium text-slate-500 hover:text-[#A67C52] hover:bg-[#FAF7F2] rounded-lg transition-colors no-underline"
     )
       i.fa-solid.fa-globe(class="text-xs text-slate-400")
       span Xem trang chủ
