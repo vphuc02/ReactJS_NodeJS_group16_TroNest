@@ -69,6 +69,24 @@ if (fs.existsSync(frontendDistPath)) {
 // Global Middleware to attach current user to requests
 app.use(attachUser);
 
+// SPA Browser Navigation Handler for React sub-routes in production:
+// Khi trình duyệt mở hoặc tải lại các URL (/login, /rooms, /admin/dashboard, /landlord/dashboard...)
+// trả về index.html để React Router điều hướng, còn các lệnh gọi API với Accept: application/json
+// sẽ đi tiếp tới các Router API phía dưới.
+if (process.env.NODE_ENV !== 'test' && fs.existsSync(frontendDistPath)) {
+  app.use((req, res, next) => {
+    const isNavigation =
+      req.headers['sec-fetch-mode'] === 'navigate' ||
+      req.accepts(['html', 'json']) === 'html';
+    const isStaticFile = Boolean(path.extname(req.path));
+
+    if (req.method === 'GET' && isNavigation && !isStaticFile) {
+      return res.sendFile(path.join(frontendDistPath, 'index.html'));
+    }
+    next();
+  });
+}
+
 // REST API Routers
 app.use('/admin', adminRouter);
 app.use('/landlord', landlordRouter);
@@ -76,7 +94,7 @@ app.use('/', clientRouter);
 app.use('/api/geo', require('./routes/api/geo'));
 app.use('/api/geo', require('./routes/api/nearby'));
 
-// SPA Fallback for client-side routing in production (HTML requests)
+// SPA Fallback cuối cùng cho client-side routing (HTML requests chưa khớp)
 if (process.env.NODE_ENV !== 'test' && fs.existsSync(frontendDistPath)) {
   app.use((req, res, next) => {
     if (req.method === 'GET' && req.accepts('html')) {

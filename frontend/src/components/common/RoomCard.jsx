@@ -5,10 +5,11 @@ import { useAuth } from '../../context/AuthContext';
 import toast from 'react-hot-toast';
 
 export const RoomCard = ({ room, isFavorited: initialFavorited = false, onFavoriteToggle }) => {
-  if (!room) return null;
   const { isAuthenticated } = useAuth();
   const [isFav, setIsFav] = useState(initialFavorited);
   const [favLoading, setFavLoading] = useState(false);
+
+  if (!room) return null;
 
   const handleToggleFavorite = async (e) => {
     e.preventDefault();

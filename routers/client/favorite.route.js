@@ -8,5 +8,7 @@ router.use(requireAuth());
 router.get('/', favoriteController.index);
 router.post('/add/:roomId', favoriteController.add);
 router.post('/remove/:roomId', favoriteController.remove);
+router.delete('/remove/:roomId', favoriteController.remove);
+router.delete('/:roomId', favoriteController.remove);
 
 module.exports = router;

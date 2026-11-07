@@ -111,7 +111,7 @@ export const HomePage = () => {
     latestRooms: [],
     favoriteRoomIds: []
   });
-  const [loading, setLoading] = useState(false);
+  const [_loading, setLoading] = useState(false);
 
   // Search filter states
   const [keyword, setKeyword] = useState('');

@@ -1,20 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { adminApi } from '../../api/adminApi';
 import toast from 'react-hot-toast';
-import { Search, Check, X, Trash2, Eye, ShieldCheck, Clock } from 'lucide-react';
+import { Search, Check, X, Trash2 } from 'lucide-react';
 
 export const AdminRoomListPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [rooms, setRooms] = useState([]);
-  const [paging, setPaging] = useState(null);
+  const [_paging, setPaging] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const status = searchParams.get('status') || '';
   const keyword = searchParams.get('keyword') || '';
   const [searchInput, setSearchInput] = useState(keyword);
 
-  const fetchRooms = async () => {
+  const fetchRooms = useCallback(async () => {
     setLoading(true);
     try {
       const params = Object.fromEntries(searchParams.entries());
@@ -28,11 +28,11 @@ export const AdminRoomListPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [searchParams]);
 
   useEffect(() => {
     fetchRooms();
-  }, [searchParams]);
+  }, [fetchRooms]);
 
   const handleSearch = (e) => {
     e.preventDefault();

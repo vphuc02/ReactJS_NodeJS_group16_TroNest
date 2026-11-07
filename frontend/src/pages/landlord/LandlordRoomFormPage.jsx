@@ -3,17 +3,10 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { landlordApi } from '../../api/landlordApi';
 import toast from 'react-hot-toast';
 import { 
-  Building, 
-  MapPin, 
-  DollarSign, 
-  Maximize2, 
-  FileText, 
   CheckCircle2, 
   Upload, 
   X, 
-  ArrowLeft,
-  Save,
-  Send
+  ArrowLeft
 } from 'lucide-react';
 
 const COMMON_AMENITIES = [
@@ -86,7 +79,7 @@ export const LandlordRoomFormPage = () => {
             }
           }
         }
-      } catch (err) {
+      } catch {
         toast.error('Không thể tải biểu mẫu phòng trọ!');
       } finally {
         setLoading(false);

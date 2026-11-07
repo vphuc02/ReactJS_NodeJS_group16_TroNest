@@ -3,16 +3,10 @@ import { Link } from 'react-router-dom';
 import { adminApi } from '../../api/adminApi';
 import toast from 'react-hot-toast';
 import { 
-  Users, 
-  Home, 
   UserCheck, 
   Clock, 
-  CheckCircle2, 
-  Tags, 
   Eye, 
-  Check, 
-  X,
-  ArrowRight 
+  Check
 } from 'lucide-react';
 
 export const AdminDashboardPage = () => {

@@ -7,9 +7,7 @@ import {
   Clock, 
   AlertCircle, 
   PlusCircle, 
-  Eye, 
   ArrowRight,
-  TrendingUp,
   FileEdit
 } from 'lucide-react';
 

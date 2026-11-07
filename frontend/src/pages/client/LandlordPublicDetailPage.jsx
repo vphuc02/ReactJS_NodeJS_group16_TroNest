@@ -4,14 +4,11 @@ import api from '../../api/client';
 import { RoomCard } from '../../components/common/RoomCard';
 import toast from 'react-hot-toast';
 import { 
-  Building, 
   Phone, 
   Mail, 
   MapPin, 
   ShieldCheck, 
-  Calendar, 
-  ArrowLeft,
-  CheckCircle2
+  ArrowLeft
 } from 'lucide-react';
 
 export const LandlordPublicDetailPage = () => {

@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { adminApi } from '../../api/adminApi';
 import toast from 'react-hot-toast';
-import { Search, Check, X, ShieldCheck, Clock, UserCheck } from 'lucide-react';
+import { Search, Check, X } from 'lucide-react';
 
 export const AdminLandlordListPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -13,7 +13,7 @@ export const AdminLandlordListPage = () => {
   const keyword = searchParams.get('keyword') || '';
   const [searchInput, setSearchInput] = useState(keyword);
 
-  const fetchLandlords = async () => {
+  const fetchLandlords = useCallback(async () => {
     setLoading(true);
     try {
       const params = Object.fromEntries(searchParams.entries());
@@ -26,11 +26,11 @@ export const AdminLandlordListPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [searchParams]);
 
   useEffect(() => {
     fetchLandlords();
-  }, [searchParams]);
+  }, [fetchLandlords]);
 
   const handleSearch = (e) => {
     e.preventDefault();

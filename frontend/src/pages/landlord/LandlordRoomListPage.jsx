@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { landlordApi } from '../../api/landlordApi';
 import toast from 'react-hot-toast';
@@ -6,25 +6,20 @@ import {
   PlusCircle,
   Search,
   FileEdit,
-  Trash2,
-  ExternalLink,
-  Eye,
-  CheckCircle2,
-  Clock,
-  AlertCircle
+  Trash2
 } from 'lucide-react';
 
 export const LandlordRoomListPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [rooms, setRooms] = useState([]);
-  const [paging, setPaging] = useState(null);
+  const [_paging, setPaging] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const status = searchParams.get('status') || '';
   const keyword = searchParams.get('keyword') || '';
   const [searchInput, setSearchInput] = useState(keyword);
 
-  const fetchRooms = async () => {
+  const fetchRooms = useCallback(async () => {
     setLoading(true);
     try {
       const params = Object.fromEntries(searchParams.entries());
@@ -38,11 +33,11 @@ export const LandlordRoomListPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [searchParams]);
 
   useEffect(() => {
     fetchRooms();
-  }, [searchParams]);
+  }, [fetchRooms]);
 
   const handleSearch = (e) => {
     e.preventDefault();

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { adminApi } from '../../api/adminApi';
 import toast from 'react-hot-toast';
-import { PlusCircle, Trash2, Tags, Layers } from 'lucide-react';
+import { PlusCircle, Trash2, Tags } from 'lucide-react';
 
 export const AdminCategoryListPage = () => {
   const [categories, setCategories] = useState([]);

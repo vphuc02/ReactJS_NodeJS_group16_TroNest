@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { favoriteApi } from '../../api/favoriteApi';
 import { RoomCard } from '../../components/common/RoomCard';
-import toast from 'react-hot-toast';
 
 export const FavoritesPage = () => {
   const [rooms, setRooms] = useState([]);

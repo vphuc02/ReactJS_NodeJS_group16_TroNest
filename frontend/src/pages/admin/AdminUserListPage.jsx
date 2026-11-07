@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { adminApi } from '../../api/adminApi';
 import toast from 'react-hot-toast';
-import { Search, Lock, Unlock, Users, ShieldAlert } from 'lucide-react';
+import { Search, Lock, Unlock } from 'lucide-react';
 
 export const AdminUserListPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -13,7 +13,7 @@ export const AdminUserListPage = () => {
   const keyword = searchParams.get('keyword') || '';
   const [searchInput, setSearchInput] = useState(keyword);
 
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     setLoading(true);
     try {
       const params = Object.fromEntries(searchParams.entries());
@@ -26,11 +26,11 @@ export const AdminUserListPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [searchParams]);
 
   useEffect(() => {
     fetchUsers();
-  }, [searchParams]);
+  }, [fetchUsers]);
 
   const handleSearch = (e) => {
     e.preventDefault();

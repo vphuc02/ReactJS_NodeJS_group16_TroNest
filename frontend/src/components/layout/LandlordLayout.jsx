@@ -9,7 +9,6 @@ import {
   User, 
   ArrowLeft, 
   LogOut,
-  Building,
   CheckCircle2,
   Clock
 } from 'lucide-react';
