@@ -87,7 +87,17 @@ module.exports.loginPost = async (req, res) => {
   return res.json({
     code: 200,
     message: `Đăng nhập thành công!${statusNote}`,
-    redirectUrl: getSafeRedirect(req.body.redirectUrl, redirectUrl)
+    redirectUrl: getSafeRedirect(req.body.redirectUrl, redirectUrl),
+    token,
+    user: {
+      _id: user._id,
+      fullName: user.fullName,
+      email: user.email,
+      phone: user.phone,
+      avatar: user.avatar,
+      role: user.role,
+      status: user.status
+    }
   });
 };
 
@@ -156,6 +166,20 @@ module.exports.logoutPost = (req, res) => {
     code: 200,
     message: 'Đăng xuất thành công!',
     redirectUrl: '/login'
+  });
+};
+
+// [GET] /auth/me (Lấy thông tin người dùng đang đăng nhập)
+module.exports.meGet = (req, res) => {
+  if (!req.user) {
+    return res.status(401).json({
+      code: 401,
+      message: 'Chưa đăng nhập!'
+    });
+  }
+  return res.json({
+    code: 200,
+    user: req.user
   });
 };
 

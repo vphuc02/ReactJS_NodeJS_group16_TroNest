@@ -11,6 +11,7 @@
     "bcryptjs": "^3.0.3",
     "cloudinary": "^1.41.3",
     "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
     "dotenv": "^18.0.5",
     "express": "^5.2.1",
     "joi": "^18.2.9",
@@ -30,6 +31,8 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
+    "frontend:dev": "npm --prefix frontend run dev",
+    "frontend:build": "npm --prefix frontend run build",
     "seed": "node seeds/seed.js",
     "uploads:cleanup": "node scripts/cleanup-uploads.js",
     "test": "node --test --test-concurrency=1 \"tests/**/*.test.js\"",

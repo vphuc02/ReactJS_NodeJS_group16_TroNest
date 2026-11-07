@@ -12,8 +12,19 @@ const { VN_PROVINCES } = require('./helpers/geo.helper');
 const clientRouter = require('./routers/client/index.route');
 const landlordRouter = require('./routers/landlord/index.route');
 const adminRouter = require('./routers/admin/index.route');
+const cors = require('cors');
 
 const app = express();
+
+// CORS Configuration for React Frontend
+app.use(
+  cors({
+    origin: ['http://localhost:5173', 'http://127.0.0.1:5173', 'http://localhost:3000'],
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-csrf-token', 'Accept', 'X-Requested-With']
+  })
+);
 
 app.locals.USER_STATUS = USER_STATUS;
 app.locals.ROOM_STATUS = ROOM_STATUS;

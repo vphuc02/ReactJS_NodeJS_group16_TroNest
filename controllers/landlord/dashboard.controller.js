@@ -1,5 +1,6 @@
 const Room = require('../../models/room.model');
 const { ROOM_STATUS } = require('../../configs/system.config');
+const { wantsJson } = require('../../helpers/http.helper');
 
 // [GET] /landlord/dashboard
 module.exports.index = async (req, res) => {
@@ -15,6 +16,22 @@ module.exports.index = async (req, res) => {
     .sort({ updatedAt: -1 })
     .populate('categoryId', 'title')
     .lean();
+
+  if (wantsJson(req)) {
+    return res.json({
+      code: 200,
+      data: {
+        totalRooms,
+        draftRooms,
+        pendingRooms,
+        approvedRooms,
+        rejectedRooms,
+        recentRooms,
+        landlordStatus: req.user.status,
+        rejectReason: req.user.rejectReason
+      }
+    });
+  }
 
   res.render('landlord/pages/dashboard', {
     title: 'Bảng điều khiển Chủ trọ - TroNest',

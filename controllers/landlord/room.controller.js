@@ -8,6 +8,7 @@ const { removeUnreferencedImages } = require('../../helpers/room.helper');
 const { queryText, queryPage, pagination } = require('../../helpers/query.helper');
 const Favorite = require('../../models/favorite.model');
 const { geocodeAddress } = require('../../helpers/geocode.helper');
+const { wantsJson } = require('../../helpers/http.helper');
 
 /**
  * Tự động geocode địa chỉ phòng và cập nhật trường location vào DB.
@@ -121,6 +122,20 @@ module.exports.index = async (req, res) => {
     .populate('categoryId', 'title')
     .lean();
 
+  if (wantsJson(req)) {
+    return res.json({
+      code: 200,
+      data: {
+        rooms,
+        paging,
+        query: { status, keyword },
+        statusFilter: status || '',
+        keyword: keyword || '',
+        landlordStatus: req.user.status
+      }
+    });
+  }
+
   res.render('landlord/pages/room-list', {
     title: 'Quản lý bài đăng phòng trọ - TroNest',
     rooms,
@@ -135,6 +150,13 @@ module.exports.index = async (req, res) => {
 // [GET] /landlord/rooms/create
 module.exports.createGet = async (req, res) => {
   const categories = await Category.find({ status: USER_STATUS.ACTIVE }).lean();
+
+  if (wantsJson(req)) {
+    return res.json({
+      code: 200,
+      data: { categories }
+    });
+  }
 
   res.render('landlord/pages/room-create', {
     title: 'Đăng tin phòng trọ mới - TroNest',
@@ -193,6 +215,13 @@ module.exports.editGet = async (req, res) => {
   }
 
   const categories = await Category.find({ status: USER_STATUS.ACTIVE }).lean();
+
+  if (wantsJson(req)) {
+    return res.json({
+      code: 200,
+      data: { room, categories }
+    });
+  }
 
   res.render('landlord/pages/room-edit', {
     title: 'Chỉnh sửa bài đăng - TroNest',

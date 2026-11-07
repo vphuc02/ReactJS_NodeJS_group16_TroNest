@@ -29,6 +29,17 @@ const csrfProtection = (req, res, next) => {
     return next();
   }
 
+  // Cho phép request có Authorization Bearer token hoặc từ Frontend React (Vite)
+  const authHeader = req.headers.authorization || req.headers.Authorization;
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    return next();
+  }
+
+  const origin = req.headers.origin;
+  if (origin && (origin === 'http://localhost:5173' || origin === 'http://127.0.0.1:5173')) {
+    return next();
+  }
+
   const submittedToken = req.get(CSRF_HEADER) || req.body?._csrf;
   if (submittedToken && submittedToken === token) {
     return next();

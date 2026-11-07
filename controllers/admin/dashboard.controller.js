@@ -2,6 +2,7 @@ const User = require('../../models/user.model');
 const Room = require('../../models/room.model');
 const Category = require('../../models/category.model');
 const { ROLES, ROOM_STATUS, USER_STATUS } = require('../../configs/system.config');
+const { wantsJson } = require('../../helpers/http.helper');
 
 // [GET] /admin/dashboard
 module.exports.index = async (req, res) => {
@@ -36,6 +37,24 @@ module.exports.index = async (req, res) => {
       .populate('categoryId', 'title')
       .lean()
   ]);
+
+  if (wantsJson(req)) {
+    return res.json({
+      code: 200,
+      data: {
+        totalLandlords,
+        pendingLandlordsCount,
+        approvedLandlordsCount,
+        totalRooms,
+        pendingRoomsCount,
+        approvedRoomsCount,
+        totalCustomers,
+        totalCategories,
+        pendingLandlords,
+        pendingRooms
+      }
+    });
+  }
 
   res.render('admin/pages/dashboard', {
     title: 'Bảng điều khiển Admin - TroNest',

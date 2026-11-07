@@ -3,6 +3,8 @@ const Room = require('../../models/room.model');
 const Favorite = require('../../models/favorite.model');
 const { ROOM_STATUS, USER_STATUS } = require('../../configs/system.config');
 
+const { wantsJson } = require('../../helpers/http.helper');
+
 // [GET] /
 module.exports.index = async (req, res) => {
   const categories = await Category.find({ status: USER_STATUS.ACTIVE }).lean();
@@ -29,6 +31,18 @@ module.exports.index = async (req, res) => {
   if (req.user) {
     const favorites = await Favorite.find({ userId: req.user._id }).select('roomId').lean();
     favoriteRoomIds = favorites.map((f) => f.roomId.toString());
+  }
+
+  if (wantsJson(req)) {
+    return res.json({
+      code: 200,
+      data: {
+        categories,
+        featuredRooms,
+        latestRooms,
+        favoriteRoomIds
+      }
+    });
   }
 
   res.render('client/pages/index', {

@@ -59,7 +59,14 @@ module.exports.loginPost = async (req, res) => {
 
   return res.json({
     code: 200,
-    message: 'Đăng nhập Quản trị thành công!'
+    message: 'Đăng nhập Quản trị thành công!',
+    token,
+    admin: {
+      _id: user._id,
+      fullName: user.fullName,
+      email: user.email,
+      role: user.role
+    }
   });
 };
 

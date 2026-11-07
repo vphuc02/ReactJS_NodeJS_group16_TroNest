@@ -5,6 +5,7 @@ const { ROLES, USER_STATUS, ROOM_STATUS } = require('../../configs/system.config
 const { escapeRegex } = require('../../helpers/security.helper');
 const { AppError } = require('../../helpers/error.helper');
 const { queryText, queryPage, pagination } = require('../../helpers/query.helper');
+const { wantsJson } = require('../../helpers/http.helper');
 
 // [GET] /admin/landlords
 module.exports.index = async (req, res) => {
@@ -52,6 +53,20 @@ module.exports.index = async (req, res) => {
     const countById = new Map(roomCounts.map((item) => [String(item._id), item.count]));
     landlords.forEach((landlord) => {
       landlord.roomCount = countById.get(String(landlord._id)) || 0;
+    });
+  }
+
+  if (wantsJson(req)) {
+    return res.json({
+      code: 200,
+      data: {
+        landlords,
+        paging,
+        query: { status, keyword },
+        statusFilter: status || '',
+        keyword: keyword || '',
+        counts
+      }
     });
   }
 

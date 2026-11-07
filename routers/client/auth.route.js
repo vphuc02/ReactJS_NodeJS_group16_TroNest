@@ -18,6 +18,7 @@ const forgotPasswordRateLimit = createRateLimiter({
 
 router.get('/login', authController.loginGet);
 router.post('/login', loginRateLimit, authValidation.loginPost, authController.loginPost);
+router.get('/auth/me', authController.meGet);
 router.get('/register', authController.registerGet);
 router.post('/register', authValidation.registerPost, authController.registerPost);
 router.post('/logout', authController.logoutPost);

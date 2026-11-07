@@ -7,6 +7,7 @@ const { escapeRegex } = require('../../helpers/security.helper');
 const { AppError } = require('../../helpers/error.helper');
 const { queryText, queryPage, pagination } = require('../../helpers/query.helper');
 const { stripUnitPrefix } = require('../../helpers/geo.helper');
+const { wantsJson } = require('../../helpers/http.helper');
 
 // [GET] /rooms
 module.exports.index = async (req, res) => {
@@ -128,6 +129,22 @@ module.exports.index = async (req, res) => {
     favoriteRoomIds = favorites.map((f) => f.roomId.toString());
   }
 
+  if (wantsJson(req)) {
+    return res.json({
+      code: 200,
+      data: {
+        rooms,
+        categories,
+        totalRooms,
+        currentPage,
+        totalPages,
+        paging,
+        query,
+        favoriteRoomIds
+      }
+    });
+  }
+
   res.render('client/pages/room-list', {
     title: 'Danh sách phòng trọ - TroNest',
     rooms,
@@ -184,6 +201,17 @@ module.exports.detail = async (req, res) => {
     .populate('categoryId', 'title slug')
     .populate('landlordId', 'fullName phone avatar status')
     .lean();
+
+  if (wantsJson(req)) {
+    return res.json({
+      code: 200,
+      data: {
+        room,
+        isFavorited,
+        relatedRooms
+      }
+    });
+  }
 
   res.render('client/pages/room-detail', {
     title: `${room.title} - TroNest`,

@@ -5,6 +5,7 @@ const { ROLES, USER_STATUS, ROOM_STATUS } = require('../../configs/system.config
 const { escapeRegex } = require('../../helpers/security.helper');
 const { AppError } = require('../../helpers/error.helper');
 const { queryText, queryPage, pagination } = require('../../helpers/query.helper');
+const { wantsJson } = require('../../helpers/http.helper');
 
 // [GET] /admin/users
 module.exports.index = async (req, res) => {
@@ -48,6 +49,20 @@ module.exports.index = async (req, res) => {
     .skip(paging.skip)
     .limit(paging.limit)
     .lean();
+
+  if (wantsJson(req)) {
+    return res.json({
+      code: 200,
+      data: {
+        users,
+        paging,
+        query: { role, status, keyword },
+        roleFilter: role || '',
+        statusFilter: status || '',
+        keyword: keyword || ''
+      }
+    });
+  }
 
   res.render('admin/pages/user-list', {
     title: 'Quản lý người dùng - TroNest',

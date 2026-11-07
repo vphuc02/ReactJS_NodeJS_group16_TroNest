@@ -7,6 +7,7 @@ const { AppError } = require('../../helpers/error.helper');
 const { removeUnreferencedImages } = require('../../helpers/room.helper');
 const { queryText, queryPage, pagination } = require('../../helpers/query.helper');
 const Favorite = require('../../models/favorite.model');
+const { wantsJson } = require('../../helpers/http.helper');
 
 // [GET] /admin/rooms
 module.exports.index = async (req, res) => {
@@ -61,6 +62,20 @@ module.exports.index = async (req, res) => {
     .populate('categoryId', 'title')
     .lean();
 
+  if (wantsJson(req)) {
+    return res.json({
+      code: 200,
+      data: {
+        rooms,
+        paging,
+        query: { status, keyword },
+        statusFilter: status || '',
+        keyword: keyword || '',
+        counts
+      }
+    });
+  }
+
   res.render('admin/pages/room-list', {
     title: 'Quản lý & Duyệt bài đăng phòng trọ - TroNest',
     rooms,
@@ -86,6 +101,13 @@ module.exports.detail = async (req, res) => {
 
   if (!room) {
     throw new AppError(404, 'Bài đăng phòng trọ này không tồn tại!');
+  }
+
+  if (wantsJson(req)) {
+    return res.json({
+      code: 200,
+      data: { room }
+    });
   }
 
   res.render('admin/pages/room-detail', {

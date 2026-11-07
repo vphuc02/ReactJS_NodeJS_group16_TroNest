@@ -3,6 +3,7 @@ const Favorite = require('../../models/favorite.model');
 const Room = require('../../models/room.model');
 const { ROOM_STATUS } = require('../../configs/system.config');
 const { AppError } = require('../../helpers/error.helper');
+const { wantsJson } = require('../../helpers/http.helper');
 
 // [GET] /favorites
 module.exports.index = async (req, res) => {
@@ -23,6 +24,16 @@ module.exports.index = async (req, res) => {
     .map((fav) => fav.roomId);
 
   const favoriteRoomIds = favoriteRooms.map((r) => r._id.toString());
+
+  if (wantsJson(req)) {
+    return res.json({
+      code: 200,
+      data: {
+        rooms: favoriteRooms,
+        favoriteRoomIds
+      }
+    });
+  }
 
   res.render('client/pages/favorites', {
     title: 'Phòng trọ đã lưu yêu thích - TroNest',

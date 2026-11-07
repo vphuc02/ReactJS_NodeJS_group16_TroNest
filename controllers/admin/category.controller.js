@@ -4,6 +4,7 @@ const Room = require('../../models/room.model');
 const { AppError } = require('../../helpers/error.helper');
 const { escapeRegex } = require('../../helpers/security.helper');
 const { queryPage, pagination } = require('../../helpers/query.helper');
+const { wantsJson } = require('../../helpers/http.helper');
 
  // [GET] /admin/categories
  module.exports.index = async (req, res) => {
@@ -23,6 +24,16 @@ const { queryPage, pagination } = require('../../helpers/query.helper');
      const countById = new Map(roomCounts.map((item) => [String(item._id), item.count]));
      categories.forEach((category) => {
        category.roomCount = countById.get(String(category._id)) || 0;
+     });
+   }
+
+   if (wantsJson(req)) {
+     return res.json({
+       code: 200,
+       data: {
+         categories,
+         paging
+       }
      });
    }
 

@@ -1,16 +1,30 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/user.model');
 const { JWT_SECRET, ROLES, USER_STATUS } = require('../configs/system.config');
-const { wantsJson } = require('../helpers/http.helper');
+const wantsJson = (req) => {
+  const helper = require('../helpers/http.helper');
+  return Boolean(
+    req.originalUrl?.startsWith('/api/') ||
+    req.headers.origin?.includes('5173') ||
+    helper.wantsJson(req)
+  );
+};
+
+const extractToken = (req) => {
+  const authHeader = req.headers.authorization || req.headers.Authorization;
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    return authHeader.substring(7).trim();
+  }
+  return req.originalUrl?.startsWith('/admin')
+    ? req.cookies?.token_admin || req.cookies?.token
+    : req.cookies?.token;
+};
 
 // Middleware gắn thông tin user vào req và res.locals (dùng toàn cục)
 module.exports.attachUser = async (req, res, next) => {
   res.locals.currentPath = req.originalUrl ? req.originalUrl.split('?')[0] : req.path;
   try {
-    // Nếu request thuộc /admin thì ưu tiên đọc cookie token_admin
-    const token = req.originalUrl.startsWith('/admin')
-      ? req.cookies.token_admin
-      : req.cookies.token;
+    const token = extractToken(req);
 
     if (!token) {
       req.user = null;
@@ -41,7 +55,7 @@ module.exports.attachUser = async (req, res, next) => {
 
 // Middleware yêu cầu quyền Quản trị viên riêng biệt (Chỉ dành cho Admin)
 module.exports.requireAdminAuth = (req, res, next) => {
-  const token = req.cookies.token_admin;
+  const token = extractToken(req) || req.cookies?.token_admin;
   if (!token) {
     if (wantsJson(req)) {
       return res.status(401).json({
