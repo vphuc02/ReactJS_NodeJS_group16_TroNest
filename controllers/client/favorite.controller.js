@@ -3,7 +3,6 @@ const Favorite = require('../../models/favorite.model');
 const Room = require('../../models/room.model');
 const { ROOM_STATUS } = require('../../configs/system.config');
 const { AppError } = require('../../helpers/error.helper');
-const { wantsJson } = require('../../helpers/http.helper');
 
 // [GET] /favorites
 module.exports.index = async (req, res) => {

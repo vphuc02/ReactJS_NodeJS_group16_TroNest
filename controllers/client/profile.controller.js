@@ -5,7 +5,6 @@ const Favorite = require('../../models/favorite.model');
 const Room = require('../../models/room.model');
 const ForgotPassword = require('../../models/forgot-password.model');
 const { ROLES } = require('../../configs/system.config');
-const { wantsJson } = require('../../helpers/http.helper');
 const { AppError } = require('../../helpers/error.helper');
 const { sendResetPasswordEmail } = require('../../helpers/mail.helper');
 

@@ -5,7 +5,6 @@ const { ROLES, USER_STATUS, ROOM_STATUS } = require('../../configs/system.config
 const { escapeRegex } = require('../../helpers/security.helper');
 const { AppError } = require('../../helpers/error.helper');
 const { queryText, queryPage, pagination } = require('../../helpers/query.helper');
-const { wantsJson } = require('../../helpers/http.helper');
 
 // [GET] /admin/landlords
 module.exports.index = async (req, res) => {

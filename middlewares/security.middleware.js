@@ -56,6 +56,10 @@ const csrfProtection = (req, res, next) => {
   });
 };
 
+// Rate Limiter: Sử dụng bộ nhớ Map trong tiến trình (phù hợp single-instance hoặc PM2 fork).
+// Khi triển khai hệ thống phân tán multi-worker (Cluster / Kubernetes / Load Balancer),
+// các biến attempts này có thể được đồng bộ qua Redis store (rate-limit-redis hoặc ioredis INCR/EXPIRE)
+// để chia sẻ giới hạn request rate trên toàn bộ cluster.
 const createRateLimiter = ({
   windowMs = 15 * 60 * 1000,
   max = 20,

@@ -2,7 +2,8 @@ const mongoose = require('mongoose');
 const Room = require('../../models/room.model');
 const Category = require('../../models/category.model');
 const Favorite = require('../../models/favorite.model');
-const { ROOM_STATUS, USER_STATUS } = require('../../configs/system.config');
+const User = require('../../models/user.model');
+const { ROOM_STATUS, USER_STATUS, ROLES } = require('../../configs/system.config');
 const { escapeRegex } = require('../../helpers/security.helper');
 const { AppError } = require('../../helpers/error.helper');
 const { queryText, queryPage, pagination } = require('../../helpers/query.helper');
@@ -20,6 +21,21 @@ module.exports.index = async (req, res) => {
   const filter = {
     status: ROOM_STATUS.APPROVED
   };
+
+  // Chỉ hiển thị phòng thuộc về các Chủ trọ đã được phê duyệt và không bị khóa
+  const invalidLandlords = await User.find({
+    role: ROLES.LANDLORD,
+    $or: [
+      { status: { $ne: USER_STATUS.APPROVED } },
+      { isBlocked: true }
+    ]
+  }).select('_id').lean();
+
+  if (invalidLandlords.length > 0) {
+    const invalidIds = invalidLandlords.map((u) => u._id);
+    filter.landlordId = { $nin: invalidIds };
+  }
+
   const andConditions = [];
 
   // Province filter, e.g. ?province=Hà Nội
@@ -155,9 +171,9 @@ module.exports.detail = async (req, res) => {
     status: ROOM_STATUS.APPROVED
   })
     .populate('categoryId', 'title slug')
-    .populate('landlordId', 'fullName phone email address avatar facebook status createdAt');
+    .populate('landlordId', 'fullName phone email address avatar facebook status isBlocked createdAt');
 
-  if (!room) {
+  if (!room || !room.landlordId || room.landlordId.status !== USER_STATUS.APPROVED || room.landlordId.isBlocked) {
     throw new AppError(404, 'Phòng trọ này không tồn tại hoặc chưa được kiểm duyệt phê duyệt!');
   }
 
@@ -173,9 +189,19 @@ module.exports.detail = async (req, res) => {
     isFavorited = Boolean(fav);
   }
 
+  const invalidLandlords = await User.find({
+    role: ROLES.LANDLORD,
+    $or: [
+      { status: { $ne: USER_STATUS.APPROVED } },
+      { isBlocked: true }
+    ]
+  }).select('_id').lean();
+  const invalidIds = invalidLandlords.map((u) => u._id);
+
   const relatedRooms = await Room.find({
     _id: { $ne: room._id },
     status: ROOM_STATUS.APPROVED,
+    ...(invalidIds.length > 0 ? { landlordId: { $nin: invalidIds } } : {}),
     $or: [
       ...(room.categoryId ? [{ categoryId: room.categoryId._id }] : []),
       { district: room.district }

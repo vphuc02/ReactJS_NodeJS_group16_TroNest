@@ -6,7 +6,7 @@ const ForgotPassword = require('../../models/forgot-password.model');
 const { JWT_SECRET, ROLES, USER_STATUS } = require('../../configs/system.config');
 const { cookieOptions } = require('../../helpers/http.helper');
 const { getSafeRedirect } = require('../../helpers/security.helper');
-const { sendOtpEmail, sendResetPasswordEmail } = require('../../helpers/mail.helper');
+const { sendOtpEmail } = require('../../helpers/mail.helper');
 const {
   buildGoogleAuthUrl,
   createOAuthState,

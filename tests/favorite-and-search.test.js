@@ -18,8 +18,6 @@ let catStudio;
 let catMini;
 let roomCheap;
 let roomMid1;
-let roomMid2;
-let roomLuxury;
 let roomPending;
 
 before(async () => {
@@ -102,7 +100,7 @@ beforeEach(async () => {
   });
 
   // Room 3: 5.5M (4-7m), 38m2 (30-50), Hà Nội, Phường Dịch Vọng, Category Chung cư mini, views: 20
-  roomMid2 = await Room.create({
+  await Room.create({
     title: '[FAV-TEST] Chung cư mini rộng rãi Cầu Giấy',
     categoryId: catMini._id,
     landlordId: landlordUser._id,
@@ -117,7 +115,7 @@ beforeEach(async () => {
   });
 
   // Room 4: 9.0M (>7m), 65m2 (>50), Đà Nẵng, Phường Hải Châu I, Category Chung cư mini, views: 80
-  roomLuxury = await Room.create({
+  await Room.create({
     title: '[FAV-TEST] Căn hộ cao cấp view biển Hải Châu',
     categoryId: catMini._id,
     landlordId: landlordUser._id,

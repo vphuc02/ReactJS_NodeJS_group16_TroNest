@@ -11,7 +11,11 @@ router.post('/create', requireApprovedLandlord, roomValidation.createPost, roomC
 router.get('/edit/:id', requireApprovedLandlord, roomController.editGet);
 router.post('/edit/:id', requireApprovedLandlord, roomValidation.editPost, roomController.editPost);
 router.post('/delete/:id', requireApprovedLandlord, roomController.deletePost);
+router.delete('/delete/:id', requireApprovedLandlord, roomController.deletePost);
+router.delete('/:id', requireApprovedLandlord, roomController.deletePost);
 router.post('/submit/:id', requireApprovedLandlord, roomController.submitPost);
+router.patch('/status/:id', requireApprovedLandlord, roomController.submitPost);
+router.post('/status/:id', requireApprovedLandlord, roomController.submitPost);
 router.post('/upload-images', requireApprovedLandlord, uploadRoomImages, roomController.uploadImages);
 
 module.exports = router;

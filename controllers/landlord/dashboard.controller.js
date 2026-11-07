@@ -1,6 +1,5 @@
 const Room = require('../../models/room.model');
 const { ROOM_STATUS } = require('../../configs/system.config');
-const { wantsJson } = require('../../helpers/http.helper');
 
 // [GET] /landlord/dashboard
 module.exports.index = async (req, res) => {

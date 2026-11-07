@@ -1,7 +1,9 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:3000',
+  baseURL: import.meta.env.VITE_API_URL !== undefined
+    ? import.meta.env.VITE_API_URL
+    : (import.meta.env.DEV ? 'http://localhost:3000' : ''),
   withCredentials: true,
   headers: {
     'Accept': 'application/json',
@@ -9,12 +11,17 @@ const api = axios.create({
   }
 });
 
-// Request interceptor: Gắn JWT token vào Header Authorization nếu có
+let memoryToken = null;
+
+export const setAuthToken = (token) => {
+  memoryToken = token;
+};
+
+// Request interceptor: Gắn JWT token trong bộ nhớ vào Header Authorization nếu có
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    if (memoryToken) {
+      config.headers.Authorization = `Bearer ${memoryToken}`;
     }
     return config;
   },
@@ -26,9 +33,10 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Nếu hết phiên và không ở trang login, có thể dọn token cũ
+      memoryToken = null;
+      localStorage.removeItem('token');
+      // Nếu hết phiên và không ở trang login, có thể dọn user cũ
       if (!window.location.pathname.includes('/login')) {
-        localStorage.removeItem('token');
         localStorage.removeItem('user');
       }
     }

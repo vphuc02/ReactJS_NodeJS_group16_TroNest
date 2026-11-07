@@ -7,6 +7,8 @@ router.get('/detail/:id', roomController.detail);
 router.post('/approve/:id', roomController.approve);
 router.post('/reject/:id', roomController.reject);
 router.post('/delete/:id', roomController.delete);
+router.delete('/delete/:id', roomController.delete);
+router.delete('/:id', roomController.delete);
 
 module.exports = router;
 

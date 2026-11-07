@@ -1,5 +1,9 @@
 // frontend/src/utils/avatar.js
 
+const API_BASE = import.meta.env.VITE_API_URL !== undefined
+  ? import.meta.env.VITE_API_URL
+  : (import.meta.env.DEV ? 'http://localhost:3000' : '');
+
 export const resolveAvatar = (avatar) => {
   if (!avatar || avatar.includes('avatar.jpg')) {
     return '/admin/assets/images/avatar.jpg';
@@ -8,7 +12,7 @@ export const resolveAvatar = (avatar) => {
     return avatar;
   }
   if (avatar.startsWith('/uploads/')) {
-    return `http://localhost:3000${avatar}`;
+    return API_BASE ? `${API_BASE}${avatar}` : avatar;
   }
   return avatar;
 };

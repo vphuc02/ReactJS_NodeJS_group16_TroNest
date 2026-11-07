@@ -6,5 +6,7 @@ const categoryValidation = require('../../validations/admin/category.validation'
 router.get('/', categoryController.index);
 router.post('/create', categoryValidation.createPost, categoryController.createPost);
 router.post('/delete/:id', categoryController.deletePost);
+router.delete('/delete/:id', categoryController.deletePost);
+router.delete('/:id', categoryController.deletePost);
 
 module.exports = router;

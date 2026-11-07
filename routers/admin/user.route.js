@@ -4,5 +4,7 @@ const userController = require('../../controllers/admin/user.controller');
 
 router.get('/', userController.index);
 router.post('/toggle-status/:id', userController.toggleStatus);
+router.patch('/status/:id', userController.toggleStatus);
+router.post('/status/:id', userController.toggleStatus);
 
 module.exports = router;

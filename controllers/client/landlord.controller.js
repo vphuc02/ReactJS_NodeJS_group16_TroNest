@@ -3,7 +3,6 @@ const User = require('../../models/user.model');
 const Room = require('../../models/room.model');
 const Favorite = require('../../models/favorite.model');
 const { ROLES, ROOM_STATUS, USER_STATUS } = require('../../configs/system.config');
-const { wantsJson } = require('../../helpers/http.helper');
 const { AppError } = require('../../helpers/error.helper');
 
 // [GET] /landlords/:id

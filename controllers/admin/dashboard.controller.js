@@ -2,7 +2,6 @@ const User = require('../../models/user.model');
 const Room = require('../../models/room.model');
 const Category = require('../../models/category.model');
 const { ROLES, ROOM_STATUS, USER_STATUS } = require('../../configs/system.config');
-const { wantsJson } = require('../../helpers/http.helper');
 
 // [GET] /admin/dashboard
 module.exports.index = async (req, res) => {

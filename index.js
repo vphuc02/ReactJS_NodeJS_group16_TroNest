@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const path = require('path');
+const fs = require('fs');
 const cors = require('cors');
 const { connectDB } = require('./configs/database.config');
 const { PORT } = require('./configs/system.config');
@@ -16,13 +17,27 @@ const adminRouter = require('./routers/admin/index.route');
 const app = express();
 
 // CORS Configuration for React Frontend
+const allowedOrigins = (process.env.ALLOWED_ORIGINS || '')
+  .split(',')
+  .map((o) => o.trim())
+  .filter(Boolean);
+
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Cho phép không có origin (curl, same-origin) hoặc bất kỳ port nào trên localhost/127.0.0.1 (5173, 5174, 3000...)
-      if (!origin || /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) {
+      // Cho phép không có origin (curl, same-origin, mobile)
+      if (!origin) return callback(null, true);
+
+      // Cho phép các cổng trên localhost/127.0.0.1 (5173, 5174, 3000...)
+      if (/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) {
         return callback(null, true);
       }
+
+      // Cho phép domain production được cấu hình qua ALLOWED_ORIGINS
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
       callback(new Error('Not allowed by CORS'));
     },
     credentials: true,
@@ -45,6 +60,12 @@ app.use(csrfProtection);
 // Static Files (Uploads and assets)
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Serve React production build if available
+const frontendDistPath = path.join(__dirname, 'frontend/dist');
+if (fs.existsSync(frontendDistPath)) {
+  app.use(express.static(frontendDistPath));
+}
+
 // Global Middleware to attach current user to requests
 app.use(attachUser);
 
@@ -54,6 +75,16 @@ app.use('/landlord', landlordRouter);
 app.use('/', clientRouter);
 app.use('/api/geo', require('./routes/api/geo'));
 app.use('/api/geo', require('./routes/api/nearby'));
+
+// SPA Fallback for client-side routing in production (HTML requests)
+if (process.env.NODE_ENV !== 'test' && fs.existsSync(frontendDistPath)) {
+  app.use((req, res, next) => {
+    if (req.method === 'GET' && req.accepts('html')) {
+      return res.sendFile(path.join(frontendDistPath, 'index.html'));
+    }
+    next();
+  });
+}
 
 // Central error handlers (Pure JSON)
 app.use(notFoundHandler);

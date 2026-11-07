@@ -9,7 +9,7 @@ const extractToken = (req) => {
   }
   return req.originalUrl?.startsWith('/admin')
     ? req.cookies?.token_admin || req.cookies?.token
-    : req.cookies?.token;
+    : req.cookies?.token || req.cookies?.token_admin;
 };
 
 // Middleware gắn thông tin user vào req và res.locals (dùng toàn cục)

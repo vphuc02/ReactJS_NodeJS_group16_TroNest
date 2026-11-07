@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { authApi } from '../api/authApi';
+import { setAuthToken } from '../api/client';
 import toast from 'react-hot-toast';
 
 const AuthContext = createContext(null);
@@ -13,28 +14,31 @@ export const AuthProvider = ({ children }) => {
       return null;
     }
   });
-  const [token, setToken] = useState(() => localStorage.getItem('token') || null);
+  const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Khi app mount, kiểm tra phiên đăng nhập với backend
+  // Khi app mount, kiểm tra phiên đăng nhập với backend bằng httpOnly cookie bảo mật
   useEffect(() => {
     const initAuth = async () => {
-      const savedToken = localStorage.getItem('token');
-      if (savedToken) {
-        try {
-          const res = await authApi.getMe();
-          if (res.code === 200 && res.user) {
-            setUser(res.user);
-            localStorage.setItem('user', JSON.stringify(res.user));
-          } else {
-            handleLogout(false);
-          }
-        } catch {
-          // Token không hợp lệ hoặc hết hạn
-          handleLogout(false);
+      // Dọn dẹp token cũ trong localStorage nếu có từ trước để chống rủi ro XSS
+      localStorage.removeItem('token');
+
+      try {
+        const res = await authApi.getMe();
+        if (res.code === 200 && res.user) {
+          setUser(res.user);
+          localStorage.setItem('user', JSON.stringify(res.user));
+        } else {
+          setUser(null);
+          localStorage.removeItem('user');
         }
+      } catch {
+        // Phiên chưa đăng nhập hoặc cookie hết hạn
+        setUser(null);
+        localStorage.removeItem('user');
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     initAuth();
@@ -42,8 +46,9 @@ export const AuthProvider = ({ children }) => {
 
   const handleLogin = (newToken, userData) => {
     setToken(newToken);
+    setAuthToken(newToken);
     setUser(userData);
-    localStorage.setItem('token', newToken);
+    localStorage.removeItem('token'); // Không lưu token trong localStorage
     localStorage.setItem('user', JSON.stringify(userData));
   };
 
@@ -56,6 +61,7 @@ export const AuthProvider = ({ children }) => {
       }
     }
     setToken(null);
+    setAuthToken(null);
     setUser(null);
     localStorage.removeItem('token');
     localStorage.removeItem('user');

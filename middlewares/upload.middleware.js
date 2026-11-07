@@ -89,6 +89,7 @@ module.exports.uploadRoomImages = async (req, res, next) => {
           folder: 'tronest/rooms',
           public_id: publicId
         });
+        usedBytes += buffer.length;
         storedFiles.push({
           filename: uploadResult.public_id,
           path: uploadResult.secure_url,

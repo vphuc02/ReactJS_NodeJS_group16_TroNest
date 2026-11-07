@@ -1,13 +1,12 @@
 const mongoose = require('mongoose');
 const Room = require('../../models/room.model');
 const User = require('../../models/user.model');
-const { ROOM_STATUS, ROLES } = require('../../configs/system.config');
+const { ROOM_STATUS, ROLES, USER_STATUS } = require('../../configs/system.config');
 const { escapeRegex } = require('../../helpers/security.helper');
 const { AppError } = require('../../helpers/error.helper');
 const { removeUnreferencedImages } = require('../../helpers/room.helper');
 const { queryText, queryPage, pagination } = require('../../helpers/query.helper');
 const Favorite = require('../../models/favorite.model');
-const { wantsJson } = require('../../helpers/http.helper');
 
 // [GET] /admin/rooms
 module.exports.index = async (req, res) => {
@@ -107,6 +106,15 @@ module.exports.approve = async (req, res) => {
   const room = await Room.findById(id);
   if (!room) {
     throw new AppError(404, 'Bài đăng không tồn tại!');
+  }
+
+  // Kiểm tra trạng thái chủ trọ: không được duyệt bài nếu chủ trọ bị khóa hoặc chưa được phê duyệt
+  const landlord = await User.findById(room.landlordId);
+  if (!landlord || landlord.isBlocked || landlord.status !== USER_STATUS.APPROVED) {
+    return res.status(400).json({
+      code: 400,
+      message: 'Không thể duyệt bài đăng do tài khoản Chủ trọ chưa được phê duyệt hoặc đang bị khóa!'
+    });
   }
 
   room.status = ROOM_STATUS.APPROVED;

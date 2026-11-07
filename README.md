@@ -87,29 +87,71 @@ Tất cả tài khoản đều có mật khẩu mặc định là: **`123456`**
 
 ---
 
-## 4. Hướng Dẫn Chạy Dự Án
+## 4. Hướng Dẫn Chạy & Triển Khai Dự Án
 
-Yêu cầu Node.js >= 20.19.0 và Yarn. Cài dependency bằng `yarn install`.
+Yêu cầu Node.js >= 20.19.0.
 
-### Cấu hình biến môi trường (.env):
-Sao chép từ file mẫu và cấu hình thông tin của bạn:
+### 4.1 Cấu hình biến môi trường (.env):
+Sao chép từ file mẫu và cấu hình thông tin:
 ```bash
 cp .env.example .env
 ```
+Các biến môi trường quan trọng:
+- `PORT`: Cổng chạy Express REST API Server (mặc định: `3000`).
+- `MONGODB_URI`: Chuỗi kết nối MongoDB Atlas hoặc local.
+- `JWT_SECRET`: Khóa bí mật ký JWT token bảo mật.
+- `ALLOWED_ORIGINS`: Danh sách các domain production được phép gọi API qua CORS (ngăn cách bởi dấu phẩy, vd: `https://tronest.vn,https://admin.tronest.vn`).
+- `VITE_API_URL`: (Tùy chọn) URL backend cho frontend React khi deploy tách biệt. Bỏ trống khi deploy fullstack trên cùng server Express.
 
-### Khởi động Server:
+---
+
+### 4.2 Chạy môi trường Phát triển (Development):
+Chạy đồng thời backend và frontend trên 2 cổng để tận dụng Hot Module Replacement (HMR):
 ```bash
-yarn start
+# Terminal 1: Chạy Express REST API Server (http://localhost:3000)
+npm run dev
+
+# Terminal 2: Chạy React Frontend Vite Server (http://localhost:5173)
+npm run frontend:dev
 ```
 
-Server sẽ chạy tại: **`http://localhost:3000`**
+---
 
-Chạy phát triển với tự động tải lại: `yarn dev`. Đặt `NODE_ENV=production` trên môi trường triển khai HTTPS.
+### 4.3 Triển khai Môi trường Thực tế (Production Full-Stack):
+TroNest hỗ trợ đóng gói và chạy toàn bộ full-stack ứng dụng (cả Client, Landlord, Admin portal) trên **một tiến trình Node.js duy nhất**:
 
-### Khởi tạo lại Dữ liệu mẫu (Seed Data):
+1. **Build bản phát hành React Frontend**:
+   ```bash
+   npm run frontend:build
+   ```
+   Lệnh này biên dịch toàn bộ source code React sang thư mục tĩnh `frontend/dist`.
+
+2. **Khởi động Server Production**:
+   ```bash
+   npm start
+   ```
+   Server Express sẽ tự động:
+   - Phục vụ API REST tại các tiền tố `/admin`, `/landlord`, `/api/geo`, `/auth`, `/rooms`...
+   - Phục vụ các tài nguyên tĩnh từ `frontend/dist` và `public/uploads`.
+   - Tự động fallback mọi yêu cầu điều hướng HTML về `frontend/dist/index.html` để React Router xử lý định tuyến phía client.
+
+---
+
+### 4.4 Kiểm tra chất lượng mã nguồn & Kiểm thử (Testing):
+```bash
+# Kiểm tra định dạng và phân tích mã nguồn (0 errors)
+npm run lint
+
+# Chạy toàn bộ 127 bài kiểm thử tự động (Unit & Integration tests)
+npm test
+```
+
+---
+
+### 4.5 Khởi tạo lại Dữ liệu mẫu (Seed Data):
 Lệnh này xóa dữ liệu hiện tại trong database được cấu hình. Chỉ dùng database phát triển riêng; seed bị chặn khi `NODE_ENV=production` và yêu cầu cờ xác nhận `--reset`.
 ```bash
-yarn seed --reset
+npm run seed -- --reset
 ```
 
 ### Cấu hình lưu trữ ảnh Cloudinary

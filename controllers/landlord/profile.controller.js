@@ -1,6 +1,5 @@
 const User = require('../../models/user.model');
 const Room = require('../../models/room.model');
-const { wantsJson } = require('../../helpers/http.helper');
 const { AppError } = require('../../helpers/error.helper');
 const clientProfileController = require('../client/profile.controller');
 

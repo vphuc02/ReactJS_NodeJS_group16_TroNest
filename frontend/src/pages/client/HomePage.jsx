@@ -299,7 +299,7 @@ export const HomePage = () => {
 
   return (
     <div className="home-page-container">
-      
+
       {/* 1. HERO BANNER & SEARCH SECTION (Hotelier Luxury Hospitality Swiper) */}
       <section className="hero-banner-section">
         <div className="swiper hero-banner-swiper">
@@ -386,7 +386,7 @@ export const HomePage = () => {
           <div className="container">
             <form onSubmit={handleSearch} className="home-search-form" data-aos="fade-up" data-aos-delay="100">
               <div className="search-fields-grid">
-                
+
                 {/* Khu vực / Địa chỉ */}
                 <div className="search-field-col col-keyword">
                   <label className="search-field-label" htmlFor="home-keyword">Khu vực / Địa chỉ</label>
@@ -647,7 +647,7 @@ export const HomePage = () => {
       <section className="hotelier-why-section">
         <div className="container">
           <div className="hotelier-why-grid">
-            
+
             {/* Left Visual Box */}
             <div className="hotelier-why-visual" data-aos="fade-right">
               <div className="hotelier-why-img-box">
@@ -897,3 +897,4 @@ export const HomePage = () => {
     </div>
   );
 };
+

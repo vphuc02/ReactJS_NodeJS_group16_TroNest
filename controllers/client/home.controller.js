@@ -1,14 +1,29 @@
 const Category = require('../../models/category.model');
 const Room = require('../../models/room.model');
 const Favorite = require('../../models/favorite.model');
-const { ROOM_STATUS, USER_STATUS } = require('../../configs/system.config');
+const User = require('../../models/user.model');
+const { ROOM_STATUS, USER_STATUS, ROLES } = require('../../configs/system.config');
 
 // [GET] /
 module.exports.index = async (req, res) => {
+  const invalidLandlords = await User.find({
+    role: ROLES.LANDLORD,
+    $or: [
+      { status: { $ne: USER_STATUS.APPROVED } },
+      { isBlocked: true }
+    ]
+  }).select('_id').lean();
+  const invalidIds = invalidLandlords.map((u) => u._id);
+
+  const roomFilter = {
+    status: ROOM_STATUS.APPROVED,
+    ...(invalidIds.length > 0 ? { landlordId: { $nin: invalidIds } } : {})
+  };
+
   const categories = await Category.find({ status: USER_STATUS.ACTIVE }).lean();
 
   const featuredRooms = await Room.find({
-    status: ROOM_STATUS.APPROVED,
+    ...roomFilter,
     isFeatured: true
   })
     .populate('categoryId', 'title slug')
@@ -16,9 +31,7 @@ module.exports.index = async (req, res) => {
     .limit(6)
     .lean();
 
-  const latestRooms = await Room.find({
-    status: ROOM_STATUS.APPROVED
-  })
+  const latestRooms = await Room.find(roomFilter)
     .sort({ createdAt: -1 })
     .populate('categoryId', 'title slug')
     .populate('landlordId', 'fullName phone avatar status')

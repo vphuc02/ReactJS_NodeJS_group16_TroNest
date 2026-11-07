@@ -5,7 +5,6 @@ const { ROLES, USER_STATUS, ROOM_STATUS } = require('../../configs/system.config
 const { escapeRegex } = require('../../helpers/security.helper');
 const { AppError } = require('../../helpers/error.helper');
 const { queryText, queryPage, pagination } = require('../../helpers/query.helper');
-const { wantsJson } = require('../../helpers/http.helper');
 
 // [GET] /admin/users
 module.exports.index = async (req, res) => {
@@ -88,7 +87,11 @@ module.exports.toggleStatus = async (req, res) => {
   }
 
   const wasBlocked = user.isBlocked || user.status === USER_STATUS.INACTIVE;
-  user.isBlocked = !wasBlocked;
+  if (typeof req.body?.isBlocked === 'boolean') {
+    user.isBlocked = req.body.isBlocked;
+  } else {
+    user.isBlocked = !wasBlocked;
+  }
   if (user.status === USER_STATUS.INACTIVE) {
     user.status = user.role === ROLES.LANDLORD ? USER_STATUS.PENDING : USER_STATUS.ACTIVE;
   }

@@ -4,7 +4,6 @@ const Room = require('../../models/room.model');
 const { AppError } = require('../../helpers/error.helper');
 const { escapeRegex } = require('../../helpers/security.helper');
 const { queryPage, pagination } = require('../../helpers/query.helper');
-const { wantsJson } = require('../../helpers/http.helper');
 
  // [GET] /admin/categories
  module.exports.index = async (req, res) => {

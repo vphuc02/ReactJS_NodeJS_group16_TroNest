@@ -8,7 +8,6 @@ const { removeUnreferencedImages } = require('../../helpers/room.helper');
 const { queryText, queryPage, pagination } = require('../../helpers/query.helper');
 const Favorite = require('../../models/favorite.model');
 const { geocodeAddress } = require('../../helpers/geocode.helper');
-const { wantsJson } = require('../../helpers/http.helper');
 
 /**
  * Tự động geocode địa chỉ phòng và cập nhật trường location vào DB.
@@ -281,7 +280,7 @@ module.exports.deletePost = async (req, res) => {
   });
 };
 
-// [POST] /landlord/rooms/submit/:id
+// [POST] /landlord/rooms/submit/:id hoặc [PATCH] /landlord/rooms/status/:id
 module.exports.submitPost = async (req, res) => {
   const { id } = req.params;
   if (!isValidId(id)) {
@@ -297,15 +296,21 @@ module.exports.submitPost = async (req, res) => {
     throw new AppError(404, 'Bài đăng không tồn tại!');
   }
 
-  room.status = ROOM_STATUS.PENDING;
+  const targetStatus = req.body?.status === ROOM_STATUS.DRAFT ? ROOM_STATUS.DRAFT : ROOM_STATUS.PENDING;
+  room.status = targetStatus;
   room.rejectReason = '';
   await room.save();
 
   return res.json({
     code: 200,
-    message: 'Bài đăng đã được gửi tới Admin để phê duyệt!'
+    status: room.status,
+    message: targetStatus === ROOM_STATUS.DRAFT
+      ? 'Đã chuyển bài đăng về trạng thái Bản nháp (DRAFT)!'
+      : 'Bài đăng đã được gửi tới Admin để phê duyệt!'
   });
 };
+
+module.exports.changeStatus = module.exports.submitPost;
 
 // [POST] /landlord/rooms/upload-images
 module.exports.uploadImages = async (req, res) => {
