@@ -239,3 +239,4 @@ export const RoomListPage = () => {
     </div>
   );
 };
+

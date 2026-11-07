@@ -21,3 +21,4 @@ export const roomApi = {
     return res.data;
   }
 };
+

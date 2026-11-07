@@ -81,6 +81,12 @@ export const RoomCard = ({ room, isFavorited: initialFavorited = false, onFavori
 
         {/* Category & Verified Badge */}
         <div className="absolute top-3.5 left-3.5 flex flex-col gap-1.5 z-10 pointer-events-none">
+          {room.distanceM !== undefined && room.distanceM !== null && (
+            <span className="px-2.5 py-1 rounded-full text-[10.5px] font-bold bg-emerald-600 text-white shadow-xs flex items-center gap-1">
+              <MapPin className="w-3 h-3" />
+              <span>Cách {room.distanceM < 1000 ? `${Math.round(room.distanceM)}m` : `${(room.distanceM / 1000).toFixed(1)}km`}</span>
+            </span>
+          )}
           {room.categoryId && (
             <span className="px-2.5 py-1 rounded-full text-[10.5px] font-bold bg-[#FAF7F2]/95 backdrop-blur-xs text-[#A67C52] border border-[#E6DFD3] shadow-xs">
               {room.categoryId.title || room.categoryId}
@@ -147,3 +153,4 @@ export const RoomCard = ({ room, isFavorited: initialFavorited = false, onFavori
     </div>
   );
 };
+

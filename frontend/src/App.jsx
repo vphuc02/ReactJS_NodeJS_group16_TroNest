@@ -19,6 +19,7 @@ import { ForgotPasswordPage } from './pages/client/ForgotPasswordPage';
 import { ResetPasswordPage } from './pages/client/ResetPasswordPage';
 import { FavoritesPage } from './pages/client/FavoritesPage';
 import { ProfilePage } from './pages/client/ProfilePage';
+import { LandlordPublicDetailPage } from './pages/client/LandlordPublicDetailPage';
 
 // Landlord Pages
 import { LandlordDashboardPage } from './pages/landlord/LandlordDashboardPage';
@@ -27,6 +28,7 @@ import { LandlordRoomFormPage } from './pages/landlord/LandlordRoomFormPage';
 import { LandlordProfilePage } from './pages/landlord/LandlordProfilePage';
 
 // Admin Pages
+import { AdminLoginPage } from './pages/admin/AdminLoginPage';
 import { AdminDashboardPage } from './pages/admin/AdminDashboardPage';
 import { AdminRoomListPage } from './pages/admin/AdminRoomListPage';
 import { AdminLandlordListPage } from './pages/admin/AdminLandlordListPage';
@@ -74,6 +76,8 @@ export default function App() {
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/forgot-password" element={<ForgotPasswordPage />} />
             <Route path="/reset-password" element={<ResetPasswordPage />} />
+            <Route path="/landlords/:id" element={<LandlordPublicDetailPage />} />
+            <Route path="/chu-tro/:id" element={<LandlordPublicDetailPage />} />
             <Route
               path="/favorites"
               element={
@@ -108,6 +112,9 @@ export default function App() {
             <Route path="rooms/edit/:id" element={<LandlordRoomFormPage />} />
             <Route path="profile" element={<LandlordProfilePage />} />
           </Route>
+
+          {/* ADMIN LOGIN */}
+          <Route path="/admin/login" element={<AdminLoginPage />} />
 
           {/* ADMIN PORTAL ROUTES */}
           <Route

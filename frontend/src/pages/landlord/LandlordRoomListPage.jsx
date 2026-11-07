@@ -245,3 +245,4 @@ export const LandlordRoomListPage = () => {
     </div>
   );
 };
+

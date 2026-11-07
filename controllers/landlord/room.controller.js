@@ -346,6 +346,7 @@ module.exports.uploadImages = async (req, res) => {
   return res.json({
     code: 200,
     message: `Đã tải lên thành công ${fileUrls.length} ảnh!`,
-    urls: fileUrls
+    urls: fileUrls,
+    images: fileUrls
   });
 };

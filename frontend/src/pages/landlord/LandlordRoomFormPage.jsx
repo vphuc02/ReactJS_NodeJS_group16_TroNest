@@ -118,9 +118,10 @@ export const LandlordRoomFormPage = () => {
       files.forEach((f) => formData.append('roomImages', f));
 
       const res = await landlordApi.uploadImages(formData);
-      if (res.code === 200 && res.images) {
-        setImages((prev) => [...prev, ...res.images].slice(0, 6));
-        toast.success(`Đã tải lên ${res.images.length} hình ảnh!`);
+      const uploadedList = res.images || res.urls || [];
+      if (res.code === 200 && uploadedList.length > 0) {
+        setImages((prev) => [...prev, ...uploadedList].slice(0, 6));
+        toast.success(`Đã tải lên ${uploadedList.length} hình ảnh!`);
       } else {
         toast.error('Tải ảnh thất bại!');
       }
@@ -453,3 +454,4 @@ export const LandlordRoomFormPage = () => {
     </div>
   );
 };
+

@@ -181,6 +181,20 @@ export const RegisterPage = () => {
           >
             {loading ? <span>Đang xử lý đăng ký...</span> : <span>Hoàn Tất Đăng Ký</span>}
           </button>
+
+          {/* Google OAuth Register */}
+          <div className="relative flex items-center justify-center pt-1">
+            <div className="border-t border-slate-100 w-full"></div>
+            <span className="bg-white px-2.5 text-[10px] text-slate-400 font-bold uppercase">Hoặc</span>
+          </div>
+
+          <a
+            href={`http://localhost:3000/auth/google?role=${role}`}
+            className="w-full py-2.5 rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold flex items-center justify-center gap-2.5 transition-all shadow-2xs no-underline"
+          >
+            <i className="fa-brands fa-google text-red-500 text-sm"></i>
+            <span>Đăng ký với Google</span>
+          </a>
         </form>
 
         {/* Footer */}
@@ -195,3 +209,4 @@ export const RegisterPage = () => {
     </div>
   );
 };
+

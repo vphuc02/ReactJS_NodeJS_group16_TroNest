@@ -3,7 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { roomApi } from '../../api/roomApi';
 import { RoomCard } from '../../components/common/RoomCard';
 import { BronzeAmenityStrip } from '../../components/home/BronzeAmenityStrip';
-import { Search, MapPin, Sparkles, ArrowRight, ShieldCheck, CheckCircle2, ChevronRight } from 'lucide-react';
+import { Search, MapPin, Sparkles, ArrowRight, ShieldCheck, CheckCircle2, ChevronRight, Navigation, Loader2 } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 export const HomePage = () => {
   const [data, setData] = useState({
@@ -16,6 +17,8 @@ export const HomePage = () => {
   const [keyword, setKeyword] = useState('');
   const [category, setCategory] = useState('');
   const [province, setProvince] = useState('');
+  const [nearbyLoading, setNearbyLoading] = useState(false);
+  const [nearbyData, setNearbyData] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -41,6 +44,50 @@ export const HomePage = () => {
     if (category) params.append('category', category);
     if (province) params.append('province', province);
     navigate(`/rooms?${params.toString()}`);
+  };
+
+  const handleFindNearby = () => {
+    if (!navigator.geolocation) {
+      toast.error('Trình duyệt của bạn không hỗ trợ định vị GPS!');
+      return;
+    }
+
+    setNearbyLoading(true);
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        try {
+          const { latitude, longitude } = position.coords;
+          const res = await roomApi.getNearbyRooms({
+            lat: latitude,
+            lng: longitude,
+            limit: 6,
+            radius: 5000
+          });
+
+          if (res && res.code === 200) {
+            setNearbyData(res);
+            toast.success(`Tìm thấy ${res.rooms?.length || 0} phòng gần vị trí của bạn!`);
+            setTimeout(() => {
+              const el = document.getElementById('nearby-section');
+              if (el) el.scrollIntoView({ behavior: 'smooth' });
+            }, 100);
+          } else {
+            toast.error(res?.message || 'Không tìm thấy phòng phù hợp quanh khu vực này!');
+          }
+        } catch (err) {
+          console.error('Lỗi tìm kiếm gần đây:', err);
+          toast.error('Lỗi kết nối máy chủ khi tìm phòng gần đây!');
+        } finally {
+          setNearbyLoading(false);
+        }
+      },
+      (error) => {
+        setNearbyLoading(false);
+        console.warn('Geolocation error:', error);
+        toast.error('Vui lòng cấp quyền truy cập vị trí trên trình duyệt để tìm phòng quanh bạn!');
+      },
+      { timeout: 10000, enableHighAccuracy: true }
+    );
   };
 
   return (
@@ -101,6 +148,21 @@ export const HomePage = () => {
                 >
                   <Search className="w-3.5 h-3.5" />
                   <span>Tìm Phòng</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleFindNearby}
+                  disabled={nearbyLoading}
+                  className="px-4 py-2.5 rounded-2xl bg-white border border-[#E6DFD3] hover:border-[#A67C52] text-slate-700 hover:text-[#A67C52] text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-60 shadow-xs shrink-0"
+                  title="Tìm phòng gần vị trí hiện tại của bạn"
+                >
+                  {nearbyLoading ? (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin text-[#A67C52]" />
+                  ) : (
+                    <Navigation className="w-3.5 h-3.5 text-[#A67C52]" />
+                  )}
+                  <span>{nearbyLoading ? 'Đang dò vị trí...' : 'Gần tôi'}</span>
                 </button>
               </form>
 
@@ -163,6 +225,62 @@ export const HomePage = () => {
 
       {/* Section 2: Warm Bronze Amenity & Service Strip */}
       <BronzeAmenityStrip />
+
+      {/* GPS Nearby Rooms Section */}
+      {(nearbyLoading || nearbyData) && (
+        <section id="nearby-section" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-24">
+          <div className="bg-gradient-to-r from-[#FAF7F2] to-[#F5EFE6] p-6 sm:p-8 rounded-3xl border border-[#E6DFD3] shadow-sm mb-6">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div>
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold mb-2">
+                  <Navigation className="w-3.5 h-3.5 animate-pulse text-emerald-600" />
+                  <span>Vị trí hiện tại của bạn</span>
+                </div>
+                <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 font-serif">
+                  Phòng Trọ Gần Vị Trí Của Bạn
+                </h2>
+                <p className="text-xs text-slate-600 mt-1 flex items-center gap-1.5">
+                  <MapPin className="w-3.5 h-3.5 text-[#A67C52]" />
+                  <span>
+                    {nearbyData?.geo?.displayName || nearbyData?.province || (nearbyLoading ? 'Đang truy vấn GPS vệ tinh...' : 'Khu vực hiện tại')}
+                  </span>
+                </p>
+              </div>
+
+              {nearbyData?.rooms?.length > 0 && (
+                <Link
+                  to="/rooms"
+                  className="px-4 py-2 rounded-2xl bg-white border border-[#E6DFD3] text-xs font-bold text-[#A67C52] hover:bg-[#FAF7F2] transition-colors shadow-2xs"
+                >
+                  Xem tất cả danh sách
+                </Link>
+              )}
+            </div>
+          </div>
+
+          {nearbyLoading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="h-80 bg-slate-200/60 rounded-3xl animate-pulse"></div>
+              ))}
+            </div>
+          ) : nearbyData?.rooms?.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {nearbyData.rooms.map((room) => (
+                <RoomCard
+                  key={room._id}
+                  room={room}
+                  isFavorited={data.favoriteRoomIds?.includes(room._id)}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-10 bg-white rounded-3xl border border-[#E6DFD3] text-slate-500 text-sm">
+              Không tìm thấy phòng trọ nào trong bán kính 5km quanh vị trí hiện tại của bạn.
+            </div>
+          )}
+        </section>
+      )}
 
       {/* Section 3: Featured Rooms */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -325,3 +443,4 @@ export const HomePage = () => {
     </div>
   );
 };
+

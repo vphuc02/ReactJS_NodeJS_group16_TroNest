@@ -53,3 +53,4 @@ export const BronzeAmenityStrip = () => {
     </section>
   );
 };
+

@@ -308,3 +308,4 @@ export const RoomDetailPage = () => {
     </div>
   );
 };
+

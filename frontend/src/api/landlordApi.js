@@ -48,3 +48,4 @@ export const landlordApi = {
     return res.data;
   }
 };
+
