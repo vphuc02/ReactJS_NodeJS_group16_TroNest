@@ -73,7 +73,7 @@ class TestClient {
 
     const contentType = res.headers.get('content-type') || '';
     let parsedBody;
-    if (contentType.includes('application/json')) {
+    if (wantsJson && contentType.includes('application/json')) {
       parsedBody = await res.json().catch(() => null);
     } else {
       parsedBody = await res.text().catch(() => '');

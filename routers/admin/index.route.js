@@ -41,8 +41,9 @@ router.use('/upload', uploadRoutes);
 
 // Xử lý 404 riêng cho phân hệ Admin
 router.use((req, res) => {
-  res.status(404).render('admin/pages/error-404', {
-    title: '404 - Không tìm thấy trang'
+  res.status(404).json({
+    code: 404,
+    message: '404 Not Found - Tài nguyên quản trị không tồn tại!'
   });
 });
 

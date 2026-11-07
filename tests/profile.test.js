@@ -123,15 +123,13 @@ describe('Xem & Quản Lý Thông Tin Cá Nhân Khách Hàng (Client Profile)', 
     assert.equal(updatedInDb.address, 'Ba Đình, Hà Nội');
     assert.equal(updatedInDb.facebook, 'https://facebook.com/khachmoi');
 
-    // Kiểm tra HTML trang cá nhân render đúng thẻ <a> chuyển hướng sang Facebook với target="_blank"
-    const profileHtmlRes = await client.get('/profile', { wantsJson: false });
-    assert.equal(profileHtmlRes.status, 200);
-    assert.match(profileHtmlRes.body, /id="profile-facebook-link"[^>]*href="https:\/\/facebook\.com\/khachmoi"/);
-    assert.match(profileHtmlRes.body, /target="_blank"/);
-    assert.match(profileHtmlRes.body, /rel="noopener noreferrer"/);
+    // Kiểm tra API thông tin cá nhân trả về đúng link Facebook đã lưu
+    const profileJsonRes = await client.get('/profile', { wantsJson: true });
+    assert.equal(profileJsonRes.status, 200);
+    assert.equal(profileJsonRes.body.user.facebook, 'https://facebook.com/khachmoi');
   });
 
-  test('Thêm link Facebook dạng username hoặc domain không tiền tố -> chuẩn hóa href để click chuyển hướng sang Facebook', async () => {
+  test('Thêm link Facebook dạng username hoặc domain không tiền tố -> lưu chính xác trong profile', async () => {
     const passwordHash = await bcrypt.hash('password123', 10);
     const customer = await User.create({
       fullName: 'Khách Test Facebook',
@@ -154,10 +152,9 @@ describe('Xem & Quản Lý Thông Tin Cá Nhân Khách Hàng (Client Profile)', 
     });
     assert.equal(editRes1.status, 200);
 
-    const htmlRes1 = await client.get('/profile', { wantsJson: false });
-    assert.equal(htmlRes1.status, 200);
-    assert.match(htmlRes1.body, /href="https:\/\/facebook\.com\/trungnguyen\.profile"/);
-    assert.match(htmlRes1.body, /target="_blank"/);
+    const jsonRes1 = await client.get('/profile', { wantsJson: true });
+    assert.equal(jsonRes1.status, 200);
+    assert.equal(jsonRes1.body.user.facebook, 'trungnguyen.profile');
 
     // 2. Thêm dạng facebook.com/username
     const editRes2 = await client.post('/profile/edit', {
@@ -166,9 +163,9 @@ describe('Xem & Quản Lý Thông Tin Cá Nhân Khách Hàng (Client Profile)', 
     });
     assert.equal(editRes2.status, 200);
 
-    const htmlRes2 = await client.get('/profile', { wantsJson: false });
-    assert.equal(htmlRes2.status, 200);
-    assert.match(htmlRes2.body, /href="https:\/\/facebook\.com\/trungnguyen\.profile"/);
+    const jsonRes2 = await client.get('/profile', { wantsJson: true });
+    assert.equal(jsonRes2.status, 200);
+    assert.equal(jsonRes2.body.user.facebook, 'facebook.com/trungnguyen.profile');
   });
 
   test('Tải lên ảnh đại diện từ máy tính thành công (POST /profile/avatar)', async () => {

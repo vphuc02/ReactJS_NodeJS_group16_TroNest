@@ -128,7 +128,7 @@ export const LandlordPublicDetailPage = () => {
           {landlord.phone && (
             <a
               href={`tel:${landlord.phone}`}
-              className="px-6 py-2.5 rounded-2xl bg-linear-to-r from-[#A67C52] to-[#8C6239] text-white text-xs font-bold shadow-md shadow-[#A67C52]/20 flex items-center justify-center gap-2 no-underline"
+              className="px-6 py-2.5 rounded-2xl bg-[#8C6239] hover:bg-[#6E4B26] text-white text-xs font-bold shadow-md shadow-[#8C6239]/20 flex items-center justify-center gap-2 no-underline transition-colors"
             >
               <Phone className="w-3.5 h-3.5" />
               <span>Gọi Điện Ngay</span>

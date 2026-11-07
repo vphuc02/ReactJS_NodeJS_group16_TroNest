@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, Link } from 'react-router-dom';
 import { roomApi } from '../../api/roomApi';
 import { RoomCard } from '../../components/common/RoomCard';
-import { Search, Filter, SlidersHorizontal, ArrowUpDown, X, MapPin } from 'lucide-react';
 
 export const RoomListPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -13,13 +12,52 @@ export const RoomListPage = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
 
-  // Filter local state
+  // Local filter states
   const [keyword, setKeyword] = useState(searchParams.get('keyword') || '');
   const [category, setCategory] = useState(searchParams.get('category') || '');
   const [province, setProvince] = useState(searchParams.get('province') || '');
+  const [ward, setWard] = useState(searchParams.get('ward') || '');
   const [priceRange, setPriceRange] = useState(searchParams.get('priceRange') || '');
+  const [areaRange, setAreaRange] = useState(searchParams.get('areaRange') || '');
   const [sort, setSort] = useState(searchParams.get('sort') || 'newest');
   const currentPage = Number(searchParams.get('page')) || 1;
+
+  // Geo options
+  const [provincesList, setProvincesList] = useState([]);
+  const [wardsList, setWardsList] = useState([]);
+
+  // Fetch provinces list
+  useEffect(() => {
+    const fetchProvinces = async () => {
+      try {
+        const list = await roomApi.getProvinces();
+        if (Array.isArray(list)) {
+          setProvincesList(list);
+        }
+      } catch (err) {
+        console.error('Lỗi tải danh sách tỉnh/thành:', err);
+      }
+    };
+    fetchProvinces();
+  }, []);
+
+  // When province changes or is initialized from query, fetch wards
+  useEffect(() => {
+    if (!province || provincesList.length === 0) {
+      setWardsList([]);
+      return;
+    }
+    const match = provincesList.find(
+      (p) => p.name === province || p.name.includes(province) || province.includes(p.name)
+    );
+    if (match && match.code) {
+      roomApi.getWards(match.code)
+        .then((list) => {
+          if (Array.isArray(list)) setWardsList(list);
+        })
+        .catch((err) => console.error('Lỗi tải phường/xã:', err));
+    }
+  }, [province, provincesList]);
 
   useEffect(() => {
     const fetchRooms = async () => {
@@ -50,19 +88,32 @@ export const RoomListPage = () => {
     if (keyword) newParams.set('keyword', keyword.trim());
     if (category) newParams.set('category', category);
     if (province) newParams.set('province', province);
+    if (ward) newParams.set('ward', ward);
     if (priceRange) newParams.set('priceRange', priceRange);
+    if (areaRange) newParams.set('areaRange', areaRange);
     if (sort) newParams.set('sort', sort);
     newParams.set('page', '1');
     setSearchParams(newParams);
   };
 
-  const handleClearFilter = () => {
+  const handleResetFilter = () => {
     setKeyword('');
     setCategory('');
     setProvince('');
+    setWard('');
+    setWardsList([]);
     setPriceRange('');
+    setAreaRange('');
     setSort('newest');
     setSearchParams({});
+  };
+
+  const handleSortChange = (newSort) => {
+    setSort(newSort);
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set('sort', newSort);
+    newParams.set('page', '1');
+    setSearchParams(newParams);
   };
 
   const handlePageChange = (newPage) => {
@@ -73,170 +124,259 @@ export const RoomListPage = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
-      
-      {/* Header */}
-      <div className="border-b border-[#E6DFD3] pb-6">
-        <span className="text-xs font-bold uppercase tracking-wider text-[#A67C52]">
-          Tìm Kiếm Không Gian Sống
-        </span>
-        <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 font-serif mt-1">
-          Danh Sách Phòng Trọ & Căn Hộ
-        </h1>
-        <p className="text-xs text-slate-500 mt-1">
-          Tìm thấy <strong>{totalRooms}</strong> phòng trọ đã được xác thực an toàn.
-        </p>
-      </div>
-
-      {/* Filter Bar */}
-      <form onSubmit={handleApplyFilter} className="bg-white p-5 rounded-3xl border border-[#E6DFD3] shadow-sm space-y-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-          
-          {/* Keyword Search */}
-          <div className="relative flex items-center">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3.5" />
-            <input
-              type="text"
-              value={keyword}
-              onChange={(e) => setKeyword(e.target.value)}
-              placeholder="Từ khóa, tên đường..."
-              className="w-full pl-10 pr-3 py-2 text-xs font-medium text-slate-800 bg-slate-50/70 rounded-2xl border border-slate-200 focus:bg-white focus:border-[#A67C52] outline-none"
-            />
-          </div>
-
-          {/* Category Select */}
-          <div>
-            <select
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              className="w-full px-3 py-2 text-xs font-medium text-slate-800 bg-slate-50/70 rounded-2xl border border-slate-200 focus:bg-white focus:border-[#A67C52] outline-none"
-            >
-              <option value="">Tất cả loại phòng</option>
-              {categories.map((c) => (
-                <option key={c._id} value={c.slug || c._id}>
-                  {c.title}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Price Range */}
-          <div>
-            <select
-              value={priceRange}
-              onChange={(e) => setPriceRange(e.target.value)}
-              className="w-full px-3 py-2 text-xs font-medium text-slate-800 bg-slate-50/70 rounded-2xl border border-slate-200 focus:bg-white focus:border-[#A67C52] outline-none"
-            >
-              <option value="">Mọi mức giá</option>
-              <option value="under-2m">Dưới 2 triệu</option>
-              <option value="2m-4m">Từ 2 - 4 triệu</option>
-              <option value="4m-7m">Từ 4 - 7 triệu</option>
-              <option value="above-7m">Trên 7 triệu</option>
-            </select>
-          </div>
-
-          {/* Sort By */}
-          <div>
-            <select
-              value={sort}
-              onChange={(e) => setSort(e.target.value)}
-              className="w-full px-3 py-2 text-xs font-medium text-slate-800 bg-slate-50/70 rounded-2xl border border-slate-200 focus:bg-white focus:border-[#A67C52] outline-none"
-            >
-              <option value="newest">Mới nhất</option>
-              <option value="price-asc">Giá tăng dần</option>
-              <option value="price-desc">Giá giảm dần</option>
-              <option value="views-desc">Xem nhiều nhất</option>
-            </select>
-          </div>
-
-        </div>
-
-        {/* Filter Action Buttons */}
-        <div className="flex items-center justify-between pt-2 border-t border-slate-100">
-          <button
-            type="button"
-            onClick={handleClearFilter}
-            className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-500 hover:text-slate-800 cursor-pointer"
-          >
-            <X className="w-3.5 h-3.5" />
-            <span>Xóa bộ lọc</span>
-          </button>
-
-          <button
-            type="submit"
-            className="px-6 py-2 rounded-2xl bg-[#A67C52] hover:bg-[#8C6239] text-white text-xs font-bold transition-all shadow-xs cursor-pointer"
-          >
-            Áp dụng bộ lọc
-          </button>
-        </div>
-      </form>
-
-      {/* Room Grid */}
-      {loading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div key={i} className="h-80 bg-slate-200/60 rounded-3xl animate-pulse"></div>
-          ))}
-        </div>
-      ) : rooms.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {rooms.map((room) => (
-            <RoomCard
-              key={room._id}
-              room={room}
-              isFavorited={favoriteRoomIds.includes(room._id)}
-            />
-          ))}
-        </div>
-      ) : (
-        <div className="text-center py-20 bg-white rounded-3xl border border-[#E6DFD3] space-y-3">
-          <p className="text-base font-bold text-slate-800">Không tìm thấy phòng trọ nào phù hợp</p>
-          <p className="text-xs text-slate-500 max-w-sm mx-auto">
-            Vui lòng thử thay đổi khoảng giá, khu vực hoặc xóa bớt tiêu chí lọc để xem thêm nhiều kết quả.
+    <main className="client-clean-001 pb-20">
+      <div className="container">
+        
+        {/* Title Bar */}
+        <div className="client-clean-094 mb-8">
+          <h1 className="client-clean-095 text-3xl sm:text-4xl font-serif font-bold text-[#1C1B19]">
+            Danh Sách Phòng Trọ Cho Thuê
+          </h1>
+          <p className="client-clean-096 text-sm text-[#6E6A63] mt-1">
+            Tìm thấy <b className="client-clean-059 text-[#8C6239]">{totalRooms}</b> căn phòng đã được phê duyệt phù hợp với nhu cầu của bạn
           </p>
-          <button
-            onClick={handleClearFilter}
-            className="mt-2 px-5 py-2 rounded-full bg-[#FAF7F2] border border-[#E6DFD3] text-xs font-bold text-[#A67C52] hover:bg-[#F5EFE6]"
-          >
-            Xem tất cả phòng
-          </button>
         </div>
-      )}
 
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex justify-center items-center gap-2 pt-6">
-          <button
-            onClick={() => handlePageChange(currentPage - 1)}
-            disabled={currentPage <= 1}
-            className="px-3.5 py-1.5 rounded-xl border border-[#E6DFD3] bg-white text-xs font-bold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#F5EFE6]"
-          >
-            Trước
-          </button>
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-            <button
-              key={p}
-              onClick={() => handlePageChange(p)}
-              className={`w-8 h-8 rounded-xl text-xs font-bold transition-all ${
-                p === currentPage
-                  ? 'bg-[#A67C52] text-white shadow-xs'
-                  : 'bg-white border border-[#E6DFD3] text-slate-700 hover:bg-[#F5EFE6]'
-              }`}
-            >
-              {p}
-            </button>
-          ))}
-          <button
-            onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage >= totalPages}
-            className="px-3.5 py-1.5 rounded-xl border border-[#E6DFD3] bg-white text-xs font-bold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#F5EFE6]"
-          >
-            Sau
-          </button>
+        {/* Layout Room List: Filter Sidebar + Content */}
+        <div className="layout-room-list client-clean-097 flex flex-col lg:flex-row gap-8 items-start">
+          
+          {/* Sidebar Filter */}
+          <aside className="filter-sidebar client-clean-098 w-full lg:w-80 shrink-0 bg-white p-6 rounded-2xl border border-[#E6DFD3] shadow-xs">
+            <div className="client-clean-099 flex items-center justify-between pb-4 mb-4 border-b border-[#E6DFD3]">
+              <h3 className="client-clean-100 font-serif font-bold text-lg text-[#1C1B19] flex items-center gap-2 m-0">
+                <i className="fa-solid fa-filter client-clean-059 text-[#A67C52]"></i>
+                <span>Bộ lọc tìm kiếm</span>
+              </h3>
+              <button
+                type="button"
+                onClick={handleResetFilter}
+                className="client-clean-101 text-xs font-semibold text-[#A67C52] hover:underline bg-transparent border-0 cursor-pointer p-0"
+              >
+                Đặt lại
+              </button>
+            </div>
+
+            <form onSubmit={handleApplyFilter} className="space-y-4">
+              {/* Keyword */}
+              <div className="form-group client-clean-102">
+                <label className="client-clean-103 block text-xs font-bold text-[#1C1B19] mb-1.5">
+                  Từ khóa
+                </label>
+                <input
+                  type="text"
+                  value={keyword}
+                  onChange={(e) => setKeyword(e.target.value)}
+                  placeholder="Tên đường, địa chỉ..."
+                  className="client-clean-104 w-full px-3.5 py-2.5 rounded-xl border border-[#E6DFD3] bg-[#FAF7F2] text-xs font-medium text-[#1C1B19] outline-none focus:border-[#A67C52] focus:bg-white transition-all"
+                />
+              </div>
+
+              {/* Tỉnh / Thành phố */}
+              <div className="form-group client-clean-102">
+                <label className="client-clean-103 block text-xs font-bold text-[#1C1B19] mb-1.5">
+                  Tỉnh / Thành phố
+                </label>
+                <select
+                  value={province}
+                  onChange={(e) => {
+                    setProvince(e.target.value);
+                    setWard('');
+                  }}
+                  className="client-clean-104 w-full px-3.5 py-2.5 rounded-xl border border-[#E6DFD3] bg-[#FAF7F2] text-xs font-medium text-[#1C1B19] outline-none focus:border-[#A67C52] focus:bg-white transition-all"
+                >
+                  <option value="">-- Toàn quốc --</option>
+                  {provincesList.length > 0 ? (
+                    provincesList.map((p) => (
+                      <option key={p.code} value={p.name}>
+                        {p.name}
+                      </option>
+                    ))
+                  ) : (
+                    <>
+                      <option value="Thành phố Hà Nội">Hà Nội</option>
+                      <option value="Thành phố Hồ Chí Minh">TP. Hồ Chí Minh</option>
+                      <option value="Thành phố Đà Nẵng">Đà Nẵng</option>
+                    </>
+                  )}
+                </select>
+              </div>
+
+              {/* Phường / Xã */}
+              <div className="form-group client-clean-102">
+                <label className="client-clean-103 block text-xs font-bold text-[#1C1B19] mb-1.5">
+                  Phường / Xã
+                </label>
+                <select
+                  value={ward}
+                  onChange={(e) => setWard(e.target.value)}
+                  disabled={!province || wardsList.length === 0}
+                  className="client-clean-104 w-full px-3.5 py-2.5 rounded-xl border border-[#E6DFD3] bg-[#FAF7F2] text-xs font-medium text-[#1C1B19] outline-none focus:border-[#A67C52] focus:bg-white transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <option value="">
+                    {province ? (wardsList.length === 0 ? 'Đang tải phường/xã...' : '-- Chọn phường / xã --') : '-- Chọn tỉnh trước --'}
+                  </option>
+                  {wardsList.map((w) => (
+                    <option key={w.code} value={w.name}>
+                      {w.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Loại phòng */}
+              <div className="form-group client-clean-102">
+                <label className="client-clean-103 block text-xs font-bold text-[#1C1B19] mb-1.5">
+                  Loại phòng
+                </label>
+                <select
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  className="client-clean-104 w-full px-3.5 py-2.5 rounded-xl border border-[#E6DFD3] bg-[#FAF7F2] text-xs font-medium text-[#1C1B19] outline-none focus:border-[#A67C52] focus:bg-white transition-all"
+                >
+                  <option value="">-- Tất cả loại phòng --</option>
+                  {categories.map((c) => (
+                    <option key={c._id} value={c.slug || c._id}>
+                      {c.title}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Mức giá */}
+              <div className="form-group client-clean-102">
+                <label className="client-clean-103 block text-xs font-bold text-[#1C1B19] mb-1.5">
+                  Mức giá thuê
+                </label>
+                <select
+                  value={priceRange}
+                  onChange={(e) => setPriceRange(e.target.value)}
+                  className="client-clean-104 w-full px-3.5 py-2.5 rounded-xl border border-[#E6DFD3] bg-[#FAF7F2] text-xs font-medium text-[#1C1B19] outline-none focus:border-[#A67C52] focus:bg-white transition-all"
+                >
+                  <option value="">-- Mọi mức giá --</option>
+                  <option value="under-2m">Dưới 2 triệu</option>
+                  <option value="2m-4m">2 triệu - 4 triệu</option>
+                  <option value="4m-7m">4 triệu - 7 triệu</option>
+                  <option value="above-7m">Trên 7 triệu</option>
+                </select>
+              </div>
+
+              {/* Diện tích */}
+              <div className="form-group client-clean-094 mb-4">
+                <label className="client-clean-103 block text-xs font-bold text-[#1C1B19] mb-1.5">
+                  Diện tích (m²)
+                </label>
+                <select
+                  value={areaRange}
+                  onChange={(e) => setAreaRange(e.target.value)}
+                  className="client-clean-104 w-full px-3.5 py-2.5 rounded-xl border border-[#E6DFD3] bg-[#FAF7F2] text-xs font-medium text-[#1C1B19] outline-none focus:border-[#A67C52] focus:bg-white transition-all"
+                >
+                  <option value="">-- Mọi diện tích --</option>
+                  <option value="under-20">Dưới 20 m²</option>
+                  <option value="20-30">20 - 30 m²</option>
+                  <option value="30-50">30 - 50 m²</option>
+                  <option value="above-50">Trên 50 m²</option>
+                </select>
+              </div>
+
+              <button
+                type="submit"
+                className="btn-hotelier btn-hotelier-dark w-full justify-between cursor-pointer"
+              >
+                <span>Áp dụng bộ lọc</span>
+                <span className="btn-hotelier-icon">
+                  <i className="fa-solid fa-filter text-[11px]"></i>
+                </span>
+              </button>
+            </form>
+          </aside>
+
+          {/* Rooms Content */}
+          <section className="room-content flex-1 w-full space-y-6">
+            
+            {/* Sort Bar */}
+            <div className="sort-bar client-clean-106 flex flex-wrap items-center justify-between gap-3 p-3 bg-white rounded-2xl border border-[#E6DFD3]">
+              <span className="client-clean-107 text-xs font-bold text-[#6E6A63]">Sắp xếp theo:</span>
+              <div className="client-clean-108 flex flex-wrap gap-2">
+                {[
+                  { key: 'newest', label: 'Mới nhất' },
+                  { key: 'price-asc', label: 'Giá thấp đến cao' },
+                  { key: 'price-desc', label: 'Giá cao đến thấp' },
+                  { key: 'area-desc', label: 'Diện tích lớn' }
+                ].map((item) => (
+                  <button
+                    key={item.key}
+                    type="button"
+                    onClick={() => handleSortChange(item.key)}
+                    className={`room-sort-link px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer border ${
+                      sort === item.key
+                        ? 'is-active bg-[#1C1B19] text-white border-[#1C1B19]'
+                        : 'bg-[#FAF7F2] text-[#6E6A63] border-[#E6DFD3] hover:text-[#1C1B19] hover:bg-[#F5EFE6]'
+                    }`}
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Room Grid */}
+            {loading ? (
+              <div className="rooms-grid client-clean-109 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                {[1, 2, 3, 4, 5, 6].map((i) => (
+                  <div key={i} className="h-80 bg-[#E6DFD3]/40 rounded-2xl animate-pulse"></div>
+                ))}
+              </div>
+            ) : rooms.length > 0 ? (
+              <div className="rooms-grid client-clean-109 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                {rooms.map((room) => (
+                  <RoomCard
+                    key={room._id}
+                    room={room}
+                    isFavorited={favoriteRoomIds.includes(room._id)}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-20 bg-white rounded-2xl border border-[#E6DFD3] space-y-3">
+                <i className="fa-solid fa-house-chimney-crack text-4xl text-[#A67C52]/50"></i>
+                <p className="text-base font-bold text-[#1C1B19]">Không tìm thấy phòng trọ nào phù hợp</p>
+                <p className="text-xs text-[#6E6A63] max-w-sm mx-auto">
+                  Vui lòng thử thay đổi khoảng giá, khu vực hoặc đặt lại tiêu chí lọc để xem thêm kết quả.
+                </p>
+                <button
+                  type="button"
+                  onClick={handleResetFilter}
+                  className="btn-hotelier btn-hotelier-outline cursor-pointer"
+                >
+                  <span>Đặt lại bộ lọc</span>
+                </button>
+              </div>
+            )}
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="flex justify-center items-center gap-2 pt-6">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                  <button
+                    key={p}
+                    onClick={() => handlePageChange(p)}
+                    className={`w-9 h-9 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                      currentPage === p
+                        ? 'bg-[#A67C52] text-white shadow-xs'
+                        : 'bg-white border border-[#E6DFD3] text-[#6E6A63] hover:bg-[#F5EFE6]'
+                    }`}
+                  >
+                    {p}
+                  </button>
+                ))}
+              </div>
+            )}
+
+          </section>
+
         </div>
-      )}
 
-    </div>
+      </div>
+    </main>
   );
 };
-

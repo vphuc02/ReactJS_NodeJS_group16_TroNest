@@ -2,17 +2,16 @@ require('dotenv').config();
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const path = require('path');
+const cors = require('cors');
 const { connectDB } = require('./configs/database.config');
-const { PORT, ROLES, ROOM_DEFAULTS, ROOM_DISTRICTS, ROOM_STATUS, USER_STATUS } = require('./configs/system.config');
+const { PORT } = require('./configs/system.config');
 const { attachUser } = require('./middlewares/auth.middleware');
 const { csrfProtection, securityHeaders } = require('./middlewares/security.middleware');
 const { errorHandler, notFoundHandler } = require('./middlewares/error.middleware');
-const { VN_PROVINCES } = require('./helpers/geo.helper');
 
 const clientRouter = require('./routers/client/index.route');
 const landlordRouter = require('./routers/landlord/index.route');
 const adminRouter = require('./routers/admin/index.route');
-const cors = require('cors');
 
 const app = express();
 
@@ -32,13 +31,6 @@ app.use(
   })
 );
 
-app.locals.USER_STATUS = USER_STATUS;
-app.locals.ROOM_STATUS = ROOM_STATUS;
-app.locals.ROLES = ROLES;
-app.locals.ROOM_DEFAULTS = ROOM_DEFAULTS;
-app.locals.ROOM_DISTRICTS = ROOM_DISTRICTS;
-app.locals.VN_PROVINCES = VN_PROVINCES;
-
 // Body Parser Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -50,24 +42,20 @@ app.use(cookieParser());
 app.use(securityHeaders);
 app.use(csrfProtection);
 
-// Static Files
+// Static Files (Uploads and assets)
 app.use(express.static(path.join(__dirname, 'public')));
 
-// View Engine Setup (Pug)
-app.set('view engine', 'pug');
-app.set('views', path.join(__dirname, 'views'));
-
-// Global Middleware to attach current user to views and requests
+// Global Middleware to attach current user to requests
 app.use(attachUser);
 
-// Routers
+// REST API Routers
 app.use('/admin', adminRouter);
 app.use('/landlord', landlordRouter);
 app.use('/', clientRouter);
 app.use('/api/geo', require('./routes/api/geo'));
 app.use('/api/geo', require('./routes/api/nearby'));
 
-// Central error handlers
+// Central error handlers (Pure JSON)
 app.use(notFoundHandler);
 app.use(errorHandler);
 
@@ -77,10 +65,8 @@ const startServer = async () => {
 
   app.listen(PORT, () => {
     console.log(`===============================================`);
-    console.log(` TroNest Server is running at http://localhost:${PORT}`);
-    console.log(` Client Portal:    http://localhost:${PORT}`);
-    console.log(` Landlord Portal:  http://localhost:${PORT}/landlord`);
-    console.log(` Admin Portal:     http://localhost:${PORT}/admin`);
+    console.log(` TroNest REST API Server is running at http://localhost:${PORT}`);
+    console.log(` React Frontend:  http://localhost:5173`);
     console.log(`===============================================`);
   });
 };

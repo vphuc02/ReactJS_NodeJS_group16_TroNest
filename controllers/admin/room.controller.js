@@ -62,28 +62,16 @@ module.exports.index = async (req, res) => {
     .populate('categoryId', 'title')
     .lean();
 
-  if (wantsJson(req)) {
-    return res.json({
-      code: 200,
-      data: {
-        rooms,
-        paging,
-        query: { status, keyword },
-        statusFilter: status || '',
-        keyword: keyword || '',
-        counts
-      }
-    });
-  }
-
-  res.render('admin/pages/room-list', {
-    title: 'Quản lý & Duyệt bài đăng phòng trọ - TroNest',
-    rooms,
-    paging,
-    query: { status, keyword },
-    statusFilter: status || '',
-    keyword: keyword || '',
-    counts
+  return res.json({
+    code: 200,
+    data: {
+      rooms,
+      paging,
+      query: { status, keyword },
+      statusFilter: status || '',
+      keyword: keyword || '',
+      counts
+    }
   });
 };
 
@@ -103,16 +91,9 @@ module.exports.detail = async (req, res) => {
     throw new AppError(404, 'Bài đăng phòng trọ này không tồn tại!');
   }
 
-  if (wantsJson(req)) {
-    return res.json({
-      code: 200,
-      data: { room }
-    });
-  }
-
-  res.render('admin/pages/room-detail', {
-    title: `Thẩm định: ${room.title} - TroNest`,
-    room
+  return res.json({
+    code: 200,
+    data: { room }
   });
 };
 

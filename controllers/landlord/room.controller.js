@@ -122,28 +122,16 @@ module.exports.index = async (req, res) => {
     .populate('categoryId', 'title')
     .lean();
 
-  if (wantsJson(req)) {
-    return res.json({
-      code: 200,
-      data: {
-        rooms,
-        paging,
-        query: { status, keyword },
-        statusFilter: status || '',
-        keyword: keyword || '',
-        landlordStatus: req.user.status
-      }
-    });
-  }
-
-  res.render('landlord/pages/room-list', {
-    title: 'Quản lý bài đăng phòng trọ - TroNest',
-    rooms,
-    paging,
-    query: { status, keyword },
-    statusFilter: status || '',
-    keyword: keyword || '',
-    landlordStatus: req.user.status
+  return res.json({
+    code: 200,
+    data: {
+      rooms,
+      paging,
+      query: { status, keyword },
+      statusFilter: status || '',
+      keyword: keyword || '',
+      landlordStatus: req.user.status
+    }
   });
 };
 
@@ -151,16 +139,10 @@ module.exports.index = async (req, res) => {
 module.exports.createGet = async (req, res) => {
   const categories = await Category.find({ status: USER_STATUS.ACTIVE }).lean();
 
-  if (wantsJson(req)) {
-    return res.json({
-      code: 200,
-      data: { categories }
-    });
-  }
-
-  res.render('landlord/pages/room-create', {
+  return res.json({
+    code: 200,
     title: 'Đăng tin phòng trọ mới - TroNest',
-    categories
+    data: { categories }
   });
 };
 
@@ -216,17 +198,9 @@ module.exports.editGet = async (req, res) => {
 
   const categories = await Category.find({ status: USER_STATUS.ACTIVE }).lean();
 
-  if (wantsJson(req)) {
-    return res.json({
-      code: 200,
-      data: { room, categories }
-    });
-  }
-
-  res.render('landlord/pages/room-edit', {
-    title: 'Chỉnh sửa bài đăng - TroNest',
-    room,
-    categories
+  return res.json({
+    code: 200,
+    data: { room, categories }
   });
 };
 

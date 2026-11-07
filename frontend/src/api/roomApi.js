@@ -19,6 +19,17 @@ export const roomApi = {
   getNearbyRooms: async (params) => {
     const res = await api.get('/api/geo/nearby', { params });
     return res.data;
+  },
+
+  getProvinces: async () => {
+    const res = await api.get('/api/geo/provinces');
+    return res.data;
+  },
+
+  getWards: async (code) => {
+    const res = await api.get(`/api/geo/provinces/${encodeURIComponent(code)}/wards`);
+    return res.data;
   }
 };
+
 

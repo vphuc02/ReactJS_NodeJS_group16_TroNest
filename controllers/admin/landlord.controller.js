@@ -56,28 +56,16 @@ module.exports.index = async (req, res) => {
     });
   }
 
-  if (wantsJson(req)) {
-    return res.json({
-      code: 200,
-      data: {
-        landlords,
-        paging,
-        query: { status, keyword },
-        statusFilter: status || '',
-        keyword: keyword || '',
-        counts
-      }
-    });
-  }
-
-  res.render('admin/pages/landlord-list', {
-    title: 'Quản lý duyệt Chủ trọ - TroNest',
-    landlords,
-    paging,
-    query: { status, keyword },
-    statusFilter: status || '',
-    keyword: keyword || '',
-    counts
+  return res.json({
+    code: 200,
+    data: {
+      landlords,
+      paging,
+      query: { status, keyword },
+      statusFilter: status || '',
+      keyword: keyword || '',
+      counts
+    }
   });
 };
 

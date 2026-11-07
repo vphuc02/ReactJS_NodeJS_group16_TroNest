@@ -1,308 +1,302 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { 
-  Home, 
-  Search, 
-  Building, 
-  Heart, 
-  User, 
-  LogOut, 
-  PlusCircle, 
-  ShieldCheck, 
-  LayoutDashboard,
-  Menu,
-  X,
-  ChevronDown
-} from 'lucide-react';
+import { resolveAvatar, handleAvatarError } from '../../utils/avatar';
 
 export const Navbar = () => {
   const { user, isAuthenticated, isLandlord, isAdmin, logout } = useAuth();
-  const [dropdownOpen, setDropdownOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const dropdownRef = useRef(null);
   const navigate = useNavigate();
 
-  // Đóng dropdown khi click ra ngoài
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
-        setDropdownOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
   const handleLogout = () => {
-    setDropdownOpen(false);
     logout();
     navigate('/');
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-[#FAF7F2]/90 backdrop-blur-md border-b border-[#E6DFD3] transition-all">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
-          
-          {/* Logo */}
-          <Link to="/" className="flex items-center gap-2.5 group no-underline">
-            <span className="w-10 h-10 rounded-2xl bg-[#A67C52] text-white flex items-center justify-center shadow-md shadow-[#A67C52]/20 group-hover:scale-105 transition-transform">
-              <i className="fa-solid fa-house-circle-check text-lg"></i>
-            </span>
-            <div className="flex flex-col">
-              <span className="text-2xl font-black tracking-tight text-slate-900 font-serif leading-none">
-                TroNest
-              </span>
-              <span className="text-[10px] uppercase font-bold tracking-widest text-[#A67C52] mt-0.5">
-                Boutique Living
-              </span>
+    <>
+      {/* Floating Pill Navbar - Hotelier Luxury Hospitality Style */}
+      <header className="fixed top-4 inset-x-0 z-50 px-2 sm:px-6 pointer-events-none">
+        <div className="w-[96%] max-w-[1440px] mx-auto pointer-events-auto">
+          <nav className="rounded-full bg-[#FAF7F2]/95 backdrop-blur-md border border-[#E6DFD3] shadow-[0_10px_34px_rgba(28,27,25,0.08),0_1px_2px_rgba(28,27,25,0.04)] hover:shadow-[0_14px_42px_rgba(166,124,82,0.16)] transition-all duration-300 px-4 sm:px-7 py-2.5 flex items-center justify-between gap-3 sm:gap-6">
+            
+            {/* Left: TroNest Hotelier Logo */}
+            <div className="flex items-center gap-2.5 shrink-0">
+              <button
+                type="button"
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                aria-label="Mở menu"
+                className="md:hidden w-8 h-8 sm:w-9 sm:h-9 rounded-full border border-[#E6DFD3] bg-[#F5EFE6] hover:bg-[#A67C52] text-[#1C1B19] hover:text-white flex items-center justify-center transition-all duration-200 cursor-pointer"
+              >
+                <i className="fa-solid fa-bars text-xs sm:text-sm"></i>
+              </button>
+
+              <Link to="/" title="TroNest - Nền tảng tìm kiếm phòng trọ sang trọng, an tâm" className="flex items-center gap-2.5 group no-underline">
+                <span className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#A67C52] border border-[#8C6239]/30 flex items-center justify-center text-white group-hover:bg-[#1C1B19] transition-all duration-200 shadow-xs">
+                  <i className="fa-solid fa-house-chimney text-sm sm:text-base"></i>
+                </span>
+                <span className="text-xl sm:text-2xl font-serif font-bold tracking-tight text-[#1C1B19] group-hover:text-[#A67C52] transition-colors duration-200">
+                  TroNest
+                </span>
+              </Link>
             </div>
-          </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-1 bg-[#F5EFE6]/80 p-1.5 rounded-full border border-[#E6DFD3]">
-            <NavLink
-              to="/"
-              end
-              className={({ isActive }) =>
-                `px-4 py-2 rounded-full text-xs font-semibold tracking-wide transition-all ${
-                  isActive
-                    ? 'bg-[#A67C52] text-white shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
-                }`
-              }
-            >
-              Trang Chủ
-            </NavLink>
-            <NavLink
-              to="/rooms"
-              className={({ isActive }) =>
-                `px-4 py-2 rounded-full text-xs font-semibold tracking-wide transition-all ${
-                  isActive
-                    ? 'bg-[#A67C52] text-white shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
-                }`
-              }
-            >
-              Tất Cả Phòng
-            </NavLink>
-            <NavLink
-              to="/favorites"
-              className={({ isActive }) =>
-                `px-4 py-2 rounded-full text-xs font-semibold tracking-wide transition-all ${
-                  isActive
-                    ? 'bg-[#A67C52] text-white shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
-                }`
-              }
-            >
-              Yêu Thích
-            </NavLink>
-          </nav>
+            {/* Middle: Main Navigation Links */}
+            <nav className="hidden md:flex items-center justify-center gap-1.5 lg:gap-4 flex-1 px-4">
+              <NavLink
+                to="/"
+                end
+                className={({ isActive }) =>
+                  `px-4 py-2 rounded-full text-[13.5px] lg:text-sm font-semibold transition-all duration-200 no-underline flex items-center gap-2 group ${
+                    isActive
+                      ? 'text-[#A67C52] bg-[#F5EFE6]'
+                      : 'text-[#1C1B19] hover:text-[#A67C52] hover:bg-[#F5EFE6]'
+                  }`
+                }
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-[#D4C2AA] group-hover:bg-[#A67C52] transition-colors"></span>
+                <span>Trang Chủ</span>
+              </NavLink>
 
-          {/* Right Action Buttons */}
-          <div className="hidden md:flex items-center gap-3">
-            <Link
-              to={isLandlord ? "/landlord/rooms/create" : "/register?role=LANDLORD"}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold text-white bg-linear-to-r from-[#A67C52] to-[#8C6239] hover:opacity-95 shadow-xs transition-all cursor-pointer"
-            >
-              <PlusCircle className="w-3.5 h-3.5" />
-              <span>Đăng tin trọ</span>
-            </Link>
+              <NavLink
+                to="/rooms"
+                className={({ isActive }) =>
+                  `px-4 py-2 rounded-full text-[13.5px] lg:text-sm font-semibold transition-all duration-200 no-underline flex items-center gap-2 group ${
+                    isActive
+                      ? 'text-[#A67C52] bg-[#F5EFE6]'
+                      : 'text-[#1C1B19] hover:text-[#A67C52] hover:bg-[#F5EFE6]'
+                  }`
+                }
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-[#D4C2AA] group-hover:bg-[#A67C52] transition-colors"></span>
+                <span>Tất Cả Phòng</span>
+              </NavLink>
 
-            {isAuthenticated ? (
-              <div className="relative" ref={dropdownRef}>
-                <button
-                  onClick={() => setDropdownOpen(!dropdownOpen)}
-                  className="flex items-center gap-2 p-1.5 pl-3 rounded-full border border-[#E6DFD3] bg-white hover:bg-[#F5EFE6]/50 transition-all cursor-pointer"
-                >
-                  <span className="text-xs font-bold text-slate-800 max-w-[120px] truncate">
-                    {user?.fullName || user?.email}
-                  </span>
-                  <img
-                    src={user?.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80"}
-                    alt={user?.fullName || "Avatar"}
-                    className="w-8 h-8 rounded-full object-cover border border-[#E6DFD3]"
-                  />
-                  <ChevronDown className="w-3.5 h-3.5 text-slate-400 mr-1" />
-                </button>
+              <NavLink
+                to="/rooms?category=can-ho-mini-studio"
+                className={({ isActive }) =>
+                  `hidden lg:flex px-4 py-2 rounded-full text-[13.5px] lg:text-sm font-semibold transition-all duration-200 no-underline items-center gap-2 group ${
+                    isActive
+                      ? 'text-[#A67C52] bg-[#F5EFE6]'
+                      : 'text-[#6E6A63] hover:text-[#A67C52] hover:bg-[#F5EFE6]'
+                  }`
+                }
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-[#D4C2AA] group-hover:bg-[#A67C52] transition-colors"></span>
+                <span>Studio & Căn Hộ</span>
+              </NavLink>
+            </nav>
 
-                {/* Dropdown Menu */}
-                {dropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-slate-100 py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
-                    <div className="px-4 py-2.5 border-b border-slate-100">
-                      <p className="text-xs text-slate-400 font-medium">Đăng nhập với tư cách</p>
-                      <p className="text-sm font-bold text-slate-900 truncate">{user?.fullName}</p>
-                      <span className="inline-block mt-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#FAF7F2] text-[#A67C52] border border-[#E6DFD3]">
-                        {user?.role === 'ADMIN' ? 'Quản trị viên' : user?.role === 'LANDLORD' ? 'Chủ trọ' : 'Khách thuê'}
-                      </span>
-                    </div>
-
+            {/* Right: Actions (Post Room + Auth Buttons) */}
+            <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
+              {isAuthenticated ? (
+                <>
+                  {isAdmin ? (
                     <Link
-                      to="/profile"
-                      onClick={() => setDropdownOpen(false)}
-                      className="flex items-center gap-2.5 px-4 py-2.5 text-xs font-medium text-slate-700 hover:bg-[#FAF7F2] hover:text-[#A67C52] transition-colors"
+                      to="/admin/dashboard"
+                      title="Cổng Quản trị"
+                      className="rounded-full bg-[#1C1B19] hover:bg-[#2A2825] text-white px-3.5 sm:px-4 py-2 text-xs sm:text-sm font-semibold shadow-xs flex items-center gap-1.5 no-underline transition-all duration-200"
                     >
-                      <User className="w-4 h-4 text-slate-400" />
-                      Hồ sơ cá nhân
+                      <i className="fa-solid fa-shield-halved text-[#C59B6D]"></i>
+                      <span className="hidden sm:inline">Cổng Quản trị</span>
                     </Link>
-
-                    <Link
-                      to="/favorites"
-                      onClick={() => setDropdownOpen(false)}
-                      className="flex items-center gap-2.5 px-4 py-2.5 text-xs font-medium text-slate-700 hover:bg-[#FAF7F2] hover:text-[#A67C52] transition-colors"
-                    >
-                      <Heart className="w-4 h-4 text-slate-400" />
-                      Phòng đã lưu
-                    </Link>
-
-                    {isLandlord && (
+                  ) : isLandlord ? (
+                    <>
                       <Link
                         to="/landlord/dashboard"
-                        onClick={() => setDropdownOpen(false)}
-                        className="flex items-center gap-2.5 px-4 py-2.5 text-xs font-medium text-slate-700 hover:bg-[#FAF7F2] hover:text-[#A67C52] transition-colors"
+                        title="Kênh Quản lý Chủ trọ"
+                        className="rounded-full bg-[#F5EFE6] hover:bg-[#E6DFD3] text-[#8C6239] border border-[#E6DFD3] px-3.5 sm:px-4 py-2 text-xs sm:text-sm font-semibold shadow-xs flex items-center gap-1.5 no-underline transition-all duration-200"
                       >
-                        <LayoutDashboard className="w-4 h-4 text-[#A67C52]" />
-                        Kênh Quản Lý Chủ Trọ
+                        <i className="fa-solid fa-house-chimney-user text-xs"></i>
+                        <span className="hidden sm:inline">Kênh Chủ Trọ</span>
                       </Link>
-                    )}
-
-                    {isAdmin && (
                       <Link
-                        to="/admin/dashboard"
-                        onClick={() => setDropdownOpen(false)}
-                        className="flex items-center gap-2.5 px-4 py-2.5 text-xs font-medium text-slate-700 hover:bg-[#FAF7F2] hover:text-[#A67C52] transition-colors"
+                        to="/landlord/rooms/create"
+                        title="Đăng tin trọ"
+                        className="btn-hotelier btn-hotelier-bronze text-xs sm:text-sm no-underline"
                       >
-                        <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                        Cổng Quản Trị Hệ Thống
+                        <span className="hidden xs:inline sm:inline">Đăng tin trọ</span>
+                        <span className="btn-hotelier-icon">
+                          <i className="fa-solid fa-plus text-[11px]"></i>
+                        </span>
                       </Link>
-                    )}
+                    </>
+                  ) : (
+                    <Link
+                      to="/register?role=LANDLORD"
+                      title="Đăng tin trọ"
+                      className="btn-hotelier btn-hotelier-bronze text-xs sm:text-sm no-underline"
+                    >
+                      <span className="hidden xs:inline sm:inline">Đăng tin trọ</span>
+                      <span className="btn-hotelier-icon">
+                        <i className="fa-solid fa-plus text-[11px]"></i>
+                      </span>
+                    </Link>
+                  )}
 
-                    <div className="border-t border-slate-100 mt-1 pt-1">
-                      <button
-                        onClick={handleLogout}
-                        className="w-full flex items-center gap-2.5 px-4 py-2.5 text-xs font-medium text-rose-600 hover:bg-rose-50 transition-colors text-left cursor-pointer"
-                      >
-                        <LogOut className="w-4 h-4 text-rose-500" />
-                        Đăng xuất
-                      </button>
-                    </div>
+                  {/* Divider */}
+                  <div className="hidden sm:block w-px h-6 bg-[#E6DFD3] mx-0.5"></div>
+
+                  {/* User Profile Capsule */}
+                  <div className="flex items-center gap-1.5 pl-1">
+                    <Link
+                      to={isLandlord ? "/landlord/profile" : (isAdmin ? "/admin/dashboard" : "/profile")}
+                      title="Xem và cập nhật thông tin cá nhân"
+                      className="flex items-center gap-1.5 sm:gap-2 py-1 px-1.5 sm:px-3 rounded-full border border-[#E6DFD3] bg-white hover:bg-[#F5EFE6] hover:border-[#A67C52] transition-all duration-200 no-underline shadow-xs"
+                    >
+                      <img
+                        src={resolveAvatar(user?.avatar)}
+                        alt={user?.fullName || "Avatar"}
+                        className="w-6 h-6 sm:w-7 sm:h-7 rounded-full object-cover border border-[#E6DFD3]"
+                        onError={handleAvatarError}
+                      />
+                      <span className="text-xs font-semibold text-[#1C1B19] inline-block max-w-[110px] sm:max-w-[150px] truncate">
+                        {user?.fullName ? user.fullName.replace(/\s*\([^)]*\)/g, '') : user?.email}
+                      </span>
+                      <span className={`text-[10px] sm:text-[11px] px-2 py-0.5 rounded-full font-bold ${
+                        isLandlord
+                          ? 'bg-[#F5EFE6] text-[#8C6239] border border-[#E6DFD3]'
+                          : (isAdmin
+                              ? 'bg-[#1C1B19] text-[#C59B6D]'
+                              : 'bg-[#FAF7F2] text-[#6E4B26] border border-[#E6DFD3]')
+                      }`}>
+                        {isLandlord ? 'Chủ trọ' : isAdmin ? 'Quản trị' : 'Khách thuê'}
+                      </span>
+                    </Link>
+
+                    {/* Favorites Icon */}
+                    <Link
+                      to="/favorites"
+                      title="Phòng yêu thích"
+                      className="w-8 h-8 rounded-full border border-[#E6DFD3] bg-white flex items-center justify-center text-[#6E6A63] hover:text-[#A67C52] hover:border-[#A67C52] hover:bg-[#F5EFE6] transition-all duration-200 no-underline shadow-xs"
+                    >
+                      <i className="fa-solid fa-heart text-xs"></i>
+                    </Link>
+
+                    {/* Logout Button */}
+                    <button
+                      onClick={handleLogout}
+                      title="Đăng xuất"
+                      className="w-8 h-8 rounded-full border border-[#E6DFD3] bg-white flex items-center justify-center text-[#6E6A63] hover:text-red-600 hover:border-red-300 hover:bg-red-50 transition-all duration-200 no-underline shadow-xs cursor-pointer"
+                    >
+                      <i className="fa-solid fa-arrow-right-from-bracket text-xs"></i>
+                    </button>
                   </div>
-                )}
-              </div>
-            ) : (
-              <div className="flex items-center gap-2">
-                <Link
-                  to="/login"
-                  className="px-4 py-2 rounded-full text-xs font-bold text-slate-700 hover:text-slate-900 hover:bg-[#F5EFE6] transition-all"
-                >
-                  Đăng nhập
-                </Link>
-                <Link
-                  to="/register"
-                  className="px-4 py-2 rounded-full text-xs font-bold text-white bg-slate-900 hover:bg-slate-800 transition-all shadow-xs"
-                >
-                  Đăng ký
-                </Link>
-              </div>
-            )}
-          </div>
+                </>
+              ) : (
+                <>
+                  {/* Guest state */}
+                  <Link
+                    to="/register?role=LANDLORD"
+                    title="Đăng tin trọ"
+                    className="btn-hotelier btn-hotelier-bronze text-xs sm:text-sm no-underline"
+                  >
+                    <span className="hidden xs:inline sm:inline">Đăng tin trọ</span>
+                    <span className="btn-hotelier-icon">
+                      <i className="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                    </span>
+                  </Link>
 
-          {/* Mobile Menu Toggle Button */}
-          <div className="flex md:hidden items-center gap-2">
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-xl text-slate-700 hover:bg-[#F5EFE6]"
-            >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-            </button>
-          </div>
+                  <Link
+                    to="/login"
+                    className="rounded-full border border-[#E6DFD3] bg-white hover:border-[#A67C52] hover:text-[#1C1B19] text-[#6E6A63] px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold transition-all duration-200 no-underline shadow-xs"
+                  >
+                    Đăng nhập
+                  </Link>
+
+                  <Link
+                    to="/register"
+                    className="rounded-full border border-[#1C1B19] bg-[#1C1B19] hover:bg-[#2A2825] text-white px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold transition-all duration-200 no-underline shadow-xs"
+                  >
+                    Đăng ký
+                  </Link>
+                </>
+              )}
+            </div>
+
+          </nav>
         </div>
-      </div>
+      </header>
 
-      {/* Mobile Drawer Navigation */}
+      {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-t border-[#E6DFD3] bg-[#FAF7F2] px-4 pt-3 pb-6 space-y-3">
-          <Link
-            to="/"
+        <div className="fixed inset-0 z-50 md:hidden flex">
+          <div
+            className="fixed inset-0 bg-black/40 backdrop-blur-xs"
             onClick={() => setMobileMenuOpen(false)}
-            className="block px-3 py-2 rounded-xl text-sm font-semibold text-slate-700 hover:bg-[#F5EFE6]"
-          >
-            Trang Chủ
-          </Link>
-          <Link
-            to="/rooms"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block px-3 py-2 rounded-xl text-sm font-semibold text-slate-700 hover:bg-[#F5EFE6]"
-          >
-            Tất Cả Phòng
-          </Link>
-          <Link
-            to="/favorites"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block px-3 py-2 rounded-xl text-sm font-semibold text-slate-700 hover:bg-[#F5EFE6]"
-          >
-            Phòng Yêu Thích
-          </Link>
-          {isAuthenticated ? (
-            <div className="pt-3 border-t border-[#E6DFD3] space-y-2">
-              <Link
-                to="/profile"
-                onClick={() => setMobileMenuOpen(false)}
-                className="block px-3 py-2 rounded-xl text-sm font-medium text-slate-700 hover:bg-[#F5EFE6]"
-              >
-                Hồ sơ ({user?.fullName})
-              </Link>
-              {isLandlord && (
-                <Link
-                  to="/landlord/dashboard"
+          ></div>
+          <div className="relative ml-auto w-72 max-w-[80%] bg-[#FAF7F2] h-full shadow-2xl p-6 flex flex-col justify-between z-10 border-l border-[#E6DFD3]">
+            <div className="space-y-6">
+              <div className="flex items-center justify-between pb-4 border-b border-[#E6DFD3]">
+                <div className="flex items-center gap-2">
+                  <span className="w-8 h-8 rounded-full bg-[#A67C52] flex items-center justify-center text-white">
+                    <i className="fa-solid fa-house-chimney text-xs"></i>
+                  </span>
+                  <span className="font-serif font-bold text-lg text-[#1C1B19]">TroNest</span>
+                </div>
+                <button
                   onClick={() => setMobileMenuOpen(false)}
-                  className="block px-3 py-2 rounded-xl text-sm font-medium text-[#A67C52] hover:bg-[#F5EFE6]"
+                  className="w-8 h-8 rounded-full bg-white border border-[#E6DFD3] flex items-center justify-center text-slate-500 hover:text-slate-900"
                 >
-                  Kênh Chủ Trọ
-                </Link>
-              )}
-              {isAdmin && (
+                  <i className="fa-solid fa-xmark"></i>
+                </button>
+              </div>
+
+              <nav className="flex flex-col space-y-2">
                 <Link
-                  to="/admin/dashboard"
+                  to="/"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="block px-3 py-2 rounded-xl text-sm font-medium text-emerald-600 hover:bg-[#F5EFE6]"
+                  className="px-4 py-2.5 rounded-2xl text-sm font-bold text-[#1C1B19] hover:bg-[#F5EFE6]"
                 >
-                  Trang Quản Trị
+                  Trang Chủ
                 </Link>
+                <Link
+                  to="/rooms"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="px-4 py-2.5 rounded-2xl text-sm font-bold text-[#1C1B19] hover:bg-[#F5EFE6]"
+                >
+                  Tất Cả Phòng
+                </Link>
+                <Link
+                  to="/favorites"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="px-4 py-2.5 rounded-2xl text-sm font-bold text-[#1C1B19] hover:bg-[#F5EFE6]"
+                >
+                  Phòng Yêu Thích
+                </Link>
+              </nav>
+            </div>
+
+            <div className="pt-4 border-t border-[#E6DFD3]">
+              {isAuthenticated ? (
+                <button
+                  onClick={() => { setMobileMenuOpen(false); handleLogout(); }}
+                  className="w-full py-2.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-bold"
+                >
+                  Đăng xuất
+                </button>
+              ) : (
+                <div className="flex gap-2">
+                  <Link
+                    to="/login"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex-1 text-center py-2 rounded-2xl bg-white border border-[#E6DFD3] text-xs font-bold text-[#1C1B19]"
+                  >
+                    Đăng nhập
+                  </Link>
+                  <Link
+                    to="/register"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex-1 text-center py-2 rounded-2xl bg-[#1C1B19] text-white text-xs font-bold"
+                  >
+                    Đăng ký
+                  </Link>
+                </div>
               )}
-              <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  handleLogout();
-                }}
-                className="w-full text-left px-3 py-2 rounded-xl text-sm font-medium text-rose-600 hover:bg-rose-50"
-              >
-                Đăng xuất
-              </button>
             </div>
-          ) : (
-            <div className="pt-3 border-t border-[#E6DFD3] flex gap-2">
-              <Link
-                to="/login"
-                onClick={() => setMobileMenuOpen(false)}
-                className="flex-1 text-center py-2 rounded-xl border border-slate-300 text-sm font-bold text-slate-700"
-              >
-                Đăng nhập
-              </Link>
-              <Link
-                to="/register"
-                onClick={() => setMobileMenuOpen(false)}
-                className="flex-1 text-center py-2 rounded-xl bg-slate-900 text-sm font-bold text-white"
-              >
-                Đăng ký
-              </Link>
-            </div>
-          )}
+          </div>
         </div>
       )}
-    </header>
+    </>
   );
 };
-

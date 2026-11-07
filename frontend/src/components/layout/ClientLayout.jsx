@@ -7,11 +7,10 @@ export const ClientLayout = () => {
   return (
     <div className="min-h-screen flex flex-col bg-[#FAF7F2]">
       <Navbar />
-      <main className="grow">
+      <main className="grow pt-24 sm:pt-28">
         <Outlet />
       </main>
       <Footer />
     </div>
   );
 };
-

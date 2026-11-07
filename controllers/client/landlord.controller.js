@@ -53,34 +53,25 @@ module.exports.detail = async (req, res) => {
     favoriteRoomIds = favorites.map((f) => f.roomId.toString());
   }
 
-  if (wantsJson(req)) {
-    return res.json({
-      code: 200,
-      landlord: {
-        _id: landlord._id,
-        fullName: landlord.fullName,
-        avatar: landlord.avatar,
-        phone: landlord.phone,
-        email: landlord.email,
-        address: landlord.address,
-        facebook: landlord.facebook,
-        status: landlord.status,
-        createdAt: landlord.createdAt
-      },
-      rooms,
-      totalRooms
-    });
-  }
+  const formattedRooms = rooms.map((r) => ({
+    ...r,
+    priceFormatted: new Intl.NumberFormat('vi-VN').format(r.price)
+  }));
 
-  const cleanName = landlord.fullName
-    ? landlord.fullName.replace(/\s*\([^)]*\)/g, '').trim()
-    : 'Chủ trọ';
-
-  res.render('client/pages/landlord-detail', {
-    title: `${cleanName} - Thông tin chủ trọ | TroNest`,
-    landlord,
-    cleanName,
-    rooms,
+  return res.json({
+    code: 200,
+    landlord: {
+      _id: landlord._id,
+      fullName: landlord.fullName,
+      avatar: landlord.avatar,
+      phone: landlord.phone,
+      email: landlord.email,
+      address: landlord.address,
+      facebook: landlord.facebook,
+      status: landlord.status,
+      createdAt: landlord.createdAt
+    },
+    rooms: formattedRooms,
     totalRooms,
     favoriteRoomIds
   });

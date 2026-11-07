@@ -38,36 +38,20 @@ module.exports.index = async (req, res) => {
       .lean()
   ]);
 
-  if (wantsJson(req)) {
-    return res.json({
-      code: 200,
-      data: {
-        totalLandlords,
-        pendingLandlordsCount,
-        approvedLandlordsCount,
-        totalRooms,
-        pendingRoomsCount,
-        approvedRoomsCount,
-        totalCustomers,
-        totalCategories,
-        pendingLandlords,
-        pendingRooms
-      }
-    });
-  }
-
-  res.render('admin/pages/dashboard', {
-    title: 'Bảng điều khiển Admin - TroNest',
-    totalLandlords,
-    pendingLandlordsCount,
-    approvedLandlordsCount,
-    totalRooms,
-    pendingRoomsCount,
-    approvedRoomsCount,
-    totalCustomers,
-    totalCategories,
-    pendingLandlords,
-    pendingRooms
+  return res.json({
+    code: 200,
+    data: {
+      totalLandlords,
+      pendingLandlordsCount,
+      approvedLandlordsCount,
+      totalRooms,
+      pendingRoomsCount,
+      approvedRoomsCount,
+      totalCustomers,
+      totalCategories,
+      pendingLandlords,
+      pendingRooms
+    }
   });
 };
 

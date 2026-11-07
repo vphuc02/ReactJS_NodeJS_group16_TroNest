@@ -2,16 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { landlordApi } from '../../api/landlordApi';
 import toast from 'react-hot-toast';
-import { 
-  PlusCircle, 
-  Search, 
-  FileEdit, 
-  Trash2, 
-  ExternalLink, 
-  Eye, 
-  CheckCircle2, 
-  Clock, 
-  AlertCircle 
+import {
+  PlusCircle,
+  Search,
+  FileEdit,
+  Trash2,
+  ExternalLink,
+  Eye,
+  CheckCircle2,
+  Clock,
+  AlertCircle
 } from 'lucide-react';
 
 export const LandlordRoomListPage = () => {
@@ -82,7 +82,7 @@ export const LandlordRoomListPage = () => {
 
   return (
     <div className="space-y-6">
-      
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -96,16 +96,16 @@ export const LandlordRoomListPage = () => {
 
         <Link
           to="/landlord/rooms/create"
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-linear-to-r from-[#A67C52] to-[#8C6239] text-white text-xs font-bold shadow-md shadow-[#A67C52]/20 no-underline cursor-pointer"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-[#8C6239] hover:bg-[#6E4B26] text-white text-xs font-bold shadow-md shadow-[#8C6239]/25 hover:shadow-lg transition-all duration-200 no-underline cursor-pointer"
         >
-          <PlusCircle className="w-4 h-4" />
+          <PlusCircle className="w-4 h-4 text-white" />
           <span>Đăng Tin Mới</span>
         </Link>
       </div>
 
       {/* Filter Tabs & Search Bar */}
       <div className="bg-white p-4 rounded-3xl border border-[#E6DFD3] shadow-xs flex flex-col md:flex-row items-center justify-between gap-4">
-        
+
         {/* Status Pills */}
         <div className="flex items-center gap-1.5 overflow-x-auto w-full md:w-auto pb-2 md:pb-0">
           {[
@@ -118,11 +118,10 @@ export const LandlordRoomListPage = () => {
             <button
               key={tab.val}
               onClick={() => handleStatusFilter(tab.val)}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
-                status === tab.val
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${status === tab.val
                   ? 'bg-[#A67C52] text-white shadow-xs'
                   : 'bg-slate-50 text-slate-600 hover:bg-[#F5EFE6]'
-              }`}
+                }`}
             >
               {tab.label}
             </button>

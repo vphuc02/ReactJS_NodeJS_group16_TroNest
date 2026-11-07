@@ -27,21 +27,12 @@ const { wantsJson } = require('../../helpers/http.helper');
      });
    }
 
-   if (wantsJson(req)) {
-     return res.json({
-       code: 200,
-       data: {
-         categories,
-         paging
-       }
-     });
-   }
-
-   res.render('admin/pages/category-list', {
-     title: 'Quản lý loại phòng trọ - TroNest',
-     categories,
-     paging,
-     query: {}
+   return res.json({
+     code: 200,
+     data: {
+       categories,
+       paging
+     }
    });
  };
 

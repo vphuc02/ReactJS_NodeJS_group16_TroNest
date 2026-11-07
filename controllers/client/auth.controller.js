@@ -21,14 +21,22 @@ const hashToken = (raw) => {
 // [GET] /login
 module.exports.loginGet = (req, res) => {
   if (req.user) {
-    if (req.user.role === ROLES.LANDLORD) return res.redirect('/landlord/dashboard');
-    return res.redirect('/');
+    return res.json({
+      code: 200,
+      authenticated: true,
+      user: {
+        id: req.user._id,
+        fullName: req.user.fullName,
+        email: req.user.email,
+        role: req.user.role
+      }
+    });
   }
 
-  res.render('client/pages/login', {
-    title: 'Đăng nhập - TroNest',
-    redirectUrl: getSafeRedirect(req.query.redirect, ''),
-    oauthError: typeof req.query.error === 'string' ? req.query.error.trim() : ''
+  return res.json({
+    code: 200,
+    authenticated: false,
+    message: 'Trang đăng nhập TroNest'
   });
 };
 
@@ -103,12 +111,9 @@ module.exports.loginPost = async (req, res) => {
 
 // [GET] /register
 module.exports.registerGet = (req, res) => {
-  if (req.user) {
-    return res.redirect('/');
-  }
-
-  res.render('client/pages/register', {
-    title: 'Đăng ký tài khoản - TroNest'
+  return res.json({
+    code: 200,
+    message: 'Trang đăng ký tài khoản TroNest'
   });
 };
 
@@ -185,13 +190,9 @@ module.exports.meGet = (req, res) => {
 
 // [GET] /forgot-password
 module.exports.forgotPasswordGet = (req, res) => {
-  if (req.user) {
-    if (req.user.role === ROLES.LANDLORD) return res.redirect('/landlord/dashboard');
-    return res.redirect('/');
-  }
-
-  res.render('client/pages/forgot-password', {
-    title: 'Quên mật khẩu - TroNest'
+  return res.json({
+    code: 200,
+    message: 'Khôi phục mật khẩu - TroNest'
   });
 };
 
@@ -377,32 +378,36 @@ module.exports.resetPasswordPageGet = async (req, res) => {
   const email = String(req.query.email || '').toLowerCase().trim();
 
   if (!token || !email) {
-    return res.render('client/pages/reset-password', {
-      title: 'Đặt lại mật khẩu - TroNest',
-      error: 'Liên kết đặt lại mật khẩu không hợp lệ hoặc thiếu thông tin!'
+    return res.status(400).json({
+      code: 400,
+      valid: false,
+      message: 'Liên kết đặt lại mật khẩu không hợp lệ hoặc thiếu thông tin!'
     });
   }
 
   const record = await ForgotPassword.findOne({ email, verified: true }).sort({ createdAt: -1 });
   if (!record || record.expireAt <= new Date() || !record.resetTokenHash) {
-    return res.render('client/pages/reset-password', {
-      title: 'Đặt lại mật khẩu - TroNest',
-      error: 'Liên kết đặt lại mật khẩu đã hết hạn hoặc không tồn tại. Vui lòng yêu cầu link mới!'
+    return res.status(400).json({
+      code: 400,
+      valid: false,
+      message: 'Liên kết đặt lại mật khẩu đã hết hạn hoặc không tồn tại. Vui lòng yêu cầu link mới!'
     });
   }
 
   if (hashToken(token) !== record.resetTokenHash) {
-    return res.render('client/pages/reset-password', {
-      title: 'Đặt lại mật khẩu - TroNest',
-      error: 'Mã token trong liên kết không chính xác hoặc đã bị vô hiệu hóa!'
+    return res.status(400).json({
+      code: 400,
+      valid: false,
+      message: 'Mã token trong liên kết không chính xác hoặc đã bị vô hiệu hóa!'
     });
   }
 
-  return res.render('client/pages/reset-password', {
-    title: 'Đặt lại mật khẩu - TroNest',
+  return res.json({
+    code: 200,
+    valid: true,
+    message: 'Đặt lại mật khẩu - TroNest',
     token,
-    email,
-    error: null
+    email
   });
 };
 

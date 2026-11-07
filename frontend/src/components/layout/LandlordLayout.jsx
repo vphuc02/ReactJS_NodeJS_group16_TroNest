@@ -1,6 +1,7 @@
 import React from 'react';
 import { Outlet, NavLink, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { resolveAvatar, handleAvatarError } from '../../utils/avatar';
 import { 
   LayoutDashboard, 
   Home, 
@@ -51,9 +52,10 @@ export const LandlordLayout = () => {
         {/* User Badge */}
         <div className="p-4 mx-4 my-4 rounded-2xl bg-[#FAF7F2] border border-[#E6DFD3] flex items-center gap-3">
           <img
-            src={user?.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80"}
+            src={resolveAvatar(user?.avatar)}
             alt="Avatar"
             className="w-10 h-10 rounded-xl object-cover border border-[#E6DFD3]"
+            onError={handleAvatarError}
           />
           <div className="truncate">
             <p className="text-xs font-bold text-slate-900 truncate">{user?.fullName}</p>

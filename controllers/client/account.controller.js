@@ -13,8 +13,8 @@ module.exports.index = async (req, res) => {
     throw new AppError(404, 'Không tìm thấy thông tin tài khoản!');
   }
 
-  res.render('client/pages/account', {
-    title: 'Thông tin tài khoản - TroNest',
+  return res.json({
+    code: 200,
     profile,
     favoriteCount
   });

@@ -30,7 +30,11 @@ export const AdminLoginPage = () => {
         toast.error(res.message || 'Đăng nhập thất bại!');
       }
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Tài khoản Quản trị không chính xác!');
+      if (!err.response) {
+        toast.error('Không thể kết nối đến máy chủ Backend (http://localhost:3000). Vui lòng đảm bảo bạn đang chạy "npm run dev"!');
+      } else {
+        toast.error(err.response.data?.message || 'Tài khoản Quản trị không chính xác!');
+      }
     } finally {
       setLoading(false);
     }

@@ -300,19 +300,19 @@ describe('Bộ Lọc Tìm Kiếm Nâng Cao & Chuẩn Hóa Hành Chính (Advanced
 
   test('Sắp xếp phòng trọ: Giá tăng dần, Giá giảm dần, Lượt xem nhiều nhất', async () => {
     // Giá tăng dần (price-asc): 1.8M -> 3.5M -> 5.5M -> 9M
-    const resAsc = await guestClient.get('/rooms?sort=price-asc', { wantsJson: false });
+    const resAsc = await guestClient.get('/rooms?sort=price-asc&keyword=FAV-TEST', { wantsJson: false });
     const idxCheapAsc = resAsc.body.indexOf('Phòng trọ giá rẻ sinh viên Ba Đình');
     const idxLuxAsc = resAsc.body.indexOf('Căn hộ cao cấp view biển Hải Châu');
     assert.ok(idxCheapAsc !== -1 && idxLuxAsc !== -1 && idxCheapAsc < idxLuxAsc, 'Giá rẻ phải đứng trước giá đắt');
 
     // Giá giảm dần (price-desc): 9M -> 5.5M -> 3.5M -> 1.8M
-    const resDesc = await guestClient.get('/rooms?sort=price-desc', { wantsJson: false });
+    const resDesc = await guestClient.get('/rooms?sort=price-desc&keyword=FAV-TEST', { wantsJson: false });
     const idxCheapDesc = resDesc.body.indexOf('Phòng trọ giá rẻ sinh viên Ba Đình');
     const idxLuxDesc = resDesc.body.indexOf('Căn hộ cao cấp view biển Hải Châu');
     assert.ok(idxLuxDesc < idxCheapDesc, 'Giá đắt phải đứng trước giá rẻ');
 
     // Lượt xem nhiều nhất (views-desc): Hải Châu (80 views) -> Bến Nghé (40 views) -> Cầu Giấy (20 views)
-    const resViews = await guestClient.get('/rooms?sort=views-desc', { wantsJson: false });
+    const resViews = await guestClient.get('/rooms?sort=views-desc&keyword=FAV-TEST', { wantsJson: false });
     const idxLuxViews = resViews.body.indexOf('Căn hộ cao cấp view biển Hải Châu');
     const idxMidViews = resViews.body.indexOf('Phòng studio tiện nghi Bến Nghé');
     assert.ok(idxLuxViews < idxMidViews, 'Nhiều lượt xem hơn phải đứng trước');

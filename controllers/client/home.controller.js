@@ -3,8 +3,6 @@ const Room = require('../../models/room.model');
 const Favorite = require('../../models/favorite.model');
 const { ROOM_STATUS, USER_STATUS } = require('../../configs/system.config');
 
-const { wantsJson } = require('../../helpers/http.helper');
-
 // [GET] /
 module.exports.index = async (req, res) => {
   const categories = await Category.find({ status: USER_STATUS.ACTIVE }).lean();
@@ -33,23 +31,13 @@ module.exports.index = async (req, res) => {
     favoriteRoomIds = favorites.map((f) => f.roomId.toString());
   }
 
-  if (wantsJson(req)) {
-    return res.json({
-      code: 200,
-      data: {
-        categories,
-        featuredRooms,
-        latestRooms,
-        favoriteRoomIds
-      }
-    });
-  }
-
-  res.render('client/pages/index', {
-    title: 'TroNest - Hệ thống tìm kiếm và đăng tin phòng trọ uy tín',
-    categories,
-    featuredRooms,
-    latestRooms,
-    favoriteRoomIds
+  return res.json({
+    code: 200,
+    data: {
+      categories,
+      featuredRooms,
+      latestRooms,
+      favoriteRoomIds
+    }
   });
 };

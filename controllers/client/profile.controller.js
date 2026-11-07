@@ -21,8 +21,8 @@ module.exports.index = async (req, res) => {
     throw new AppError(404, 'Không tìm thấy thông tin người dùng!');
   }
 
-  // Nếu là tài khoản Chủ trọ xem trang HTML -> chuyển hướng đến trang cá nhân trên Kênh Chủ Trọ
-  if (user.role === ROLES.LANDLORD && !wantsJson(req)) {
+  // Nếu là tài khoản Chủ trọ xem dạng trình duyệt (không phải JSON) -> chuyển hướng đến Kênh Chủ Trọ
+  if (user.role === ROLES.LANDLORD && !req.headers.accept?.includes('application/json') && !req.xhr) {
     return res.redirect('/landlord/profile');
   }
 
@@ -32,16 +32,8 @@ module.exports.index = async (req, res) => {
     roomCount = await Room.countDocuments({ landlordId: req.user._id });
   }
 
-  if (wantsJson(req)) {
-    return res.json({
-      code: 200,
-      user,
-      favoriteCount,
-      roomCount
-    });
-  }
-
-  res.render('client/pages/profile', {
+  return res.json({
+    code: 200,
     title: 'Thông tin cá nhân - TroNest',
     user,
     favoriteCount,

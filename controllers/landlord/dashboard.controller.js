@@ -17,31 +17,17 @@ module.exports.index = async (req, res) => {
     .populate('categoryId', 'title')
     .lean();
 
-  if (wantsJson(req)) {
-    return res.json({
-      code: 200,
-      data: {
-        totalRooms,
-        draftRooms,
-        pendingRooms,
-        approvedRooms,
-        rejectedRooms,
-        recentRooms,
-        landlordStatus: req.user.status,
-        rejectReason: req.user.rejectReason
-      }
-    });
-  }
-
-  res.render('landlord/pages/dashboard', {
-    title: 'Bảng điều khiển Chủ trọ - TroNest',
-    totalRooms,
-    draftRooms,
-    pendingRooms,
-    approvedRooms,
-    rejectedRooms,
-    recentRooms,
-    landlordStatus: req.user.status,
-    rejectReason: req.user.rejectReason
+  return res.json({
+    code: 200,
+    data: {
+      totalRooms,
+      draftRooms,
+      pendingRooms,
+      approvedRooms,
+      rejectedRooms,
+      recentRooms,
+      landlordStatus: req.user.status,
+      rejectReason: req.user.rejectReason
+    }
   });
 };

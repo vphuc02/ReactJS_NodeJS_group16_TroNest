@@ -25,20 +25,12 @@ module.exports.index = async (req, res) => {
 
   const favoriteRoomIds = favoriteRooms.map((r) => r._id.toString());
 
-  if (wantsJson(req)) {
-    return res.json({
-      code: 200,
-      data: {
-        rooms: favoriteRooms,
-        favoriteRoomIds
-      }
-    });
-  }
-
-  res.render('client/pages/favorites', {
-    title: 'Phòng trọ đã lưu yêu thích - TroNest',
-    rooms: favoriteRooms,
-    favoriteRoomIds
+  return res.json({
+    code: 200,
+    data: {
+      rooms: favoriteRooms,
+      favoriteRoomIds
+    }
   });
 };
 

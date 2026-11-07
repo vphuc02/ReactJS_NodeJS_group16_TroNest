@@ -30,7 +30,7 @@ export const BronzeAmenityStrip = () => {
   ];
 
   return (
-    <section className="bg-linear-to-r from-[#8C6239] via-[#A67C52] to-[#8C6239] py-6 border-y border-white/15 text-white">
+    <section className="bg-gradient-to-r from-[#8C6239] via-[#A67C52] to-[#8C6239] py-6 border-y border-white/15 text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 items-center">
           {items.map((item, idx) => (

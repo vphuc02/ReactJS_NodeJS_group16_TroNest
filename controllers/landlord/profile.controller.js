@@ -14,16 +14,10 @@ module.exports.index = async (req, res) => {
 
   const roomCount = await Room.countDocuments({ landlordId: req.user._id });
 
-  if (wantsJson(req)) {
-    return res.json({
-      code: 200,
-      user,
-      roomCount
-    });
-  }
-
-  res.render('landlord/pages/profile', {
-    title: 'Thông tin cá nhân - Kênh Chủ Trọ TroNest',
+  return res.json({
+    code: 200,
+    title: 'Hồ sơ chủ trọ - Kênh Chủ Trọ TroNest',
+    roleTitle: 'Chủ trọ cho thuê',
     user,
     roomCount,
     landlordStatus: user.status,

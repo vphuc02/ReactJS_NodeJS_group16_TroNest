@@ -7,7 +7,6 @@ const { escapeRegex } = require('../../helpers/security.helper');
 const { AppError } = require('../../helpers/error.helper');
 const { queryText, queryPage, pagination } = require('../../helpers/query.helper');
 const { stripUnitPrefix } = require('../../helpers/geo.helper');
-const { wantsJson } = require('../../helpers/http.helper');
 
 // [GET] /rooms
 module.exports.index = async (req, res) => {
@@ -29,7 +28,6 @@ module.exports.index = async (req, res) => {
   }
 
   // Ward filter, e.g. ?ward=Phường Ba Đình
-  // Older rooms stored the old district name, so also match district/address.
   if (ward && ward.trim() !== '') {
     const safeWard = escapeRegex(stripUnitPrefix(ward));
     andConditions.push({
@@ -71,7 +69,7 @@ module.exports.index = async (req, res) => {
     }
   }
 
-  // Legacy ?district= links (old bookmarks)
+  // Legacy ?district= links
   if (district && district.trim() !== '') {
     filter.district = { $regex: escapeRegex(district.trim()), $options: 'i' };
   }
@@ -129,32 +127,18 @@ module.exports.index = async (req, res) => {
     favoriteRoomIds = favorites.map((f) => f.roomId.toString());
   }
 
-  if (wantsJson(req)) {
-    return res.json({
-      code: 200,
-      data: {
-        rooms,
-        categories,
-        totalRooms,
-        currentPage,
-        totalPages,
-        paging,
-        query,
-        favoriteRoomIds
-      }
-    });
-  }
-
-  res.render('client/pages/room-list', {
-    title: 'Danh sách phòng trọ - TroNest',
-    rooms,
-    categories,
-    totalRooms,
-    currentPage,
-    totalPages,
-    paging,
-    query,
-    favoriteRoomIds
+  return res.json({
+    code: 200,
+    data: {
+      rooms,
+      categories,
+      totalRooms,
+      currentPage,
+      totalPages,
+      paging,
+      query,
+      favoriteRoomIds
+    }
   });
 };
 
@@ -202,21 +186,18 @@ module.exports.detail = async (req, res) => {
     .populate('landlordId', 'fullName phone avatar status')
     .lean();
 
-  if (wantsJson(req)) {
-    return res.json({
-      code: 200,
-      data: {
-        room,
-        isFavorited,
-        relatedRooms
-      }
-    });
+  const roomObj = typeof room.toObject === 'function' ? room.toObject() : room;
+  if (roomObj.landlordId && roomObj.landlordId._id) {
+    roomObj.landlordProfileUrl = `/landlords/${roomObj.landlordId._id}`;
   }
 
-  res.render('client/pages/room-detail', {
-    title: `${room.title} - TroNest`,
-    room,
-    isFavorited,
-    relatedRooms
+  return res.json({
+    code: 200,
+    message: 'Xem thông tin chi tiết chủ trọ',
+    data: {
+      room: roomObj,
+      isFavorited,
+      relatedRooms
+    }
   });
 };

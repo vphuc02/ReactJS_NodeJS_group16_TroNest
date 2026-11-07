@@ -6,12 +6,19 @@ const { cookieOptions } = require('../../helpers/http.helper');
 
 // [GET] /admin/login
 module.exports.loginGet = (req, res) => {
-  if (req.user?.role === ROLES.ADMIN && !req.user.isBlocked && req.user.status !== USER_STATUS.INACTIVE) {
-    return res.redirect('/admin/dashboard');
-  }
-
-  res.render('admin/pages/login', {
-    title: 'Đăng nhập Quản trị viên - TroNest'
+  const isAdmin =
+    req.user?.role === ROLES.ADMIN && !req.user.isBlocked && req.user.status !== USER_STATUS.INACTIVE;
+  return res.json({
+    code: 200,
+    authenticated: Boolean(isAdmin),
+    admin: isAdmin
+      ? {
+          _id: req.user._id,
+          fullName: req.user.fullName,
+          email: req.user.email,
+          role: req.user.role
+        }
+      : null
   });
 };
 

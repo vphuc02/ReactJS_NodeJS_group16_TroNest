@@ -1,15 +1,6 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/user.model');
 const { JWT_SECRET, ROLES, USER_STATUS } = require('../configs/system.config');
-const wantsJson = (req) => {
-  const helper = require('../helpers/http.helper');
-  const origin = req.headers.origin;
-  return Boolean(
-    req.originalUrl?.startsWith('/api/') ||
-    (origin && /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) ||
-    helper.wantsJson(req)
-  );
-};
 
 const extractToken = (req) => {
   const authHeader = req.headers.authorization || req.headers.Authorization;
@@ -58,36 +49,27 @@ module.exports.attachUser = async (req, res, next) => {
 module.exports.requireAdminAuth = (req, res, next) => {
   const token = extractToken(req) || req.cookies?.token_admin;
   if (!token) {
-    if (wantsJson(req)) {
-      return res.status(401).json({
-        code: 401,
-        message: 'Vui lòng đăng nhập Quản trị viên!'
-      });
-    }
-    return res.redirect('/admin/login');
+    return res.status(401).json({
+      code: 401,
+      message: 'Vui lòng đăng nhập Quản trị viên!'
+    });
   }
 
   const adminUser = req.user;
   if (!adminUser) {
     res.clearCookie('token_admin');
-    if (wantsJson(req)) {
-      return res.status(401).json({
-        code: 401,
-        message: 'Phiên làm việc hết hạn, vui lòng đăng nhập lại!'
-      });
-    }
-    return res.redirect('/admin/login');
+    return res.status(401).json({
+      code: 401,
+      message: 'Phiên làm việc hết hạn, vui lòng đăng nhập lại!'
+    });
   }
 
   if (adminUser.role !== ROLES.ADMIN || adminUser.isBlocked || adminUser.status === USER_STATUS.INACTIVE) {
     res.clearCookie('token_admin');
-    if (wantsJson(req)) {
-      return res.status(403).json({
-        code: 403,
-        message: 'Tài khoản không có quyền truy cập Quản trị viên!'
-      });
-    }
-    return res.redirect('/admin/login');
+    return res.status(403).json({
+      code: 403,
+      message: 'Tài khoản không có quyền truy cập Quản trị viên!'
+    });
   }
 
   req.admin = adminUser;
@@ -99,7 +81,7 @@ module.exports.requireAdminAuth = (req, res, next) => {
 module.exports.requireAuth = (allowedRoles = []) => {
   return (req, res, next) => {
     if (!req.user) {
-      if (wantsJson(req)) {
+      if (req.headers.accept?.includes('application/json') || req.is('json') || req.xhr) {
         return res.status(401).json({
           code: 401,
           message: 'Vui lòng đăng nhập để thực hiện chức năng này!'
@@ -109,15 +91,9 @@ module.exports.requireAuth = (allowedRoles = []) => {
     }
 
     if (allowedRoles.length > 0 && !allowedRoles.includes(req.user.role)) {
-      if (wantsJson(req)) {
-        return res.status(403).json({
-          code: 403,
-          message: 'Bạn không có quyền truy cập vào tài nguyên này!'
-        });
-      }
-      return res.status(403).render('client/pages/error', {
-        title: 'Truy cập bị từ chối',
-        message: 'Bạn không có quyền truy cập vào trang này!'
+      return res.status(403).json({
+        code: 403,
+        message: 'Bạn không có quyền truy cập vào tài nguyên này!'
       });
     }
 
@@ -128,27 +104,19 @@ module.exports.requireAuth = (allowedRoles = []) => {
 // Middleware kiểm tra Chủ trọ đã được Admin duyệt chưa
 module.exports.requireApprovedLandlord = (req, res, next) => {
   if (!req.user || req.user.role !== ROLES.LANDLORD) {
-    return res.status(403).render('client/pages/error', {
-      title: 'Quyền truy cập',
+    return res.status(403).json({
+      code: 403,
       message: 'Chỉ tài khoản Chủ trọ mới có quyền thực hiện thao tác này!'
     });
   }
 
   if (req.user.status !== USER_STATUS.APPROVED) {
-    if (wantsJson(req)) {
-      return res.status(403).json({
-        code: 403,
-        message:
-          req.user.status === USER_STATUS.PENDING
-            ? 'Tài khoản Chủ trọ của bạn đang trong trạng thái Chờ duyệt. Vui lòng đợi Admin phê duyệt trước khi đăng bài!'
-            : 'Tài khoản Chủ trọ của bạn đã bị từ chối phê duyệt!'
-      });
-    }
-
-    return res.status(403).render('landlord/pages/pending-approval', {
-      title: 'Tài khoản chưa được duyệt',
-      status: req.user.status,
-      rejectReason: req.user.rejectReason
+    return res.status(403).json({
+      code: 403,
+      message:
+        req.user.status === USER_STATUS.PENDING
+          ? 'Tài khoản Chủ trọ của bạn đang trong trạng thái Chờ duyệt. Vui lòng đợi Admin phê duyệt trước khi đăng bài!'
+          : 'Tài khoản Chủ trọ của bạn đã bị từ chối phê duyệt!'
     });
   }
 

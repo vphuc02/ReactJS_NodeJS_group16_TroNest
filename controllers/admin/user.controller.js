@@ -50,28 +50,16 @@ module.exports.index = async (req, res) => {
     .limit(paging.limit)
     .lean();
 
-  if (wantsJson(req)) {
-    return res.json({
-      code: 200,
-      data: {
-        users,
-        paging,
-        query: { role, status, keyword },
-        roleFilter: role || '',
-        statusFilter: status || '',
-        keyword: keyword || ''
-      }
-    });
-  }
-
-  res.render('admin/pages/user-list', {
-    title: 'Quản lý người dùng - TroNest',
-    users,
-    paging,
-    query: { role, status, keyword },
-    roleFilter: role || '',
-    statusFilter: status || '',
-    keyword: keyword || ''
+  return res.json({
+    code: 200,
+    data: {
+      users,
+      paging,
+      query: { role, status, keyword },
+      roleFilter: role || '',
+      statusFilter: status || '',
+      keyword: keyword || ''
+    }
   });
 };
 

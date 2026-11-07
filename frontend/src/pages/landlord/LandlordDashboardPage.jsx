@@ -64,9 +64,9 @@ export const LandlordDashboardPage = () => {
 
         <Link
           to="/landlord/rooms/create"
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-linear-to-r from-[#A67C52] to-[#8C6239] text-white text-xs font-bold shadow-md shadow-[#A67C52]/20 no-underline cursor-pointer"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-[#8C6239] hover:bg-[#6E4B26] text-white text-xs font-bold shadow-md shadow-[#8C6239]/25 hover:shadow-lg transition-all duration-200 no-underline cursor-pointer"
         >
-          <PlusCircle className="w-4 h-4" />
+          <PlusCircle className="w-4 h-4 text-white" />
           <span>Đăng Tin Mới</span>
         </Link>
       </div>

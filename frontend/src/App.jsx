@@ -67,15 +67,18 @@ export default function App() {
         />
 
         <Routes>
-          {/* CLIENT PORTAL ROUTES */}
+          {/* STANDALONE AUTH ROUTES (Giống hệt Pug SSR: Không bị Navbar/Footer đè) */}
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
+          <Route path="/admin/login" element={<AdminLoginPage />} />
+
+          {/* CLIENT PORTAL ROUTES (Có Navbar và Footer) */}
           <Route element={<ClientLayout />}>
             <Route path="/" element={<HomePage />} />
             <Route path="/rooms" element={<RoomListPage />} />
             <Route path="/rooms/detail/:id" element={<RoomDetailPage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
-            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-            <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route path="/landlords/:id" element={<LandlordPublicDetailPage />} />
             <Route path="/chu-tro/:id" element={<LandlordPublicDetailPage />} />
             <Route
@@ -112,9 +115,6 @@ export default function App() {
             <Route path="rooms/edit/:id" element={<LandlordRoomFormPage />} />
             <Route path="profile" element={<LandlordProfilePage />} />
           </Route>
-
-          {/* ADMIN LOGIN */}
-          <Route path="/admin/login" element={<AdminLoginPage />} />
 
           {/* ADMIN PORTAL ROUTES */}
           <Route

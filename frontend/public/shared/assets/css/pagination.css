@@ -1,0 +1,55 @@
+.list-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0;
+  font-family: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+}
+
+.list-pagination a,
+.list-pagination span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 38px;
+  height: 38px;
+  padding: 0 12px;
+  font-size: 13.5px;
+  font-weight: 700;
+  line-height: 1;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+}
+
+.list-pagination span {
+  color: #9A9389;
+}
+
+.list-pagination a {
+  border: 1px solid #E6DFD3;
+  color: #3D3A35;
+  background: #FFFFFF;
+  text-decoration: none;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+.list-pagination a:hover {
+  border-color: #D4C2AA;
+  background: #F5EFE6;
+  color: #A67C52;
+  transform: translateY(-1px);
+}
+
+.list-pagination a[aria-current="page"] {
+  background: #A67C52;
+  border-color: #A67C52;
+  color: #FFFFFF;
+  box-shadow: 0 4px 12px rgba(166, 124, 82, 0.25);
+}
+
+.list-pagination a:focus-visible {
+  outline: 2px solid #A67C52;
+  outline-offset: 2px;
+}
