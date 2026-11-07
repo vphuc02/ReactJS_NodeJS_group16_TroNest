@@ -44,7 +44,8 @@
 
   const isSafeImagePath = (value) => {
     return /^\/uploads\/rooms\/room-[a-zA-Z0-9-]+\.(jpe?g|png|webp|gif)$/i.test(value)
-      || /^\/client\/assets\/images\/[a-zA-Z0-9._-]+\.(jpe?g|png|webp|gif)$/i.test(value);
+      || /^\/client\/assets\/images\/[a-zA-Z0-9._-]+\.(jpe?g|png|webp|gif)$/i.test(value)
+      || /^https?:\/\/res\.cloudinary\.com\/[a-zA-Z0-9_.-]+\/image\/upload\/(?:v\d+\/)?[^\s"'<>\\]+$/i.test(value);
   };
 
   const showError = (message) => window.notyf?.error(message);
@@ -130,7 +131,7 @@
 
   const addImage = (url) => {
     if (!isSafeImagePath(url)) {
-      showError("Đường dẫn ảnh phải thuộc /uploads/rooms hoặc /client/assets/images.");
+      showError("Đường dẫn ảnh phải thuộc /uploads/rooms, Cloudinary hoặc /client/assets/images.");
       return;
     }
     if (roomImages.length >= 6) {

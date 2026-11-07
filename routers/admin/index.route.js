@@ -6,6 +6,7 @@ const landlordRoutes = require('./landlord.route');
 const roomRoutes = require('./room.route');
 const userRoutes = require('./user.route');
 const categoryRoutes = require('./category.route');
+const uploadRoutes = require('./upload.route');
 const accountController = require('../../controllers/admin/account.controller');
 const accountValidation = require('../../validations/shared/auth.validation');
 const { requireAdminAuth } = require('../../middlewares/auth.middleware');
@@ -36,6 +37,7 @@ router.use('/landlords', landlordRoutes);
 router.use('/rooms', roomRoutes);
 router.use('/users', userRoutes);
 router.use('/categories', categoryRoutes);
+router.use('/upload', uploadRoutes);
 
 // Xử lý 404 riêng cho phân hệ Admin
 router.use((req, res) => {

@@ -313,7 +313,7 @@ module.exports.uploadImages = async (req, res) => {
     });
   }
 
-  const fileUrls = req.files.map((file) => `/uploads/rooms/${file.filename}`);
+  const fileUrls = req.files.map((file) => file.url || file.path || `/uploads/rooms/${file.filename}`);
   return res.json({
     code: 200,
     message: `Đã tải lên thành công ${fileUrls.length} ảnh!`,

@@ -112,6 +112,21 @@ Lệnh này xóa dữ liệu hiện tại trong database được cấu hình. C
 yarn seed --reset
 ```
 
+### Cấu hình lưu trữ ảnh Cloudinary
+Dự án hỗ trợ lưu trữ ảnh trên Cloudinary tương tự kiến trúc của `Project-1`:
+- Khai báo các biến môi trường trong `.env`:
+  ```env
+  CLOUDINARY_NAME=your_cloud_name
+  CLOUDINARY_APIKEY=your_api_key
+  CLOUDINARY_APISECRET=your_api_secret
+  ```
+- Khi đã cấu hình Cloudinary:
+  - Ảnh phòng trọ đăng tải bởi chủ trọ được tự động tải lên thư mục `tronest/rooms` trên Cloudinary.
+  - Ảnh đại diện tài khoản được tự động tải lên thư mục `tronest/avatars` trên Cloudinary.
+  - Cung cấp endpoint dành cho Quản trị viên `POST /admin/upload/image` tải ảnh trực tiếp qua Multer `CloudinaryStorage`.
+  - Có thể import `uploadCloudinary` từ `middlewares/upload.middleware.js` hoặc dùng trực tiếp `helpers/cloudinary.helper.js` (`storage`, `uploadBuffer`, `deleteImage`).
+- Khi chạy kiểm thử hoặc không cấu hình Cloudinary, hệ thống tự động lưu vào ổ đĩa cục bộ (`public/uploads/rooms` và `public/uploads/avatars`).
+
 ### Ảnh tải lên
 - Tối đa 6 ảnh/lượt, 10 MB/ảnh và 25 megapixel. Ảnh được giải mã rồi lưu lại dạng WebP tĩnh; GIF động chỉ giữ khung đầu.
 - Ảnh mới có định danh chủ trọ trong tên file; quota 200 MB/chủ trọ được tính từ các file này, kể cả ảnh chưa gắn vào bài. Ảnh cũ không có định danh chủ trọ không được tính vào quota mới.

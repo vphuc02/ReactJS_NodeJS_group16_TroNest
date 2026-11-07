@@ -60,8 +60,8 @@ module.exports.editPost = async (req, res) => {
     facebook: facebook ? facebook.trim() : ''
   };
 
-  if (req.file && req.file.storedPath) {
-    updateData.avatar = req.file.storedPath;
+  if (req.file && (req.file.storedPath || req.file.path || req.file.url)) {
+    updateData.avatar = req.file.storedPath || req.file.path || req.file.url;
   } else if (avatar && avatar.trim()) {
     updateData.avatar = avatar.trim();
   }
@@ -81,13 +81,14 @@ module.exports.editPost = async (req, res) => {
 
 // [POST] /profile/avatar
 module.exports.uploadAvatarPost = async (req, res) => {
-  if (!req.file || !req.file.storedPath) {
+  const avatarUrl = req.file ? (req.file.storedPath || req.file.path || req.file.url) : null;
+  if (!avatarUrl) {
     throw new AppError(400, 'Vui lòng chọn tệp ảnh đại diện hợp lệ từ thiết bị!');
   }
 
   const updatedUser = await User.findByIdAndUpdate(
     req.user._id,
-    { avatar: req.file.storedPath },
+    { avatar: avatarUrl },
     { returnDocument: 'after' }
   ).select('-password');
 
@@ -98,7 +99,7 @@ module.exports.uploadAvatarPost = async (req, res) => {
   return res.json({
     code: 200,
     message: 'Cập nhật ảnh đại diện thành công!',
-    avatar: req.file.storedPath,
+    avatar: avatarUrl,
     user: updatedUser
   });
 };

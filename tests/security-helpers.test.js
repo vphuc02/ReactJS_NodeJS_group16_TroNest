@@ -15,6 +15,7 @@ const {
   escapeRegex,
   jsonForInlineScript,
   isSafeStoredImagePath,
+  isCloudinaryImageUrl,
   getImageExtension
 } = require('../helpers/security.helper');
 const { queryText, queryPage, pagination } = require('../helpers/query.helper');
@@ -123,9 +124,14 @@ describe('Chống Regex Injection & XSS & Kiểm Tra Đường Dẫn File (Sanit
     assert.equal(isSafeStoredImagePath('/uploads/rooms/room-123-abc.webp'), true);
     assert.equal(isSafeStoredImagePath('/uploads/rooms/room-xyz.jpg'), true);
     assert.equal(isSafeStoredImagePath('/client/assets/images/default.png'), true);
+    assert.equal(isSafeStoredImagePath('https://res.cloudinary.com/bxg8l8qn/image/upload/v1712345678/tronest/rooms/room-123.webp'), true);
+    assert.equal(isSafeStoredImagePath('http://res.cloudinary.com/demo/image/upload/sample.jpg'), true);
+    assert.equal(isCloudinaryImageUrl('https://res.cloudinary.com/bxg8l8qn/image/upload/sample.jpg'), true);
+    assert.equal(isCloudinaryImageUrl('https://malicious.com/not-cloudinary.jpg'), false);
 
     // Bất hợp lệ (Path traversal, file script, định dạng cấm)
     assert.equal(isSafeStoredImagePath('../../etc/passwd'), false);
+    assert.equal(isSafeStoredImagePath('https://malicious.com/fake.png'), false);
     assert.equal(isSafeStoredImagePath('/uploads/rooms/shell.php'), false);
     assert.equal(isSafeStoredImagePath('/uploads/rooms/script.js'), false);
     assert.equal(isSafeStoredImagePath('/uploads/rooms/room-123.svg'), false);

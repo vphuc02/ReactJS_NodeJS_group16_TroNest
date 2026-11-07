@@ -5,11 +5,21 @@ const fs = require('fs/promises');
 const { randomUUID } = require('crypto');
 const { getImageExtension } = require('../helpers/security.helper');
 const { AppError } = require('../helpers/error.helper');
+const cloudinaryHelper = require('../helpers/cloudinary.helper');
 
 const uploadDir = path.join(__dirname, '../public/uploads/rooms');
 const MAX_FILE_BYTES = 10 * 1024 * 1024;
 const USER_QUOTA_BYTES = 200 * 1024 * 1024;
 const activeUploads = new Set();
+
+const isCloudinaryActive = () => {
+  return (
+    cloudinaryHelper.isCloudinaryConfigured() &&
+    process.env.STORAGE_DRIVER !== 'local' &&
+    process.env.NODE_ENV !== 'test'
+  );
+};
+
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: MAX_FILE_BYTES, files: 6, fields: 2, parts: 8 },
@@ -54,6 +64,8 @@ module.exports.uploadRoomImages = async (req, res, next) => {
 
     await receiveImages(req, res);
     const storedFiles = [];
+    const useCloudinary = isCloudinaryActive();
+
     for (const file of req.files || []) {
       let buffer;
       try {
@@ -70,12 +82,34 @@ module.exports.uploadRoomImages = async (req, res, next) => {
       if (buffer.length > MAX_FILE_BYTES || usedBytes + buffer.length > USER_QUOTA_BYTES) {
         throw new AppError(413, 'Ảnh vượt quá giới hạn dung lượng (10 MB/ảnh, 200 MB/tài khoản)!');
       }
-      const filename = `${prefix}${randomUUID()}.webp`;
-      const fullPath = path.join(uploadDir, filename);
-      writtenPaths.push(fullPath);
-      await fs.writeFile(fullPath, buffer, { flag: 'wx' });
-      usedBytes += buffer.length;
-      storedFiles.push({ filename, size: buffer.length, mimetype: 'image/webp' });
+
+      if (useCloudinary) {
+        const publicId = `${prefix}${randomUUID()}`;
+        const uploadResult = await cloudinaryHelper.uploadBuffer(buffer, {
+          folder: 'tronest/rooms',
+          public_id: publicId
+        });
+        storedFiles.push({
+          filename: uploadResult.public_id,
+          path: uploadResult.secure_url,
+          url: uploadResult.secure_url,
+          size: uploadResult.bytes || buffer.length,
+          mimetype: 'image/webp'
+        });
+      } else {
+        const filename = `${prefix}${randomUUID()}.webp`;
+        const fullPath = path.join(uploadDir, filename);
+        writtenPaths.push(fullPath);
+        await fs.writeFile(fullPath, buffer, { flag: 'wx' });
+        usedBytes += buffer.length;
+        storedFiles.push({
+          filename,
+          path: `/uploads/rooms/${filename}`,
+          url: `/uploads/rooms/${filename}`,
+          size: buffer.length,
+          mimetype: 'image/webp'
+        });
+      }
     }
     req.files = storedFiles;
     next();
@@ -108,7 +142,6 @@ const receiveAvatar = (req, res) => new Promise((resolve, reject) => {
 
 module.exports.uploadAvatar = async (req, res, next) => {
   try {
-    await fs.mkdir(avatarUploadDir, { recursive: true });
     await receiveAvatar(req, res);
     if (!req.file) {
       return next();
@@ -120,10 +153,25 @@ module.exports.uploadAvatar = async (req, res, next) => {
       .webp({ quality: 85 })
       .toBuffer();
 
-    const filename = `avatar-${req.user._id}-${randomUUID()}.webp`;
-    const fullPath = path.join(avatarUploadDir, filename);
-    await fs.writeFile(fullPath, buffer, { flag: 'wx' });
-    req.file.storedPath = `/uploads/avatars/${filename}`;
+    const filename = `avatar-${req.user._id}-${randomUUID()}`;
+
+    if (isCloudinaryActive()) {
+      const uploadResult = await cloudinaryHelper.uploadBuffer(buffer, {
+        folder: 'tronest/avatars',
+        public_id: filename
+      });
+      req.file.storedPath = uploadResult.secure_url;
+      req.file.path = uploadResult.secure_url;
+      req.file.url = uploadResult.secure_url;
+      req.file.filename = uploadResult.public_id;
+    } else {
+      await fs.mkdir(avatarUploadDir, { recursive: true });
+      const fullPath = path.join(avatarUploadDir, `${filename}.webp`);
+      await fs.writeFile(fullPath, buffer, { flag: 'wx' });
+      req.file.storedPath = `/uploads/avatars/${filename}.webp`;
+      req.file.path = `/uploads/avatars/${filename}.webp`;
+      req.file.url = `/uploads/avatars/${filename}.webp`;
+    }
     next();
   } catch (error) {
     if (error instanceof multer.MulterError) {
@@ -135,3 +183,5 @@ module.exports.uploadAvatar = async (req, res, next) => {
   }
 };
 
+// Multer storage engine Cloudinary trực tiếp (chuẩn theo cấu trúc của Project-1)
+module.exports.uploadCloudinary = multer({ storage: cloudinaryHelper.storage });

@@ -72,13 +72,19 @@ const getImageExtension = (file) => {
   return mimeConfig.output;
 };
 
+const isCloudinaryImageUrl = (value) => {
+  if (typeof value !== 'string') return false;
+  return /^https?:\/\/res\.cloudinary\.com\/[a-zA-Z0-9_.-]+\/image\/upload\/(?:v\d+\/)?[^\s"'<>\\]+$/i.test(value.trim());
+};
+
 const isSafeStoredImagePath = (value) => {
   if (typeof value !== 'string') return false;
   return (
     /^\/uploads\/rooms\/room-[a-zA-Z0-9-]+\.(jpe?g|png|webp|gif)$/i.test(value) ||
     /^\/uploads\/avatars\/avatar-[a-zA-Z0-9-]+\.(jpe?g|png|webp|gif)$/i.test(value) ||
     /^\/client\/assets\/images\/[a-zA-Z0-9._-]+\.(jpe?g|png|webp|gif)$/i.test(value) ||
-    /^\/admin\/assets\/images\/[a-zA-Z0-9._-]+\.(jpe?g|png|webp|gif)$/i.test(value)
+    /^\/admin\/assets\/images\/[a-zA-Z0-9._-]+\.(jpe?g|png|webp|gif)$/i.test(value) ||
+    isCloudinaryImageUrl(value)
   );
 };
 
@@ -92,6 +98,7 @@ module.exports = {
   getImageExtension,
   getSafeRedirect,
   isSafeLocalRedirect,
+  isCloudinaryImageUrl,
   isSafeStoredImagePath,
   jsonForInlineScript
 };
