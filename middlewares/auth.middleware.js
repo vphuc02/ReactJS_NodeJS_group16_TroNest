@@ -3,9 +3,10 @@ const User = require('../models/user.model');
 const { JWT_SECRET, ROLES, USER_STATUS } = require('../configs/system.config');
 const wantsJson = (req) => {
   const helper = require('../helpers/http.helper');
+  const origin = req.headers.origin;
   return Boolean(
     req.originalUrl?.startsWith('/api/') ||
-    req.headers.origin?.includes('5173') ||
+    (origin && /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) ||
     helper.wantsJson(req)
   );
 };

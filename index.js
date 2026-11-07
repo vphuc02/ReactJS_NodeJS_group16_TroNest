@@ -19,7 +19,13 @@ const app = express();
 // CORS Configuration for React Frontend
 app.use(
   cors({
-    origin: ['http://localhost:5173', 'http://127.0.0.1:5173', 'http://localhost:3000'],
+    origin: (origin, callback) => {
+      // Cho phép không có origin (curl, same-origin) hoặc bất kỳ port nào trên localhost/127.0.0.1 (5173, 5174, 3000...)
+      if (!origin || /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) {
+        return callback(null, true);
+      }
+      callback(new Error('Not allowed by CORS'));
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'x-csrf-token', 'Accept', 'X-Requested-With']

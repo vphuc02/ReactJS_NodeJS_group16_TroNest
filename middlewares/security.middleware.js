@@ -29,14 +29,19 @@ const csrfProtection = (req, res, next) => {
     return next();
   }
 
-  // Cho phép request có Authorization Bearer token hoặc từ Frontend React (Vite)
+  // Cho phép request có Authorization Bearer token hoặc từ Frontend React (Vite localhost bất kỳ port)
   const authHeader = req.headers.authorization || req.headers.Authorization;
   if (authHeader && authHeader.startsWith('Bearer ')) {
     return next();
   }
 
   const origin = req.headers.origin;
-  if (origin && (origin === 'http://localhost:5173' || origin === 'http://127.0.0.1:5173')) {
+  if (origin && /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) {
+    return next();
+  }
+
+  // Cho phép mọi request gửi Content-Type application/json (REST API calls)
+  if (req.is('json') || req.headers['content-type']?.includes('application/json')) {
     return next();
   }
 

@@ -130,6 +130,32 @@ export const LoginPage = () => {
             </label>
           </div>
 
+          {/* Quick Demo Credentials Box */}
+          <div className="p-3 rounded-2xl bg-[#FAF7F2] border border-[#E6DFD3] text-[11px] text-slate-600 space-y-1.5">
+            <p className="font-bold text-[#A67C52] text-[11.5px]">💡 Tài khoản mẫu sẵn có (Bấm để điền nhanh):</p>
+            <div className="flex justify-between items-center text-slate-700">
+              <span>Khách: <strong className="font-mono">khachhang@tronest.com</strong></span>
+              <button
+                type="button"
+                onClick={() => { setEmail('khachhang@tronest.com'); setPassword('123456'); }}
+                className="px-2 py-0.5 rounded-lg bg-white border border-[#E6DFD3] text-[#A67C52] hover:bg-[#F5EFE6] font-bold cursor-pointer shadow-2xs"
+              >
+                Điền
+              </button>
+            </div>
+            <div className="flex justify-between items-center text-slate-700">
+              <span>Chủ trọ: <strong className="font-mono">chutro.viet@tronest.com</strong></span>
+              <button
+                type="button"
+                onClick={() => { setEmail('chutro.viet@tronest.com'); setPassword('123456'); }}
+                className="px-2 py-0.5 rounded-lg bg-white border border-[#E6DFD3] text-[#A67C52] hover:bg-[#F5EFE6] font-bold cursor-pointer shadow-2xs"
+              >
+                Điền
+              </button>
+            </div>
+            <p className="text-[10px] text-slate-400">Mật khẩu chung: <strong className="text-slate-600 font-mono">123456</strong></p>
+          </div>
+
           {/* Submit Button */}
           <button
             type="submit"
@@ -162,11 +188,19 @@ export const LoginPage = () => {
         </form>
 
         {/* Footer Link */}
-        <div className="pt-4 border-t border-slate-100 text-center text-xs text-slate-500">
-          Chưa có tài khoản TroNest?{' '}
-          <Link to="/register" className="font-bold text-[#A67C52] hover:text-[#8C6239]">
-            Đăng ký ngay
-          </Link>
+        <div className="pt-4 border-t border-slate-100 text-center text-xs text-slate-500 space-y-2">
+          <div>
+            Chưa có tài khoản TroNest?{' '}
+            <Link to="/register" className="font-bold text-[#A67C52] hover:text-[#8C6239]">
+              Đăng ký ngay
+            </Link>
+          </div>
+          <div>
+            Bạn là Quản trị viên?{' '}
+            <Link to="/admin/login" className="font-bold text-slate-700 hover:text-slate-900 underline">
+              Cổng Quản Trị Hệ Thống
+            </Link>
+          </div>
         </div>
 
       </div>
