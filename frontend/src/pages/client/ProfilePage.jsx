@@ -10,6 +10,7 @@ export const ProfilePage = () => {
   const [fullName, setFullName] = useState(user?.fullName || '');
   const [phone, setPhone] = useState(user?.phone || '');
   const [address, setAddress] = useState(user?.address || '');
+  const [facebook, setFacebook] = useState(user?.facebook || '');
   const [avatarPreview, setAvatarPreview] = useState(() => resolveAvatar(user?.avatar));
   const [avatarFile, setAvatarFile] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -27,6 +28,7 @@ export const ProfilePage = () => {
       setFullName(user.fullName || '');
       setPhone(user.phone || '');
       setAddress(user.address || '');
+      setFacebook(user.facebook || '');
       setAvatarPreview(resolveAvatar(user.avatar));
     }
   }, [user]);
@@ -52,6 +54,7 @@ export const ProfilePage = () => {
       formData.append('fullName', fullName.trim());
       formData.append('phone', phone.trim());
       formData.append('address', address.trim());
+      formData.append('facebook', facebook.trim());
       if (avatarFile) {
         formData.append('avatar', avatarFile);
       }
@@ -105,7 +108,7 @@ export const ProfilePage = () => {
   };
 
   return (
-    <main className="client-clean-001 pt-4 pb-16 min-h-screen bg-[#FAF7F2]">
+    <div className="pb-16 pt-2 sm:pt-3">
       <div className="container max-w-5xl mx-auto px-4 space-y-6">
         
         {/* Hero Profile Header Card */}
@@ -170,6 +173,18 @@ export const ProfilePage = () => {
                     <span>{user?.phone}</span>
                   </span>
                 )}
+                {user?.facebook && (
+                  <a
+                    href={user.facebook.startsWith('http') ? user.facebook : `https://${user.facebook}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1.5 text-[#1877F2] hover:underline font-medium no-underline"
+                    title="Mở liên kết Facebook"
+                  >
+                    <i className="fa-brands fa-facebook text-sm"></i>
+                    <span>Facebook</span>
+                  </a>
+                )}
               </div>
             </div>
 
@@ -218,6 +233,25 @@ export const ProfilePage = () => {
                   placeholder="Quận Cầu Giấy, Hà Nội"
                   className="w-full px-4 py-2.5 rounded-xl border border-[#E6DFD3] bg-[#FAF7F2] text-xs font-medium text-[#1C1B19] outline-none focus:border-[#A67C52] focus:bg-white transition-all"
                 />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-[#1C1B19] mb-1.5">Link Facebook cá nhân</label>
+                <div className="relative">
+                  <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#1877F2]">
+                    <i className="fa-brands fa-facebook text-sm"></i>
+                  </span>
+                  <input
+                    type="url"
+                    value={facebook}
+                    onChange={(e) => setFacebook(e.target.value)}
+                    placeholder="https://facebook.com/username-cua-ban"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-[#E6DFD3] bg-[#FAF7F2] text-xs font-medium text-[#1C1B19] outline-none focus:border-[#A67C52] focus:bg-white transition-all"
+                  />
+                </div>
+                <p className="text-[11px] text-[#8C867A] mt-1">
+                  Thêm liên kết Facebook giúp người thuê hoặc chủ trọ liên hệ trao đổi thuận tiện hơn.
+                </p>
               </div>
 
               <button
@@ -295,6 +329,6 @@ export const ProfilePage = () => {
         </div>
 
       </div>
-    </main>
+    </div>
   );
 };

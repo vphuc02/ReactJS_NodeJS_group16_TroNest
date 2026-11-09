@@ -32,11 +32,11 @@ export const FavoritesPage = () => {
   };
 
   return (
-    <main className="client-clean-001 pb-20">
+    <div className="pb-20 pt-2 sm:pt-3">
       <div className="container">
         
         {/* Title Bar */}
-        <div className="client-clean-094 mb-8">
+        <div className="client-clean-094 mb-6 sm:mb-8">
           <h1 className="client-clean-116 text-3xl sm:text-4xl font-serif font-bold text-[#1C1B19] flex items-center gap-3">
             <i className="fa-solid fa-heart client-clean-013 text-rose-500"></i>
             <span>Phòng Trọ Đã Lưu Yêu Thích</span>
@@ -85,6 +85,6 @@ export const FavoritesPage = () => {
         )}
 
       </div>
-    </main>
+    </div>
   );
 };
