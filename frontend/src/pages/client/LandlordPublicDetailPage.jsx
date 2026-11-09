@@ -114,6 +114,17 @@ export const LandlordPublicDetailPage = () => {
                   <span>{landlord.address}</span>
                 </span>
               )}
+              {landlord.facebook && (
+                <a
+                  href={landlord.facebook.startsWith('http') ? landlord.facebook : `https://${landlord.facebook}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 text-[#1877F2] hover:underline no-underline font-medium"
+                >
+                  <i className="fa-brands fa-facebook text-sm"></i>
+                  <span>Facebook</span>
+                </a>
+              )}
             </div>
 
             <p className="text-xs text-slate-400 pt-1">
@@ -142,6 +153,17 @@ export const LandlordPublicDetailPage = () => {
             >
               <i className="fa-solid fa-comment-dots text-sm"></i>
               <span>Nhắn Tin Zalo</span>
+            </a>
+          )}
+          {landlord.facebook && (
+            <a
+              href={landlord.facebook.startsWith('http') ? landlord.facebook : `https://${landlord.facebook}`}
+              target="_blank"
+              rel="noreferrer"
+              className="px-6 py-2.5 rounded-2xl bg-[#1877F2] hover:bg-[#166fe5] text-white text-xs font-bold shadow-sm flex items-center justify-center gap-2 no-underline transition-colors"
+            >
+              <i className="fa-brands fa-facebook text-sm"></i>
+              <span>Trang Facebook</span>
             </a>
           )}
         </div>
