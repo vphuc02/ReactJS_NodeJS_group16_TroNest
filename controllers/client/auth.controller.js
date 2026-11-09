@@ -475,16 +475,42 @@ module.exports.resetPasswordFromLinkPost = async (req, res) => {
   });
 };
 
+const resolveFrontendOriginFromReq = (req) => {
+  const referer = req.get('referer') || req.get('origin') || '';
+  if (!referer) return '';
+  try {
+    const parsed = new URL(referer);
+    const currentHostOrigin = `${req.protocol}://${req.get('host')}`;
+    if (parsed.origin === currentHostOrigin) return '';
+    if (/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(parsed.origin)) {
+      return parsed.origin;
+    }
+    const allowed = (process.env.ALLOWED_ORIGINS || '')
+      .split(',')
+      .map((o) => o.trim())
+      .filter(Boolean);
+    if (allowed.includes(parsed.origin)) {
+      return parsed.origin;
+    }
+  } catch {
+    // ignore
+  }
+  return '';
+};
+
 // [GET] /auth/google
 module.exports.googleAuthGet = (req, res) => {
+  const frontendOrigin = resolveFrontendOriginFromReq(req);
   if (req.user) {
-    if (req.user.role === ROLES.LANDLORD) return res.redirect('/landlord/dashboard');
-    return res.redirect('/');
+    if (req.user.role === ROLES.LANDLORD) {
+      return res.redirect(`${frontendOrigin}/landlord/dashboard`);
+    }
+    return res.redirect(`${frontendOrigin}/`);
   }
 
   const role = req.query.role === ROLES.LANDLORD ? ROLES.LANDLORD : ROLES.CUSTOMER;
   const redirectUrl = getSafeRedirect(req.query.redirect, '');
-  const state = createOAuthState({ role, redirectUrl });
+  const state = createOAuthState({ role, redirectUrl, frontendOrigin });
 
   res.cookie('google_oauth_state', state, cookieOptions(10 * 60 * 1000));
 
@@ -494,9 +520,13 @@ module.exports.googleAuthGet = (req, res) => {
 
 // [GET] /auth/google/callback
 module.exports.googleAuthCallbackGet = async (req, res) => {
+  const queryState = String(req.query.state || '');
+  const parsedStateForOrigin = parseOAuthState(queryState);
+  const frontendOrigin = parsedStateForOrigin?.frontendOrigin || '';
+
   const redirectWithError = (msg) => {
     res.clearCookie('google_oauth_state');
-    return res.redirect(`/login?error=${encodeURIComponent(msg)}`);
+    return res.redirect(`${frontendOrigin}/login?error=${encodeURIComponent(msg)}`);
   };
 
   if (req.query.error) {
@@ -504,7 +534,6 @@ module.exports.googleAuthCallbackGet = async (req, res) => {
   }
 
   const cookieState = req.cookies?.google_oauth_state || '';
-  const queryState = String(req.query.state || '');
   res.clearCookie('google_oauth_state');
 
   if (!cookieState || !queryState || cookieState !== queryState) {
@@ -513,7 +542,7 @@ module.exports.googleAuthCallbackGet = async (req, res) => {
     );
   }
 
-  const statePayload = parseOAuthState(queryState);
+  const statePayload = parsedStateForOrigin;
   if (!statePayload) {
     return redirectWithError('Trạng thái xác thực Google không hợp lệ. Vui lòng thử lại!');
   }
@@ -608,7 +637,7 @@ module.exports.googleAuthCallbackGet = async (req, res) => {
     const defaultRedirect =
       user.role === ROLES.LANDLORD ? '/landlord/dashboard' : '/';
     const finalRedirect = getSafeRedirect(statePayload.redirectUrl, defaultRedirect);
-    return res.redirect(finalRedirect);
+    return res.redirect(`${frontendOrigin}${finalRedirect}`);
   } catch (err) {
     return redirectWithError(
       err?.message || 'Đăng nhập bằng Google thất bại. Vui lòng thử lại!'

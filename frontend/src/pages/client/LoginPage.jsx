@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { authApi } from '../../api/authApi';
 import { useAuth } from '../../context/AuthContext';
@@ -15,6 +15,13 @@ export const LoginPage = () => {
   const [searchParams] = useSearchParams();
 
   const redirectUrl = searchParams.get('redirect') || '/';
+  const oauthError = searchParams.get('error');
+
+  useEffect(() => {
+    if (oauthError) {
+      toast.error(oauthError);
+    }
+  }, [oauthError]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

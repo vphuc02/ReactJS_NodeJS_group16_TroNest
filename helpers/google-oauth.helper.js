@@ -51,13 +51,14 @@ const signStatePayload = (encodedPayload) => {
     .digest('base64url');
 };
 
-const createOAuthState = ({ role, redirectUrl } = {}) => {
+const createOAuthState = ({ role, redirectUrl, frontendOrigin } = {}) => {
   const normalizedRole = role === ROLES.LANDLORD ? ROLES.LANDLORD : ROLES.CUSTOMER;
   const safeRedirect = getSafeRedirect(redirectUrl, '');
   const payload = {
     nonce: crypto.randomBytes(16).toString('hex'),
     role: normalizedRole,
     redirectUrl: safeRedirect,
+    frontendOrigin: typeof frontendOrigin === 'string' ? frontendOrigin : '',
     iat: Date.now()
   };
 
@@ -88,7 +89,8 @@ const parseOAuthState = (stateString) => {
     return {
       nonce: parsed.nonce,
       role,
-      redirectUrl
+      redirectUrl,
+      frontendOrigin: typeof parsed.frontendOrigin === 'string' ? parsed.frontendOrigin : ''
     };
   } catch {
     return null;

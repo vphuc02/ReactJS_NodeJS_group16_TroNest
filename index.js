@@ -79,8 +79,10 @@ if (process.env.NODE_ENV !== 'test' && fs.existsSync(frontendDistPath)) {
       req.headers['sec-fetch-mode'] === 'navigate' ||
       req.accepts(['html', 'json']) === 'html';
     const isStaticFile = Boolean(path.extname(req.path));
+    const isBackendBrowserRoute =
+      req.path.startsWith('/auth/google') || req.path.startsWith('/api/');
 
-    if (req.method === 'GET' && isNavigation && !isStaticFile) {
+    if (req.method === 'GET' && isNavigation && !isStaticFile && !isBackendBrowserRoute) {
       return res.sendFile(path.join(frontendDistPath, 'index.html'));
     }
     next();

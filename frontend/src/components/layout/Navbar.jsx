@@ -71,20 +71,6 @@ export const Navbar = () => {
                 <span className="w-1.5 h-1.5 rounded-full bg-[#D4C2AA] group-hover:bg-[#A67C52] transition-colors"></span>
                 <span>Tất Cả Phòng</span>
               </NavLink>
-
-              <NavLink
-                to="/rooms?category=can-ho-mini-studio"
-                className={({ isActive }) =>
-                  `hidden lg:flex px-4 py-2 rounded-full text-[13.5px] lg:text-sm font-semibold transition-all duration-200 no-underline items-center gap-2 group ${
-                    isActive
-                      ? 'text-[#A67C52] bg-[#F5EFE6]'
-                      : 'text-[#6E6A63] hover:text-[#A67C52] hover:bg-[#F5EFE6]'
-                  }`
-                }
-              >
-                <span className="w-1.5 h-1.5 rounded-full bg-[#D4C2AA] group-hover:bg-[#A67C52] transition-colors"></span>
-                <span>Studio & Căn Hộ</span>
-              </NavLink>
             </nav>
 
             {/* Right: Actions (Post Room + Auth Buttons) */}
