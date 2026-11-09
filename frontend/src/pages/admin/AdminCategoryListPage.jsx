@@ -67,11 +67,11 @@ export const AdminCategoryListPage = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-5">
+      <div className="flex items-center justify-between pb-1">
         <div>
           <span className="text-xs font-bold uppercase tracking-wider text-emerald-600">Phân Loại Phòng</span>
-          <h1 className="text-3xl font-extrabold text-slate-900 font-serif mt-1">Danh Mục Loại Phòng Trọ</h1>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 font-serif mt-0.5">Danh Mục Loại Phòng Trọ</h1>
         </div>
 
         <button

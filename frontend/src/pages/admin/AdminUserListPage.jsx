@@ -2,15 +2,17 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { adminApi } from '../../api/adminApi';
 import toast from 'react-hot-toast';
-import { Search, Lock, Unlock } from 'lucide-react';
+import { Search, Lock, Unlock, ChevronLeft, ChevronRight } from 'lucide-react';
 
 export const AdminUserListPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [users, setUsers] = useState([]);
+  const [paging, setPaging] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const role = searchParams.get('role') || '';
   const keyword = searchParams.get('keyword') || '';
+  const page = parseInt(searchParams.get('page') || '1', 10);
   const [searchInput, setSearchInput] = useState(keyword);
 
   const fetchUsers = useCallback(async () => {
@@ -20,9 +22,11 @@ export const AdminUserListPage = () => {
       const res = await adminApi.getUsers(params);
       if (res.code === 200 && res.data) {
         setUsers(res.data.users || []);
+        setPaging(res.data.paging);
       }
     } catch (err) {
       console.error('Lỗi tải danh sách người dùng:', err);
+      toast.error('Không thể tải danh sách người dùng!');
     } finally {
       setLoading(false);
     }
@@ -49,6 +53,14 @@ export const AdminUserListPage = () => {
     setSearchParams(newParams);
   };
 
+  const handlePageChange = (newPage) => {
+    if (!paging || newPage < 1 || newPage > paging.totalPages) return;
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set('page', String(newPage));
+    setSearchParams(newParams);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const handleToggleBlock = async (id, currentBlocked) => {
     const action = currentBlocked ? 'mở khóa' : 'khóa';
     if (!window.confirm(`Bạn có chắc muốn ${action} tài khoản này?`)) return;
@@ -65,15 +77,15 @@ export const AdminUserListPage = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <div>
         <span className="text-xs font-bold uppercase tracking-wider text-emerald-600">Thành Viên Hệ Thống</span>
-        <h1 className="text-3xl font-extrabold text-slate-900 font-serif mt-1">Quản Lý Người Dùng</h1>
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 font-serif mt-0.5">Quản Lý Người Dùng</h1>
       </div>
 
       {/* Filter Tabs & Search */}
       <div className="bg-white p-4 rounded-3xl border border-slate-200/80 shadow-xs flex flex-col md:flex-row items-center justify-between gap-4">
-        <div className="flex items-center gap-1.5 overflow-x-auto w-full md:w-auto pb-2 md:pb-0">
+        <div className="flex items-center gap-1.5 overflow-x-auto w-full md:w-auto pb-2 md:pb-0 scrollbar-none">
           {[
             { label: 'Tất cả', val: '' },
             { label: 'Khách thuê', val: 'CUSTOMER' },
@@ -82,6 +94,7 @@ export const AdminUserListPage = () => {
           ].map((tab) => (
             <button
               key={tab.val}
+              type="button"
               onClick={() => handleRoleFilter(tab.val)}
               className={`px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
                 role === tab.val ? 'bg-emerald-600 text-white shadow-xs' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'
@@ -158,6 +171,7 @@ export const AdminUserListPage = () => {
                     <td className="py-4 px-6 text-right">
                       {u.role !== 'ADMIN' && (
                         <button
+                          type="button"
                           onClick={() => handleToggleBlock(u._id, u.isBlocked)}
                           className={`px-3 py-1.5 rounded-xl border font-bold text-[11px] cursor-pointer inline-flex items-center gap-1.5 transition-colors ${
                             u.isBlocked
@@ -178,8 +192,61 @@ export const AdminUserListPage = () => {
         ) : (
           <div className="text-center py-16 text-slate-400 text-xs">Không tìm thấy người dùng nào.</div>
         )}
+
+        {/* Pagination Bar */}
+        {paging && paging.totalPages > 1 && (
+          <div className="p-4 sm:p-5 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs bg-slate-50/60">
+            <span className="text-slate-500 text-[11px]">
+              Hiển thị <strong className="text-slate-800">{users.length}</strong> trên tổng số{' '}
+              <strong className="text-slate-800">{paging.total || 0}</strong> tài khoản
+            </span>
+
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                disabled={page <= 1}
+                onClick={() => handlePageChange(page - 1)}
+                className="p-2 rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+                title="Trang trước"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+
+              {Array.from({ length: paging.totalPages }, (_, i) => i + 1).map((p) => {
+                if (p === 1 || p === paging.totalPages || (p >= page - 1 && p <= page + 1)) {
+                  return (
+                    <button
+                      key={p}
+                      type="button"
+                      onClick={() => handlePageChange(p)}
+                      className={`min-w-8 h-8 px-2.5 rounded-xl font-bold transition-all cursor-pointer ${
+                        page === p
+                          ? 'bg-emerald-600 text-white shadow-xs'
+                          : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'
+                      }`}
+                    >
+                      {p}
+                    </button>
+                  );
+                } else if (p === page - 2 || p === page + 2) {
+                  return <span key={p} className="px-1 text-slate-400">...</span>;
+                }
+                return null;
+              })}
+
+              <button
+                type="button"
+                disabled={page >= paging.totalPages}
+                onClick={() => handlePageChange(page + 1)}
+                className="p-2 rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+                title="Trang tiếp"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
 };
-

@@ -59,20 +59,20 @@ export const AdminDashboardPage = () => {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       
       {/* Header */}
       <div>
         <span className="text-xs font-bold uppercase tracking-wider text-emerald-600">
           Tổng Thể Hệ Thống
         </span>
-        <h1 className="text-3xl font-extrabold text-slate-900 font-serif mt-1">
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 font-serif mt-0.5">
           Bảng Điều Khiển Quản Trị Viên
         </h1>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3.5">
         <div className="bg-white p-4 rounded-3xl border border-slate-200/80 shadow-xs space-y-1">
           <p className="text-[11px] font-bold text-slate-400">Tổng Phòng</p>
           <p className="text-2xl font-black text-slate-900 font-serif">{data?.totalRooms || 0}</p>
