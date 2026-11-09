@@ -108,7 +108,7 @@ export const LandlordRoomFormPage = () => {
     setUploading(true);
     try {
       const formData = new FormData();
-      files.forEach((f) => formData.append('roomImages', f));
+      files.forEach((f) => formData.append('images', f));
 
       const res = await landlordApi.uploadImages(formData);
       const uploadedList = res.images || res.urls || [];
@@ -447,4 +447,3 @@ export const LandlordRoomFormPage = () => {
     </div>
   );
 };
-

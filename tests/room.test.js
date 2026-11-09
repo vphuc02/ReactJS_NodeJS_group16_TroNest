@@ -105,6 +105,19 @@ beforeEach(async () => {
 });
 
 describe('Quyền Hạn Đăng Phòng Của Chủ Trọ (Landlord Verification Check)', () => {
+  test('Dashboard trả trạng thái xét duyệt tài khoản và lý do từ chối của Chủ trọ', async () => {
+    await User.updateOne(
+      { _id: approvedLandlordUser._id },
+      { status: USER_STATUS.REJECTED, rejectReason: 'Vui lòng bổ sung thông tin xác minh.' }
+    );
+
+    const res = await approvedLandlordClient.get('/landlord/dashboard', { wantsJson: true });
+
+    assert.equal(res.status, 200);
+    assert.equal(res.body.data.landlordStatus, USER_STATUS.REJECTED);
+    assert.equal(res.body.data.rejectReason, 'Vui lòng bổ sung thông tin xác minh.');
+  });
+
   test('Chủ trọ ở trạng thái PENDING bị chặn khi truy cập trang đăng phòng (/create)', async () => {
     const res = await pendingLandlordClient.get('/landlord/rooms/create', { wantsJson: true });
     assert.equal(res.status, 403);

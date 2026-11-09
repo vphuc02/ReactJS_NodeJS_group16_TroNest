@@ -10,7 +10,8 @@ import {
   ArrowLeft, 
   LogOut,
   CheckCircle2,
-  Clock
+  Clock,
+  AlertCircle
 } from 'lucide-react';
 
 export const LandlordLayout = () => {
@@ -64,10 +65,20 @@ export const LandlordLayout = () => {
                   <CheckCircle2 className="w-3 h-3" />
                   Đã duyệt
                 </span>
-              ) : (
+              ) : user?.status === 'REJECTED' ? (
+                <span className="inline-flex items-center gap-1 text-[10px] font-bold text-rose-600">
+                  <AlertCircle className="w-3 h-3" />
+                  Bị từ chối
+                </span>
+              ) : user?.status === 'PENDING' ? (
                 <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-600">
                   <Clock className="w-3 h-3" />
                   Chờ duyệt
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1 text-[10px] font-bold text-slate-500">
+                  <AlertCircle className="w-3 h-3" />
+                  Ngừng hoạt động
                 </span>
               )}
             </div>
@@ -127,4 +138,3 @@ export const LandlordLayout = () => {
     </div>
   );
 };
-

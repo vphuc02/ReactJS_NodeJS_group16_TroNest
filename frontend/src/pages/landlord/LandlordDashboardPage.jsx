@@ -45,6 +45,9 @@ export const LandlordDashboardPage = () => {
   }
 
   const isPending = data?.landlordStatus === 'PENDING';
+  const isRejected = data?.landlordStatus === 'REJECTED';
+  const isApproved = data?.landlordStatus === 'APPROVED';
+  const isInactive = data?.landlordStatus === 'INACTIVE';
 
   return (
     <div className="space-y-8">
@@ -69,14 +72,42 @@ export const LandlordDashboardPage = () => {
         </Link>
       </div>
 
-      {/* Pending Account Notice */}
-      {isPending && (
-        <div className="p-5 rounded-3xl bg-amber-50 border border-amber-200 flex items-start gap-3.5 text-amber-800">
-          <Clock className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+      {/* Landlord Account Review Status */}
+      {(isPending || isRejected || isApproved || isInactive) && (
+        <div className={`p-5 rounded-3xl border flex items-start gap-3.5 ${
+          isPending
+            ? 'bg-amber-50 border-amber-200 text-amber-800'
+            : isRejected
+              ? 'bg-rose-50 border-rose-200 text-rose-800'
+              : isApproved
+                ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
+                : 'bg-slate-50 border-slate-200 text-slate-700'
+        }`}>
+          {isPending ? (
+            <Clock className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+          ) : isRejected || isInactive ? (
+            <AlertCircle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
+          ) : (
+            <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+          )}
           <div className="text-xs space-y-1">
-            <p className="font-bold text-amber-900">Tài khoản của bạn đang trong trạng thái Chờ Duyệt (PENDING)</p>
-            <p className="text-amber-700 leading-relaxed">
-              Ban Quản trị TroNest đang tiến hành thẩm định thông tin chủ trọ để đảm bảo an toàn cho cộng đồng thuê nhà. Các bài đăng của bạn sẽ tự động được hiển thị công khai ngay sau khi tài khoản được duyệt!
+            <p className="font-bold">
+              {isPending
+                ? 'Tài khoản của bạn đang chờ Admin xét duyệt (PENDING)'
+                : isRejected
+                  ? 'Tài khoản Chủ trọ đã bị từ chối (REJECTED)'
+                  : isApproved
+                    ? 'Tài khoản Chủ trọ đã được duyệt (APPROVED)'
+                    : 'Tài khoản Chủ trọ đang ngừng hoạt động (INACTIVE)'}
+            </p>
+            <p className="leading-relaxed">
+              {isPending
+                ? 'Admin đang thẩm định tài khoản. Bạn chỉ có thể đăng phòng sau khi tài khoản được duyệt; mỗi bài đăng vẫn cần được Admin duyệt riêng trước khi công khai.'
+                : isRejected
+                  ? data?.rejectReason || 'Vui lòng cập nhật thông tin và liên hệ Admin để được hướng dẫn xét duyệt lại.'
+                  : isApproved
+                    ? 'Bạn có thể đăng phòng. Mỗi bài đăng sẽ được Admin kiểm duyệt trước khi hiển thị công khai.'
+                    : 'Tài khoản hiện không thể đăng phòng. Vui lòng liên hệ Admin để được hỗ trợ.'}
             </p>
           </div>
         </div>
@@ -213,4 +244,3 @@ export const LandlordDashboardPage = () => {
     </div>
   );
 };
-
