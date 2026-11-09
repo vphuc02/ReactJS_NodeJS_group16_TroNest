@@ -799,6 +799,39 @@ export const HomePage = () => {
         </section>
       )}
 
+      {/* 7. SECTION: LATEST ROOMS (Phòng Trọ Mới Đăng) */}
+      {data.latestRooms?.length > 0 && (
+        <section className="client-clean-077 py-16 bg-[#FAF7F2]" data-aos="fade-up">
+          <div className="container">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10">
+              <div>
+                <span className="hotelier-eyebrow">NEW ARRIVALS • CẬP NHẬT MỚI NHẤT</span>
+                <h2 className="client-clean-071 mb-2">Phòng Trọ Mới Đăng</h2>
+                <p className="text-sm sm:text-base text-[#6E6A63] m-0">
+                  Khám phá những căn phòng vừa được Ban quản trị TroNest kiểm duyệt và xuất bản hôm nay.
+                </p>
+              </div>
+              <Link to="/rooms?sort=newest" className="btn-hotelier btn-hotelier-outline no-underline shrink-0">
+                <span>Xem tất cả phòng mới</span>
+                <span className="btn-hotelier-icon">
+                  <i className="fa-solid fa-arrow-right"></i>
+                </span>
+              </Link>
+            </div>
+
+            <div className="rooms-grid client-clean-082">
+              {data.latestRooms.map((room) => (
+                <RoomCard
+                  key={room._id}
+                  room={room}
+                  isFavorited={data.favoriteRoomIds?.includes(room._id)}
+                />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* 8. SECTION: TESTIMONIALS */}
       <section className="hotelier-testimonials-section" data-aos="fade-up">
         <div className="container">

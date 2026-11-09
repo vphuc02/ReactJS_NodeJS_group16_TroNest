@@ -60,6 +60,14 @@ export const RoomListPage = () => {
   }, [province, provincesList]);
 
   useEffect(() => {
+    setKeyword(searchParams.get('keyword') || '');
+    setCategory(searchParams.get('category') || '');
+    setProvince(searchParams.get('province') || '');
+    setWard(searchParams.get('ward') || '');
+    setPriceRange(searchParams.get('priceRange') || '');
+    setAreaRange(searchParams.get('areaRange') || '');
+    setSort(searchParams.get('sort') || 'newest');
+
     const fetchRooms = async () => {
       setLoading(true);
       try {
@@ -253,10 +261,10 @@ export const RoomListPage = () => {
                   className="client-clean-104 w-full px-3.5 py-2.5 rounded-xl border border-[#E6DFD3] bg-[#FAF7F2] text-xs font-medium text-[#1C1B19] outline-none focus:border-[#A67C52] focus:bg-white transition-all"
                 >
                   <option value="">-- Mọi mức giá --</option>
-                  <option value="under-2m">Dưới 2 triệu</option>
-                  <option value="2m-4m">2 triệu - 4 triệu</option>
-                  <option value="4m-7m">4 triệu - 7 triệu</option>
-                  <option value="above-7m">Trên 7 triệu</option>
+                  <option value="<2m">Dưới 2 triệu</option>
+                  <option value="2-4m">2 triệu - 4 triệu</option>
+                  <option value="4-7m">4 triệu - 7 triệu</option>
+                  <option value=">7m">Trên 7 triệu</option>
                 </select>
               </div>
 
@@ -271,10 +279,10 @@ export const RoomListPage = () => {
                   className="client-clean-104 w-full px-3.5 py-2.5 rounded-xl border border-[#E6DFD3] bg-[#FAF7F2] text-xs font-medium text-[#1C1B19] outline-none focus:border-[#A67C52] focus:bg-white transition-all"
                 >
                   <option value="">-- Mọi diện tích --</option>
-                  <option value="under-20">Dưới 20 m²</option>
+                  <option value="<20">Dưới 20 m²</option>
                   <option value="20-30">20 - 30 m²</option>
                   <option value="30-50">30 - 50 m²</option>
-                  <option value="above-50">Trên 50 m²</option>
+                  <option value=">50">Trên 50 m²</option>
                 </select>
               </div>
 
@@ -301,7 +309,8 @@ export const RoomListPage = () => {
                   { key: 'newest', label: 'Mới nhất' },
                   { key: 'price-asc', label: 'Giá thấp đến cao' },
                   { key: 'price-desc', label: 'Giá cao đến thấp' },
-                  { key: 'area-desc', label: 'Diện tích lớn' }
+                  { key: 'area-desc', label: 'Diện tích lớn' },
+                  { key: 'views-desc', label: 'Xem nhiều nhất' }
                 ].map((item) => (
                   <button
                     key={item.key}
