@@ -7,7 +7,7 @@ export const ClientLayout = () => {
   return (
     <div className="min-h-screen flex flex-col bg-[#FAF7F2]">
       <Navbar />
-      <main className="grow pt-24 sm:pt-28">
+      <main className="grow pt-[76px] sm:pt-[82px]">
         <Outlet />
       </main>
       <Footer />
