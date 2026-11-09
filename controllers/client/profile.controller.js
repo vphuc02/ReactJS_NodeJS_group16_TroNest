@@ -44,11 +44,16 @@ module.exports.index = async (req, res) => {
 module.exports.editPost = async (req, res) => {
   const { fullName, phone, address, facebook, avatar } = req.body;
 
+  let cleanFacebook = facebook ? facebook.trim() : '';
+  if (cleanFacebook && !cleanFacebook.startsWith('http://') && !cleanFacebook.startsWith('https://')) {
+    cleanFacebook = `https://${cleanFacebook}`;
+  }
+
   const updateData = {
     fullName: fullName.trim(),
     phone: phone ? phone.trim() : '',
     address: address ? address.trim() : '',
-    facebook: facebook ? facebook.trim() : ''
+    facebook: cleanFacebook
   };
 
   if (req.file && (req.file.storedPath || req.file.path || req.file.url)) {

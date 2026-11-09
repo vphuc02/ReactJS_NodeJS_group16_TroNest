@@ -181,14 +181,16 @@ module.exports.detail = async (req, res) => {
   room.views = (room.views || 0) + 1;
 
   let isFavorited = false;
+  let favoriteRoomIds = [];
   if (req.user) {
-    const fav = await Favorite.findOne({
-      userId: req.user._id,
-      roomId: room._id
-    });
-    isFavorited = Boolean(fav);
+    const userFavorites = await Favorite.find({
+      userId: req.user._id
+    }).select('roomId').lean();
+    favoriteRoomIds = userFavorites.map((f) => f.roomId.toString());
+    isFavorited = favoriteRoomIds.includes(room._id.toString());
   }
 
+  // 1. Lọc bỏ các chủ trọ bị khóa hoặc chưa được phê duyệt
   const invalidLandlords = await User.find({
     role: ROLES.LANDLORD,
     $or: [
@@ -198,19 +200,132 @@ module.exports.detail = async (req, res) => {
   }).select('_id').lean();
   const invalidIds = invalidLandlords.map((u) => u._id);
 
-  const relatedRooms = await Room.find({
+  // 2. Thuật toán gợi ý phòng trọ tương tự trong khu vực:
+  // - Ưu tiên chuẩn xác theo khu vực địa lý: Cùng Quận/Huyện -> Cùng Tỉnh/Thành
+  // - Ưu tiên độ tương đồng: Cùng Loại phòng -> Mức giá gần nhất
+  const baseFilter = {
     _id: { $ne: room._id },
     status: ROOM_STATUS.APPROVED,
-    ...(invalidIds.length > 0 ? { landlordId: { $nin: invalidIds } } : {}),
-    $or: [
-      ...(room.categoryId ? [{ categoryId: room.categoryId._id }] : []),
-      { district: room.district }
-    ]
-  })
-    .limit(3)
-    .populate('categoryId', 'title slug')
-    .populate('landlordId', 'fullName phone avatar status')
-    .lean();
+    ...(invalidIds.length > 0 ? { landlordId: { $nin: invalidIds } } : {})
+  };
+
+  const TARGET_LIMIT = 6;
+  const relatedRooms = [];
+  const addedIds = new Set();
+
+  const cleanDistrict = (room.district || '').replace(/^(quận|huyện|thị xã|thành phố|tp\.?)\s+/i, '').trim();
+  const cleanProvince = (room.province || '').replace(/^(thành phố|tỉnh|tp\.?)\s+/i, '').trim();
+  const districtRegex = cleanDistrict ? new RegExp(escapeRegex(cleanDistrict), 'i') : null;
+  const provinceRegex = cleanProvince ? new RegExp(escapeRegex(cleanProvince), 'i') : null;
+  const categoryId = room.categoryId?._id || room.categoryId;
+
+  // TẦNG 1: CÙNG QUẬN/HUYỆN + CÙNG LOẠI PHÒNG (Ưu tiên cao nhất)
+  if (districtRegex) {
+    const tier1Filter = {
+      ...baseFilter,
+      district: districtRegex,
+      ...(provinceRegex ? { province: provinceRegex } : {}),
+      ...(categoryId ? { categoryId } : {})
+    };
+
+    const tier1 = await Room.find(tier1Filter)
+      .populate('categoryId', 'title slug')
+      .populate('landlordId', 'fullName phone avatar status')
+      .limit(TARGET_LIMIT)
+      .lean();
+
+    for (const r of tier1) {
+      relatedRooms.push(r);
+      addedIds.add(r._id.toString());
+    }
+  }
+
+  // TẦNG 2: CÙNG QUẬN/HUYỆN (Các loại phòng khác trong cùng quận/huyện)
+  if (relatedRooms.length < TARGET_LIMIT && districtRegex) {
+    const tier2Filter = {
+      ...baseFilter,
+      _id: { $nin: [room._id, ...Array.from(addedIds)] },
+      district: districtRegex,
+      ...(provinceRegex ? { province: provinceRegex } : {})
+    };
+
+    const tier2 = await Room.find(tier2Filter)
+      .populate('categoryId', 'title slug')
+      .populate('landlordId', 'fullName phone avatar status')
+      .limit(TARGET_LIMIT - relatedRooms.length)
+      .lean();
+
+    for (const r of tier2) {
+      relatedRooms.push(r);
+      addedIds.add(r._id.toString());
+    }
+  }
+
+  // TẦNG 3: CÙNG TỈNH/THÀNH PHỐ + CÙNG LOẠI PHÒNG (Mở rộng sang các quận khác trong cùng tỉnh/thành)
+  if (relatedRooms.length < TARGET_LIMIT && provinceRegex) {
+    const tier3Filter = {
+      ...baseFilter,
+      _id: { $nin: [room._id, ...Array.from(addedIds)] },
+      province: provinceRegex,
+      ...(categoryId ? { categoryId } : {})
+    };
+
+    const tier3 = await Room.find(tier3Filter)
+      .populate('categoryId', 'title slug')
+      .populate('landlordId', 'fullName phone avatar status')
+      .limit(TARGET_LIMIT - relatedRooms.length)
+      .lean();
+
+    for (const r of tier3) {
+      relatedRooms.push(r);
+      addedIds.add(r._id.toString());
+    }
+  }
+
+  // TẦNG 4: CÙNG TỈNH/THÀNH PHỐ (Bất kỳ loại phòng nào trong cùng tỉnh/thành)
+  if (relatedRooms.length < TARGET_LIMIT && provinceRegex) {
+    const tier4Filter = {
+      ...baseFilter,
+      _id: { $nin: [room._id, ...Array.from(addedIds)] },
+      province: provinceRegex
+    };
+
+    const tier4 = await Room.find(tier4Filter)
+      .populate('categoryId', 'title slug')
+      .populate('landlordId', 'fullName phone avatar status')
+      .limit(TARGET_LIMIT - relatedRooms.length)
+      .lean();
+
+    for (const r of tier4) {
+      relatedRooms.push(r);
+      addedIds.add(r._id.toString());
+    }
+  }
+
+  // SẮP XẾP ĐỘ TƯƠNG ĐỒNG:
+  // 1. Cùng quận lên đầu
+  // 2. Cùng loại phòng lên đầu
+  // 3. Mức giá gần với giá phòng hiện tại nhất
+  if (relatedRooms.length > 0) {
+    relatedRooms.sort((a, b) => {
+      const aSameDistrict = districtRegex ? districtRegex.test(a.district || '') : false;
+      const bSameDistrict = districtRegex ? districtRegex.test(b.district || '') : false;
+      if (aSameDistrict && !bSameDistrict) return -1;
+      if (!aSameDistrict && bSameDistrict) return 1;
+
+      const aSameCat = categoryId ? String(a.categoryId?._id || a.categoryId) === String(categoryId) : false;
+      const bSameCat = categoryId ? String(b.categoryId?._id || b.categoryId) === String(categoryId) : false;
+      if (aSameCat && !bSameCat) return -1;
+      if (!aSameCat && bSameCat) return 1;
+
+      if (room.price) {
+        const diffA = Math.abs((a.price || 0) - room.price);
+        const diffB = Math.abs((b.price || 0) - room.price);
+        return diffA - diffB;
+      }
+      return 0;
+    });
+  }
 
   const roomObj = typeof room.toObject === 'function' ? room.toObject() : room;
   if (roomObj.landlordId && roomObj.landlordId._id) {
@@ -219,10 +334,11 @@ module.exports.detail = async (req, res) => {
 
   return res.json({
     code: 200,
-    message: 'Xem thông tin chi tiết chủ trọ',
+    message: 'Xem thông tin chi tiết phòng trọ',
     data: {
       room: roomObj,
       isFavorited,
+      favoriteRoomIds,
       relatedRooms
     }
   });

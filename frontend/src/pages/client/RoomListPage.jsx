@@ -132,11 +132,11 @@ export const RoomListPage = () => {
   };
 
   return (
-    <main className="client-clean-001 pb-20">
+    <div className="pb-20 pt-2 sm:pt-3">
       <div className="container">
         
         {/* Title Bar */}
-        <div className="client-clean-094 mb-8">
+        <div className="client-clean-094 mb-6 sm:mb-8">
           <h1 className="client-clean-095 text-3xl sm:text-4xl font-serif font-bold text-[#1C1B19]">
             Danh Sách Phòng Trọ Cho Thuê
           </h1>
@@ -386,6 +386,6 @@ export const RoomListPage = () => {
         </div>
 
       </div>
-    </main>
+    </div>
   );
 };
