@@ -87,10 +87,12 @@ export const LandlordPublicDetailPage = () => {
               <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 font-serif">
                 {landlord.fullName}
               </h1>
-              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                <ShieldCheck className="w-3.5 h-3.5" />
-                Chủ trọ đã xác thực
-              </span>
+              {landlord.status === 'APPROVED' && (
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                  <ShieldCheck className="w-3.5 h-3.5" />
+                  Chủ trọ đã xác thực
+                </span>
+              )}
             </div>
 
             <div className="flex flex-wrap items-center justify-center sm:justify-start gap-4 text-xs text-slate-500 pt-1">
@@ -101,10 +103,10 @@ export const LandlordPublicDetailPage = () => {
                 </span>
               )}
               {landlord.email && (
-                <span className="flex items-center gap-1.5">
+                <a href={`mailto:${landlord.email}`} className="flex items-center gap-1.5 text-inherit no-underline hover:text-[#A67C52]">
                   <Mail className="w-3.5 h-3.5 text-[#A67C52]" />
                   <span>{landlord.email}</span>
-                </span>
+                </a>
               )}
               {landlord.address && (
                 <span className="flex items-center gap-1.5">
@@ -168,4 +170,3 @@ export const LandlordPublicDetailPage = () => {
     </div>
   );
 };
-

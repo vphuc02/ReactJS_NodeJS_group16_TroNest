@@ -99,8 +99,28 @@ describe('Khách thuê xem thông tin hồ sơ công khai của Chủ trọ trê
     assert.equal(res.body.code, 200);
     assert.equal(res.body.landlord.fullName, 'Cô Bảy Nhà Trọ (landlord-pub-test)');
     assert.equal(res.body.landlord.phone, '0911223344');
+    assert.equal(res.body.landlord.email, 'cobay@landlord-pub-test.tronest.com');
     assert.equal(typeof res.body.totalRooms, 'number');
     assert.ok(Array.isArray(res.body.rooms));
+  });
+
+  test('Không công khai hồ sơ hoặc thông tin liên hệ của chủ trọ chưa được duyệt hoặc bị từ chối', async () => {
+    const passwordHash = await bcrypt.hash('123456', 10);
+    const client = new TestClient(baseUrl);
+
+    for (const status of [USER_STATUS.PENDING, USER_STATUS.REJECTED]) {
+      const landlord = await User.create({
+        fullName: `Chủ Trọ ${status} (landlord-pub-test)`,
+        email: `${status.toLowerCase()}@landlord-pub-test.tronest.com`,
+        password: passwordHash,
+        phone: '0911223344',
+        role: ROLES.LANDLORD,
+        status
+      });
+
+      const res = await client.get(`/landlords/${landlord._id}`, { wantsJson: true });
+      assert.equal(res.status, 404);
+    }
   });
 
   test('Báo lỗi 404 khi truy cập ID chủ trọ không hợp lệ hoặc không tồn tại', async () => {

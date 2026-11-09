@@ -29,7 +29,12 @@ module.exports.detail = async (req, res) => {
     }
   }
 
-  if (!landlord || landlord.isBlocked || landlord.status === USER_STATUS.INACTIVE) {
+  if (
+    !landlord ||
+    landlord.isBlocked ||
+    landlord.status === USER_STATUS.INACTIVE ||
+    (landlord.role === ROLES.LANDLORD && landlord.status !== USER_STATUS.APPROVED)
+  ) {
     throw new AppError(404, 'Thông tin chủ trọ không tồn tại hoặc tài khoản đã ngừng hoạt động!');
   }
 

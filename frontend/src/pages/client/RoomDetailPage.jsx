@@ -339,7 +339,9 @@ export const RoomDetailPage = () => {
                 {room.landlordId?.email && (
                   <div className="flex items-center gap-2 truncate">
                     <i className="fa-regular fa-envelope client-clean-049 text-[#A67C52] shrink-0"></i>
-                    <span className="truncate">{room.landlordId.email}</span>
+                    <a href={`mailto:${room.landlordId.email}`} className="truncate text-inherit no-underline hover:text-[#A67C52]">
+                      {room.landlordId.email}
+                    </a>
                   </div>
                 )}
                 {room.landlordId?.address && (
