@@ -90,23 +90,23 @@ module.exports.index = async (req, res) => {
     filter.district = { $regex: escapeRegex(district.trim()), $options: 'i' };
   }
 
-  if (priceRange === '<2m') {
+  if (priceRange === '<2m' || priceRange === 'under-2m') {
     filter.price = { $lt: 2000000 };
-  } else if (priceRange === '2-4m') {
+  } else if (priceRange === '2-4m' || priceRange === '2m-4m') {
     filter.price = { $gte: 2000000, $lte: 4000000 };
-  } else if (priceRange === '4-7m') {
+  } else if (priceRange === '4-7m' || priceRange === '4m-7m') {
     filter.price = { $gte: 4000000, $lte: 7000000 };
-  } else if (priceRange === '>7m') {
+  } else if (priceRange === '>7m' || priceRange === 'above-7m') {
     filter.price = { $gt: 7000000 };
   }
 
-  if (areaRange === '<20') {
+  if (areaRange === '<20' || areaRange === 'under-20') {
     filter.area = { $lt: 20 };
   } else if (areaRange === '20-30') {
     filter.area = { $gte: 20, $lte: 30 };
   } else if (areaRange === '30-50') {
     filter.area = { $gte: 30, $lte: 50 };
-  } else if (areaRange === '>50') {
+  } else if (areaRange === '>50' || areaRange === 'above-50') {
     filter.area = { $gt: 50 };
   }
 

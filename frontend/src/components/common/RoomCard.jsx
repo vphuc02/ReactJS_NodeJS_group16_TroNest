@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { favoriteApi } from '../../api/favoriteApi';
 import { useAuth } from '../../context/AuthContext';
@@ -8,6 +8,10 @@ export const RoomCard = ({ room, isFavorited: initialFavorited = false, onFavori
   const { isAuthenticated } = useAuth();
   const [isFav, setIsFav] = useState(initialFavorited);
   const [favLoading, setFavLoading] = useState(false);
+
+  useEffect(() => {
+    setIsFav(initialFavorited);
+  }, [initialFavorited]);
 
   if (!room) return null;
 
