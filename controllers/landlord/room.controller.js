@@ -112,7 +112,14 @@ module.exports.index = async (req, res) => {
     filter.status = status;
   }
   if (keyword && keyword.trim() !== '') {
-    filter.title = { $regex: escapeRegex(keyword.trim()), $options: 'i' };
+    const safeKeyword = escapeRegex(keyword.trim());
+    filter.$or = [
+      { title: { $regex: safeKeyword, $options: 'i' } },
+      { address: { $regex: safeKeyword, $options: 'i' } },
+      { ward: { $regex: safeKeyword, $options: 'i' } },
+      { district: { $regex: safeKeyword, $options: 'i' } },
+      { province: { $regex: safeKeyword, $options: 'i' } }
+    ];
   }
 
   const paging = pagination(await Room.countDocuments(filter), page);
