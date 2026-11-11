@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { landlordApi } from '../../api/landlordApi';
+import { roomApi } from '../../api/roomApi';
 import toast from 'react-hot-toast';
 import { 
   CheckCircle2, 
@@ -16,7 +17,8 @@ import {
   Droplets,
   Shield,
   Users,
-  Star
+  Star,
+  AlertCircle
 } from 'lucide-react';
 
 const COMMON_AMENITIES = [
@@ -38,23 +40,20 @@ const COMMON_AMENITIES = [
   'Vệ sinh khép kín'
 ];
 
-const POPULAR_PROVINCES = [
-  'Hà Nội',
-  'TP. Hồ Chí Minh',
-  'Đà Nẵng',
-  'Bình Dương',
-  'Đồng Nai',
-  'Hải Phòng',
-  'Cần Thơ',
-  'Thừa Thiên Huế',
-  'Quảng Ninh',
-  'Khánh Hòa',
-  'Bắc Ninh',
-  'Lâm Đồng',
-  'Nghệ An',
-  'Thanh Hóa',
-  'Khác...'
+const FALLBACK_PROVINCES = [
+  { code: '01', name: 'Thành phố Hà Nội' },
+  { code: '79', name: 'Thành phố Hồ Chí Minh' },
+  { code: '48', name: 'Thành phố Đà Nẵng' }
 ];
+
+const normalizeUnitName = (name = '') =>
+  String(name)
+    .replace(/^(Thành phố|TP\.|Tỉnh|Phường|Xã|Thị trấn|Đặc khu)\s+/i, '')
+    .trim()
+    .toLowerCase();
+
+const stripProvincePrefix = (name = '') =>
+  String(name).replace(/^(Thành phố|Tỉnh)\s+/i, '').trim();
 
 function formatVndPreview(val) {
   const num = Number(val);
@@ -85,12 +84,18 @@ export const LandlordRoomFormPage = () => {
   const [waterPrice, setWaterPrice] = useState('30.000 đ/m³');
   const [servicePrice, setServicePrice] = useState('100.000 đ/phòng');
 
-  // Location
+  // Location (2-level Administrative Units: Province -> Ward)
+  const [provincesList, setProvincesList] = useState([]);
+  const [wardsList, setWardsList] = useState([]);
+  const [wardsLoading, setWardsLoading] = useState(false);
   const [province, setProvince] = useState('Hà Nội');
-  const [customProvince, setCustomProvince] = useState('');
   const [district, setDistrict] = useState('');
   const [ward, setWard] = useState('');
   const [address, setAddress] = useState('');
+
+  // Room status & Reject reason (for Edit mode)
+  const [roomStatus, setRoomStatus] = useState('');
+  const [rejectReason, setRejectReason] = useState('');
 
   // Description & Features
   const [description, setDescription] = useState('');
@@ -99,6 +104,22 @@ export const LandlordRoomFormPage = () => {
   const [uploading, setUploading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProvinces = async () => {
+      try {
+        const list = await roomApi.getProvinces();
+        if (Array.isArray(list) && list.length > 0) {
+          setProvincesList(list);
+        } else {
+          setProvincesList(FALLBACK_PROVINCES);
+        }
+      } catch {
+        setProvincesList(FALLBACK_PROVINCES);
+      }
+    };
+    fetchProvinces();
+  }, []);
 
   useEffect(() => {
     const initData = async () => {
@@ -121,16 +142,14 @@ export const LandlordRoomFormPage = () => {
             setServicePrice(r.servicePrice || '100.000 đ/phòng');
 
             // Location
-            const loadedProvince = r.province || 'Hà Nội';
-            if (POPULAR_PROVINCES.includes(loadedProvince)) {
-              setProvince(loadedProvince);
-            } else {
-              setProvince('Khác...');
-              setCustomProvince(loadedProvince);
-            }
+            setProvince(stripProvincePrefix(r.province || 'Hà Nội'));
             setDistrict(r.district || '');
             setWard(r.ward || '');
             setAddress(r.address || '');
+
+            // Status & Reject reason
+            setRoomStatus(r.status || '');
+            setRejectReason(r.rejectReason || '');
 
             setDescription(r.description || '');
             setSelectedAmenities(r.amenities || []);
@@ -145,14 +164,78 @@ export const LandlordRoomFormPage = () => {
             }
           }
         }
-      } catch {
-        toast.error('Không thể tải biểu mẫu bài đăng!');
+      } catch (err) {
+        const status = err.response?.status;
+        const msg = err.response?.data?.message || 'Không thể tải biểu mẫu bài đăng!';
+        toast.error(msg);
+        if (status === 403) {
+          navigate('/landlord/dashboard');
+        } else if (status === 404) {
+          navigate('/landlord/rooms');
+        }
       } finally {
         setLoading(false);
       }
     };
     initData();
-  }, [id, isEdit]);
+  }, [id, isEdit, navigate]);
+
+  // Load Wards whenever province or provincesList changes
+  useEffect(() => {
+    if (!province || provincesList.length === 0) {
+      setWardsList([]);
+      return;
+    }
+
+    const normTarget = normalizeUnitName(province);
+    const matchedProvince = provincesList.find(
+      (p) => normalizeUnitName(p.name) === normTarget || p.name === province
+    );
+
+    if (!matchedProvince?.code) {
+      setWardsList([]);
+      return;
+    }
+
+    let isCancelled = false;
+    setWardsLoading(true);
+
+    roomApi
+      .getWards(matchedProvince.code)
+      .then((list) => {
+        if (isCancelled) return;
+        const sorted = Array.isArray(list)
+          ? [...list].sort((a, b) => a.name.localeCompare(b.name, 'vi'))
+          : [];
+        setWardsList(sorted);
+
+        setWard((currentWard) => {
+          if (currentWard) {
+            const matchedWard = sorted.find(
+              (w) =>
+                w.name.toLowerCase() === currentWard.toLowerCase() ||
+                normalizeUnitName(w.name) === normalizeUnitName(currentWard)
+            );
+            if (matchedWard) return matchedWard.name;
+            return currentWard;
+          }
+          return sorted.length > 0 ? sorted[0].name : '';
+        });
+      })
+      .catch((err) => {
+        if (!isCancelled) {
+          console.error('Lỗi tải danh sách phường/xã:', err);
+          setWardsList([]);
+        }
+      })
+      .finally(() => {
+        if (!isCancelled) setWardsLoading(false);
+      });
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [province, provincesList]);
 
   const handleToggleAmenity = (item) => {
     if (selectedAmenities.includes(item)) {
@@ -206,8 +289,17 @@ export const LandlordRoomFormPage = () => {
   };
 
   const handleSubmit = async (actionStatus = 'PENDING') => {
-    if (!title.trim()) {
+    const trimmedTitle = title.trim();
+    if (!trimmedTitle) {
       toast.error('Vui lòng nhập tiêu đề bài đăng!');
+      return;
+    }
+    if (trimmedTitle.length < 5) {
+      toast.error('Tiêu đề bài đăng phải từ 5 ký tự trở lên!');
+      return;
+    }
+    if (trimmedTitle.length > 200) {
+      toast.error('Tiêu đề bài đăng không được vượt quá 200 ký tự!');
       return;
     }
     if (!categoryId) {
@@ -222,21 +314,23 @@ export const LandlordRoomFormPage = () => {
       toast.error('Vui lòng nhập diện tích phòng hợp lệ!');
       return;
     }
-    if (!address.trim()) {
-      toast.error('Vui lòng nhập số nhà, tên đường chi tiết!');
+    if (!province.trim()) {
+      toast.error('Vui lòng chọn Tỉnh / Thành phố!');
       return;
     }
-
-    const effectiveProvince = province === 'Khác...' ? customProvince.trim() : province;
-    if (!effectiveProvince) {
-      toast.error('Vui lòng chọn hoặc nhập Tỉnh / Thành phố!');
+    if (!ward.trim()) {
+      toast.error('Vui lòng chọn Phường / Xã!');
+      return;
+    }
+    if (!address.trim()) {
+      toast.error('Vui lòng nhập số nhà, tên đường chi tiết!');
       return;
     }
 
     setSubmitting(true);
     try {
       const payload = {
-        title: title.trim(),
+        title: trimmedTitle,
         categoryId,
         price: Number(price),
         deposit: deposit ? Number(deposit) : 0,
@@ -245,7 +339,7 @@ export const LandlordRoomFormPage = () => {
         electricityPrice: electricityPrice.trim(),
         waterPrice: waterPrice.trim(),
         servicePrice: servicePrice.trim(),
-        province: effectiveProvince,
+        province: province.trim(),
         district: district.trim(),
         ward: ward.trim(),
         address: address.trim(),
@@ -284,8 +378,7 @@ export const LandlordRoomFormPage = () => {
     return <div className="h-96 bg-white/60 rounded-3xl animate-pulse"></div>;
   }
 
-  const effectiveProvince = province === 'Khác...' ? customProvince : province;
-  const fullAddressPreview = [address, ward, district, effectiveProvince].filter(Boolean).join(', ');
+  const fullAddressPreview = [address.trim(), ward, province].filter(Boolean).join(' - ');
 
   return (
     <div className="space-y-5 max-w-4xl pb-10">
@@ -321,10 +414,23 @@ export const LandlordRoomFormPage = () => {
             onClick={() => handleSubmit('PENDING')}
             className="px-5 py-2 rounded-2xl bg-[#8C6239] hover:bg-[#6E4B26] text-white text-xs font-bold shadow-md shadow-[#8C6239]/20 hover:shadow-lg cursor-pointer disabled:opacity-50 transition-all"
           >
-            {submitting ? 'Đang lưu...' : 'Gửi Phê Duyệt'}
+            {submitting ? 'Đang lưu...' : isEdit && roomStatus === 'REJECTED' ? 'Gửi Duyệt Lại' : 'Gửi Phê Duyệt'}
           </button>
         </div>
       </div>
+
+      {/* Rejection Notice Banner when editing a REJECTED room */}
+      {isEdit && roomStatus === 'REJECTED' && (
+        <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-900 flex items-start gap-3 shadow-2xs">
+          <AlertCircle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
+          <div className="text-xs space-y-1">
+            <p className="font-bold text-sm text-rose-800">Bài đăng này đã bị Admin từ chối phê duyệt</p>
+            <p className="text-rose-700 leading-relaxed">
+              <strong>Lý do từ chối:</strong> {rejectReason || 'Nội dung chưa đạt tiêu chuẩn kiểm duyệt. Vui lòng cập nhật lại thông tin và bấm "Gửi Duyệt Lại".'}
+            </p>
+          </div>
+        </div>
+      )}
 
       <div className="bg-white p-6 sm:p-8 rounded-3xl border border-[#E6DFD3] shadow-xs space-y-7">
         
@@ -514,88 +620,105 @@ export const LandlordRoomFormPage = () => {
           </div>
         </div>
 
-        {/* Section 3: Location */}
+        {/* Section 3: Location (2-level Administrative Units: Province -> Ward) */}
         <div className="space-y-4 pt-3 border-t border-[#E6DFD3]">
           <div className="flex items-center gap-2 pb-2 border-b border-[#E6DFD3]">
             <MapPin className="w-4 h-4 text-[#A67C52]" />
-            <h3 className="text-base font-bold text-slate-900 font-serif">
-              3. Vị Trí Phòng Trọ
-            </h3>
+            <div>
+              <h3 className="text-base font-bold text-slate-900 font-serif">
+                3. Khu Vực & Địa Chỉ Phòng Trọ
+              </h3>
+              <p className="text-[11px] text-slate-400">
+                Chọn chính xác địa chỉ hành chính để người thuê dễ dàng tìm kiếm phòng trọ
+              </p>
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-bold text-slate-700 mb-1.5">
                 Tỉnh / Thành phố <span className="text-rose-500">*</span>
               </label>
               <select
                 value={province}
-                onChange={(e) => setProvince(e.target.value)}
+                onChange={(e) => {
+                  setProvince(e.target.value);
+                  setDistrict('');
+                  setWard('');
+                }}
+                required
                 className="w-full px-3.5 py-2.5 text-xs font-medium text-slate-800 bg-[#FAF7F2] rounded-2xl border border-slate-200 focus:bg-white focus:border-[#A67C52] outline-none"
               >
-                {POPULAR_PROVINCES.map((p) => (
-                  <option key={p} value={p}>{p}</option>
-                ))}
+                {provincesList.map((p) => {
+                  const shortVal = stripProvincePrefix(p.name);
+                  return (
+                    <option key={p.code} value={shortVal}>
+                      {p.name}
+                    </option>
+                  );
+                })}
               </select>
-
-              {province === 'Khác...' && (
-                <input
-                  type="text"
-                  value={customProvince}
-                  onChange={(e) => setCustomProvince(e.target.value)}
-                  placeholder="Nhập tên Tỉnh / Thành phố"
-                  className="w-full mt-2 px-3.5 py-2 text-xs font-medium text-slate-800 bg-white rounded-2xl border border-slate-300 focus:border-[#A67C52] outline-none"
-                />
-              )}
             </div>
 
             <div>
               <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                Quận / Huyện
+                Phường / Xã <span className="text-rose-500">*</span>
               </label>
-              <input
-                type="text"
-                value={district}
-                onChange={(e) => setDistrict(e.target.value)}
-                placeholder="VD: Cầu Giấy"
-                className="w-full px-3.5 py-2.5 text-xs font-medium text-slate-800 bg-[#FAF7F2] rounded-2xl border border-slate-200 focus:bg-white focus:border-[#A67C52] outline-none"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                Phường / Xã
-              </label>
-              <input
-                type="text"
+              <select
                 value={ward}
                 onChange={(e) => setWard(e.target.value)}
-                placeholder="VD: Dịch Vọng Hậu"
-                className="w-full px-3.5 py-2.5 text-xs font-medium text-slate-800 bg-[#FAF7F2] rounded-2xl border border-slate-200 focus:bg-white focus:border-[#A67C52] outline-none"
-              />
+                disabled={wardsLoading || wardsList.length === 0}
+                required
+                className="w-full px-3.5 py-2.5 text-xs font-medium text-slate-800 bg-[#FAF7F2] rounded-2xl border border-slate-200 focus:bg-white focus:border-[#A67C52] outline-none disabled:opacity-60"
+              >
+                {wardsLoading ? (
+                  <option value="">-- Đang tải danh sách phường/xã... --</option>
+                ) : wardsList.length === 0 ? (
+                  <option value={ward || ''}>{ward || '-- Vui lòng chọn Tỉnh/Thành phố trước --'}</option>
+                ) : (
+                  <>
+                    {ward && !wardsList.some((w) => w.name === ward) && (
+                      <option value={ward}>{ward}</option>
+                    )}
+                    {wardsList.map((w) => (
+                      <option key={w.code} value={w.name}>
+                        {w.name}
+                      </option>
+                    ))}
+                  </>
+                )}
+              </select>
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1.5">
-              Địa chỉ chi tiết (Số nhà, tên ngõ, tên đường) <span className="text-rose-500">*</span>
-            </label>
+            <div className="flex flex-wrap items-center justify-between gap-1 mb-1.5">
+              <label className="block text-xs font-bold text-slate-700">
+                Số nhà, tên ngõ/ngách, tên đường <span className="text-rose-500">*</span>
+              </label>
+              <span className="text-[11px] text-slate-400 italic">
+                Không cần gõ lại tên phường/xã, tỉnh/thành phố
+              </span>
+            </div>
             <input
               type="text"
               value={address}
               onChange={(e) => setAddress(e.target.value)}
-              placeholder="VD: Số 18 Ngõ 86 Duy Tân"
+              placeholder="VD: Số 18, Ngõ 175 đường Xuân Thủy"
               required
               className="w-full px-4 py-2.5 text-xs font-medium text-slate-800 bg-[#FAF7F2] rounded-2xl border border-slate-200 focus:bg-white focus:border-[#A67C52] outline-none"
             />
           </div>
 
-          {fullAddressPreview && (
-            <div className="p-3 rounded-2xl bg-[#FAF7F2] border border-[#E6DFD3] flex items-center gap-2 text-xs text-slate-600">
-              <MapPin className="w-4 h-4 text-[#A67C52] shrink-0" />
-              <span>Địa chỉ hiển thị đầy đủ: <strong className="text-slate-800">{fullAddressPreview}</strong></span>
-            </div>
-          )}
+          <div className="p-3 rounded-2xl bg-[#FAF7F2] border border-[#E6DFD3] flex items-center gap-2 text-xs text-slate-600">
+            <MapPin className="w-4 h-4 text-[#A67C52] shrink-0" />
+            <span>
+              Địa chỉ đầy đủ:{' '}
+              <strong className="text-slate-800">
+                {fullAddressPreview || 'Chưa xác định'}
+              </strong>
+            </span>
+          </div>
         </div>
 
         {/* Section 4: Amenities */}
@@ -741,7 +864,7 @@ export const LandlordRoomFormPage = () => {
               onClick={() => handleSubmit('PENDING')}
               className="flex-1 sm:flex-initial px-6 py-2.5 rounded-2xl bg-[#8C6239] hover:bg-[#6E4B26] text-white text-xs font-bold shadow-md shadow-[#8C6239]/20 hover:shadow-lg cursor-pointer disabled:opacity-50 transition-all"
             >
-              {submitting ? 'Đang lưu...' : 'Gửi Phê Duyệt'}
+              {submitting ? 'Đang lưu...' : isEdit && roomStatus === 'REJECTED' ? 'Gửi Duyệt Lại' : 'Gửi Phê Duyệt'}
             </button>
           </div>
         </div>
